@@ -134,6 +134,12 @@
 ;; Redirect Eshell to var directory
 (setq eshell-directory-name (expand-file-name "eshell/" my/var-dir))
 
+;; Redirect Transient persistence files to var directory
+(let ((transient-dir (expand-file-name "transient/" my/var-dir)))
+  (setq transient-history-file (expand-file-name "history.el" transient-dir)
+        transient-levels-file  (expand-file-name "levels.el" transient-dir)
+        transient-values-file  (expand-file-name "values.el" transient-dir)))
+
 (setq backup-by-copying t
       delete-old-versions t
       kept-new-versions 6
