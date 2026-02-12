@@ -117,14 +117,18 @@ mv ~/.emacs.d ~/.emacs.d.backup
 ### 2️⃣ Clone Chadmacs
 
 ```bash
-git clone <your-repo-url> ~/.emacs.d
+git clone https://github.com/Borderliner/Chadmacs.git ~/.emacs.d
 ```
 
 ### 3️⃣ Launch Emacs
 
-First launch bootstraps **Elpaca** automatically.
+🪄 First launch bootstraps **Elpaca** automatically.
 
-Sit back. Let it cook. 🍳
+🍳 Sit back. Let it cook.
+
+⌛ After **Elpaca** installation, check **async-compilation** buffer (C-x b), and wait for everything to be compiled.
+
+🔁 Once done, ignore warnings, **Restart** Emacs.
 
 ---
 
