@@ -4,6 +4,8 @@
 
 Minimal chrome. Smooth UI. Modern completion. LSP ready. Tree-sitter powered.
 
+[Chadmacs](https://imgur.com/IKNrO3u)
+
 ---
 
 ## ⚡ Philosophy
