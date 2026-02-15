@@ -327,32 +327,6 @@
   :config
   (ultra-scroll-mode 1))
 
-(use-package mini-frame
-  :ensure t
-  :custom
-  ;; Recommended nano-style settings (adjust to taste)
-  (mini-frame-show-parameters
-   '((top . 0.5)
-     (left . 0.5)
-     (width . 0.7)
-     (height . 15)
-     (left-fringe . 0)
-     (right-fringe . 0)
-     (internal-border-width . 10)
-     (internal-border-part-width . 10)
-     (child-frame-border-width . 10)
-     ;;(foreground-color . "white")
-     ;;(background-color . "#2d2d2d")
-     ))
-  (mini-frame-default-height 10)      ; smaller height looks nicer
-  (mini-frame-detach-on-hide t)       ; clean up after use
-  (mini-frame-ignore-commands '())
-
-  :config
-  ;; Enable it globally (recommended for nano-minibuffer)
-  (mini-frame-mode)
-  )
-
 ;; Nerd icons in completion (looks great with nano)
 (use-package nerd-icons-completion
   :ensure t
@@ -390,18 +364,67 @@
 ;; Better completion framework
 (use-package vertico
   :ensure t
-  :custom
-  (vertico-count 15)               ; show more candidates
-  (vertico-resize t)
-  (vertico-cycle t)
   :init
-  (vertico-mode))
+  (setq vertico-count 15
+        ;; vertico-resize t
+        vertico-cycle t)
+  (setq read-file-name-completion-ignore-case t
+        read-buffer-completion-ignore-case t
+        completion-ignore-case t)
+  :config
+  (vertico-mode)
+  (vertico-mouse-mode))
 
-;;;; An alternative to mini-frame
-;; (use-package vertico-posframe
-;;   :ensure t
-;;   :config
-;;   (vertico-posframe-mode))
+;; Configure directory extension.
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  ;; More convenient directory navigation commands
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  ;; Tidy shadowed file names
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
+(use-package vertico-posframe
+  :ensure t
+  :init
+  (setq vertico-posframe-parameters
+        '((left-fringe . 12)
+          (right-fringe . 12)))
+  (setq vertico-posframe-border-width 1)
+  :config
+  ;; ────── Doom Monokai Pro colors (exactly like your nano-modeline sync) ──────
+  (defun my/vertico-posframe-sync ()
+    "Sync vertico-posframe faces with current Doom theme."
+    (when (fboundp 'doom-color)
+      (let* ((bg-alt   (doom-color 'bg-alt))
+             (fg-main  (doom-color 'fg))
+             (accent   (doom-color 'yellow))
+             (border   (doom-darken accent 0.2))
+             (popup-bg (doom-darken bg-alt 0.08)))
+
+        (custom-set-faces
+         `(vertico-posframe
+           ((t (:background ,popup-bg :foreground ,fg-main))))
+         `(vertico-posframe-border
+           ((t (:background ,border))))
+         `(vertico-posframe-border-2
+           ((t (:background ,border))))
+         `(vertico-posframe-border-3
+           ((t (:background ,border))))
+         `(vertico-posframe-border-4
+           ((t (:background ,border))))
+         `(vertico-posframe-border-fallback
+           ((t (:background ,border))))))))
+  ;; Run now + on every theme change
+  (add-hook 'doom-load-theme-hook #'my/vertico-posframe-sync)
+  (my/vertico-posframe-sync)
+
+  ;; Optional: fallback to buffer display if posframe fails (e.g. terminal)
+  (setq vertico-posframe-fallback-mode #'vertico-buffer-mode)
+  (vertico-posframe-mode))
 
 (use-package orderless
   :ensure t
@@ -465,7 +488,7 @@
 (use-package consult
   :ensure t
   :hook
-  (completion-list-mode . mini-frame-mode)
+  (completion-list-mode . vertico-posframe-mode)
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
@@ -568,9 +591,9 @@
   (corfu-popupinfo-mode)
   )
 
-;; A few more useful configurations... (related to corfu)
 (use-package emacs
   :custom
+  ;;;;;;;;; CORFU ;;;;;;;;
   ;; TAB cycle if there are only few candidates
   ;; (completion-cycle-threshold 3)
 
@@ -585,7 +608,23 @@
   ;; Hide commands in M-x which do not apply to the current mode.  Corfu
   ;; commands are hidden, since they are not used via M-x. This setting is
   ;; useful beyond Corfu.
-  (read-extended-command-predicate #'command-completion-default-include-p))
+  (read-extended-command-predicate #'command-completion-default-include-p)
+
+  ;;;;;;;;; VERTICO ;;;;;;;;;
+
+  ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
+  ;; to switch display modes.
+  (context-menu-mode t)
+  ;; Support opening new minibuffers from inside existing minibuffers.
+  (enable-recursive-minibuffers t)
+  ;; Hide commands in M-x which do not work in the current mode.  Vertico
+  ;; commands are hidden in normal buffers. This setting is useful beyond
+  ;; Vertico.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Do not allow the cursor in the minibuffer prompt
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt))
+  )
 
 ;; Cape, or Completion At Point Extensions, extends the capabilities of
 ;; in-buffer completion. It integrates with Corfu or the default completion UI,
@@ -759,6 +798,14 @@
 (use-package flycheck
   :ensure t
   :config
+  ;; Delay Flycheck by 5 seconds after you stop typing
+  (setq flycheck-idle-change-delay 5)
+
+  ;; Optional: even longer delay when switching buffers
+  (setq flycheck-idle-buffer-switch-delay 5)
+
+  ;; Optional: don't check on every new line (only on idle/save)
+  (setq flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (global-flycheck-mode)
   )
 
@@ -861,7 +908,7 @@
   (prog-mode . eldoc-box-hover-mode)
   :config
   (set-face-attribute 'eldoc-box-border nil
-                      :background (doom-color 'cyan))
+                      :background (doom-color 'yellow))
   ;; ────── ALWAYS top-right of the WHOLE FRAME (ignores Treemacs/splits) ──────
   (defun my/eldoc-box--always-frame-top-right (width _height)
     "Place the childframe at the top-right corner of the entire Emacs frame."
