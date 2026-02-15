@@ -862,6 +862,14 @@
   :config
   (set-face-attribute 'eldoc-box-border nil
                       :background (doom-color 'cyan))
+  ;; ────── ALWAYS top-right of the WHOLE FRAME (ignores Treemacs/splits) ──────
+  (defun my/eldoc-box--always-frame-top-right (width _height)
+    "Place the childframe at the top-right corner of the entire Emacs frame."
+    (pcase-let ((`(,_left ,right ,top) eldoc-box-offset))
+      (cons (- (frame-outer-width) width right)   ; right edge of frame
+            top)))                                ; top edge of frame
+
+  (setq eldoc-box-position-function #'my/eldoc-box--always-frame-top-right)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Org Mode and Productivity ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -994,6 +1002,7 @@
   ;; (treemacs-resize-icons 44)
 
   (treemacs-follow-mode t)
+  (treemacs-project-follow-mode t)
   (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode 'always)
 
@@ -1007,8 +1016,12 @@
     (`(t . _)
      (treemacs-git-mode 'simple)))
 
-  (treemacs-hide-gitignored-files-mode nil)
-  (treemacs-start-on-boot))
+  (treemacs-hide-gitignored-files-mode t)
+
+  (treemacs-start-on-boot t))
+
+(use-package treemacs-magit
+  :ensure t)
 
 (use-package treemacs-icons-dired
   :ensure t
