@@ -8,17 +8,17 @@
 ;;; Code:
 
 ;;;;;;;;;; Core ;;;;;;;;;;;;
+;; Enable debugging for better error messages. Will disable when Chadmacs is stable enough
 (setq debug-on-error t)
 
+;; Disable file-name handlers during startup
 (defvar my/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
-
-;; Disable file-name handlers during startup
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq file-name-handler-alist my/file-name-handler-alist)))
-;; Increase GC threshold
-(setq gc-cons-threshold (* 300 1024 1024)) ;; 300MB
+;; Increase GC threshold. Decrease if you don't have sufficient RAM.I have 32GiB so 300MiB is nothing.
+(setq gc-cons-threshold (* 300 1024 1024)) ;; 300MiB
 
 ;;;;;;;;; UI ;;;;;;;;;;;;;;;
 
@@ -59,11 +59,12 @@
 ;; Custom file (DO NOT pollute init)
 (setq custom-file (expand-file-name "custom.el" my/var-dir))
 
-
 ;;;;;;;;;; Elpaca ;;;;;;;;;;;;
 
+;; Disable Emacs's built-in package manager, package.el
 (setq package-enable-at-startup nil)
 
+;; Elpaca version
 (defvar elpaca-installer-version 0.11)
 
 ;; 🔽 Move ALL elpaca stuff under var/
@@ -71,6 +72,7 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 
+;; Elpaca installation, don't mess with it unless you're absolutely sure what you're doing
 (defvar elpaca-order
   '(elpaca
        :repo "https://github.com/progfolio/elpaca.git"

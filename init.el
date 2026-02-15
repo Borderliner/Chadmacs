@@ -423,7 +423,8 @@
   (my/vertico-posframe-sync)
 
   ;; Optional: fallback to buffer display if posframe fails (e.g. terminal)
-  (setq vertico-posframe-fallback-mode #'vertico-buffer-mode)
+  ;; BUG: Below line makes vertico buffer mode always pop up
+  ;; (setq vertico-posframe-fallback-mode #'vertico-buffer-mode)
   (vertico-posframe-mode))
 
 (use-package orderless
@@ -1103,6 +1104,9 @@
   ([remap describe-variable] . helpful-variable)
   :custom
   (helpful-max-buffers 7))
+
+;; Load it only if it exists, silently ignoring if it doesn't
+(load custom-file t t)
 
 (provide 'init)
 ;;; init.el ends here
