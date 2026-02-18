@@ -1,2 +1,4 @@
 /var/
 custom.el
+/extensions/*.elc
+/elpa/

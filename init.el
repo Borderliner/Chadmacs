@@ -1177,6 +1177,7 @@ Return (cons 'transient ROOT) if DIR is part of a known Projectile project."
 ;; (require 'c-cpp-extension)
 ;; (require 'gerbil-extension)
 ;; (require 'clojure-extension)
+(require 'rust-extension)
 
 (create-or-load-custom-file)
 
