@@ -140,11 +140,35 @@
         transient-levels-file  (expand-file-name "levels.el" transient-dir)
         transient-values-file  (expand-file-name "values.el" transient-dir)))
 
+;; Redirect persistence files to your var directory (matches the rest of your config)
+(setq projectile-cache-file (expand-file-name "projectile.cache" my/var-dir))
+(setq projectile-known-projects-file (expand-file-name "projectile-bookmarks.eld" my/var-dir))
+
+(setq yas-snippet-dirs (list (expand-file-name "snippets" my/var-dir)))
+
 (setq backup-by-copying t
       delete-old-versions t
       kept-new-versions 6
       kept-old-versions 2
       version-control t)
+
+(add-to-list 'load-path (expand-file-name "extensions" user-emacs-directory))
+
+(defun create-or-load-custom-file ()
+  "Load the custom.el file (gitignored) if it exists or create if it doesn't."
+  (unless (file-exists-p custom-file)
+    (with-temp-file custom-file
+      (insert ";;; custom.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
+;;;
+;;; chadmacs --- Your own config files
+;;;
+;;; Commentary:
+;;; Instead of polluting init.el and early-init.el, it's better that you add your stuff here
+;;; and let git handle updates from Chadmacs by pulling from git
+;;;
+;;; Code:
+")))
+  (load custom-file t t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Optimization ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -158,10 +182,7 @@
   :config
   (push "/init.el" compile-angel-excluded-files)
   (push "/early-init.el" compile-angel-excluded-files)
-
-  ;; (dolist (file my/nano-files)
-  ;;   (unless (member file compile-angel-excluded-files)
-  ;;     (push file compile-angel-excluded-files)))
+  (push "/custom.el" compile-angel-excluded-files)
 
   (compile-angel-on-load-mode 1))
 
@@ -280,7 +301,7 @@
   ;; (after-init . dashboard-insert-startupify-lists)
   ;; (after-init . dashboard-initialize)
   :init
-  (setq dashboard-projects-backend 'project-el)
+  (setq dashboard-projects-backend 'projectile)
   (setq dashboard-banner-logo-title (concat "Welcome, " (user-full-name) "!"))
   (setq dashboard-startup-banner 2)
   (setq dashboard-center-content t)
@@ -313,8 +334,6 @@
                                    (agenda    . "a")
                                    (registers . "e")))
   :config
-  (add-hook 'after-init-hook #'dashboard-insert-startupify-lists)
-  (add-hook 'after-init-hook #'dashboard-initialize)
   (dashboard-setup-startup-hook)
   )
 
@@ -568,6 +587,13 @@
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
   )
 
+(use-package consult-projectile
+  :ensure t
+  :after (consult projectile)
+  :bind (("C-c p p" . consult-projectile-switch-project)  ; nice binding
+         ("C-c p f" . consult-projectile-find-file)
+         ("C-c p g" . consult-projectile-ripgrep)))
+
 ;; Corfu enhances in-buffer completion by displaying a compact popup with
 ;; current candidates, positioned either below or above the point. Candidates
 ;; can be selected by navigating up or down.
@@ -593,6 +619,9 @@
   )
 
 (use-package emacs
+  :hook
+  ;; Match brackets, para, etc on programming mode
+  (prog-mode . electric-pair-mode)
   :custom
   ;;;;;;;;; CORFU ;;;;;;;;
   ;; TAB cycle if there are only few candidates
@@ -775,11 +804,47 @@
   (define-key paredit-mode-map (kbd "RET") nil)
   )
 
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Programming and Development Tools ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Project management
-(use-package project
-  :ensure t)
+(use-package projectile
+  :ensure t
+  :init
+  ;; Optional: auto-discover projects in common directories (add your own paths)
+  ;; (setq projectile-project-search-path '("~/code/" "~/work/" "~/projects/"))
+  :config
+  ;; Enable globally
+  (projectile-mode +1)
+
+  ;; Use your Vertico/Orderless completion system (clean and consistent)
+  (setq projectile-completion-system 'default)
+
+  ;; Sort projects by recent activity (works nicely with recentf and dashboard)
+  (setq projectile-sort-order 'recentf)
+
+  ;; Faster indexing on large repos (alien uses external tools like git/fd/find)
+  (setq projectile-indexing-method 'alien)
+  (setq projectile-enable-caching t)
+
+  ;; Standard key prefix (C-c p) — matches many modern configs
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+  ;; Integrate Projectile as the ONLY project backend for built-in project.el
+  ;; This prevents project.el from detecting arbitrary git repos as projects
+  (defun my/projectile-project-find-function (dir)
+    "Identify Projectile-managed projects for project.el.
+Return (cons 'transient ROOT) if DIR is part of a known Projectile project."
+    (when-let ((root (projectile-project-root dir)))
+      (cons 'transient root)))
+
+  ;; Override the default project detection (removes VC/git auto-detection)
+  (setq project-find-functions '(my/projectile-project-find-function))
+  )
 
 ;; Dependency for magit
 (use-package transient
@@ -1077,6 +1142,10 @@
   (dired-mode . treemacs-icons-dired-enable-once)
   )
 
+(use-package treemacs-projectile
+  :ensure t
+  :after (treemacs projectile))
+
 ;;
 ;; (use-package treemacs-tab-bar  ; treemacs-tab-bar if you use tab-bar-mode
 ;;   :after (treemacs)
@@ -1105,8 +1174,11 @@
   :custom
   (helpful-max-buffers 7))
 
-;; Load it only if it exists, silently ignoring if it doesn't
-(load custom-file t t)
+;; (require 'c-cpp-extension)
+;; (require 'gerbil-extension)
+;; (require 'clojure-extension)
+
+(create-or-load-custom-file)
 
 (provide 'init)
 ;;; init.el ends here

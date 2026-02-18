@@ -9,7 +9,10 @@
 
 ;;;;;;;;;; Core ;;;;;;;;;;;;
 ;; Enable debugging for better error messages. Will disable when Chadmacs is stable enough
-(setq debug-on-error t)
+;; (setq debug-on-error t)
+
+;; Disable Emacs's built-in package manager, package.el
+(setq package-enable-at-startup nil)
 
 ;; Disable file-name handlers during startup
 (defvar my/file-name-handler-alist file-name-handler-alist)
@@ -40,7 +43,8 @@
 (setq inhibit-startup-screen t
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
-      initial-scratch-message nil)
+      initial-scratch-message nil
+      inhibit-compacting-font-caches t)
 
 ;;;;;;;;;; Paths ;;;;;;;;;;;;
 
@@ -51,18 +55,22 @@
 ;; Make sure it exists
 (make-directory my/var-dir t)
 
+;; ELPA's user dir
+(setq package-user-dir (expand-file-name "elpa" my/var-dir))
+(setq package-check-signature nil
+      package-archives nil)
+(with-eval-after-load 'package
+  (setq package-gnupg-directory (locate-user-emacs-file "var/elpa/gnupg")))
+
 ;; Native compilation cache (Emacs 28+)
 (when (boundp 'native-comp-eln-load-path)
   (startup-redirect-eln-cache
    (expand-file-name "eln/" my/var-dir)))
 
 ;; Custom file (DO NOT pollute init)
-(setq custom-file (expand-file-name "custom.el" my/var-dir))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;;;;;;;;;; Elpaca ;;;;;;;;;;;;
-
-;; Disable Emacs's built-in package manager, package.el
-(setq package-enable-at-startup nil)
 
 ;; Elpaca version
 (defvar elpaca-installer-version 0.11)
