@@ -38,3 +38,5 @@
   :config (setq idle-highlight-idle-time 0.2)
 
   :hook ((prog-mode text-mode) . idle-highlight-mode))
+
+(provide 'clojure-extension)

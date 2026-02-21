@@ -45,3 +45,5 @@
 ;;     (when tags (visit-tags-table tags)))
 ;;   (let ((tags (expand-file-name "src/TAGS" *gerbil-path*)))
 ;;     (when (file-exists-p tags) (visit-tags-table tags))))
+
+;; (provide 'gerbil-extension)
