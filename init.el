@@ -406,46 +406,6 @@
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
-(use-package vertico-posframe
-  :ensure t
-  :init
-  (setq vertico-posframe-parameters
-        '((left-fringe . 12)
-          (right-fringe . 12)))
-  (setq vertico-posframe-border-width 1)
-  :config
-  ;; ────── Doom Monokai Pro colors (exactly like your nano-modeline sync) ──────
-  (defun my/vertico-posframe-sync ()
-    "Sync vertico-posframe faces with current Doom theme."
-    (when (fboundp 'doom-color)
-      (let* ((bg-alt   (doom-color 'bg-alt))
-             (fg-main  (doom-color 'fg))
-             (accent   (doom-color 'yellow))
-             (border   (doom-darken accent 0.2))
-             (popup-bg (doom-darken bg-alt 0.08)))
-
-        (custom-set-faces
-         `(vertico-posframe
-           ((t (:background ,popup-bg :foreground ,fg-main))))
-         `(vertico-posframe-border
-           ((t (:background ,border))))
-         `(vertico-posframe-border-2
-           ((t (:background ,border))))
-         `(vertico-posframe-border-3
-           ((t (:background ,border))))
-         `(vertico-posframe-border-4
-           ((t (:background ,border))))
-         `(vertico-posframe-border-fallback
-           ((t (:background ,border))))))))
-  ;; Run now + on every theme change
-  (add-hook 'doom-load-theme-hook #'my/vertico-posframe-sync)
-  (my/vertico-posframe-sync)
-
-  ;; Optional: fallback to buffer display if posframe fails (e.g. terminal)
-  ;; BUG: Below line makes vertico buffer mode always pop up
-  ;; (setq vertico-posframe-fallback-mode #'vertico-buffer-mode)
-  (vertico-posframe-mode))
-
 (use-package orderless
   :ensure t
   :custom
@@ -507,8 +467,6 @@
 ;; Rich completion commands (M-x, find-file, switch-buffer, etc.)
 (use-package consult
   :ensure t
-  :hook
-  (completion-list-mode . vertico-posframe-mode)
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
