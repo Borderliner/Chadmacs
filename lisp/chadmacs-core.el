@@ -329,11 +329,17 @@ can enable per-language support without touching upstream files."
   :config
   (gcmh-mode 1))
 
-;; Inherit shell PATH so LSPs/formatters launched from GUI Emacs work
-;; (Mostly useful on macOS - Linux users typically get PATH from shell rc.)
+;; Inherit shell PATH into Emacs.
+;;
+;; GUI Emacs launched from a .desktop file (Linux X / Wayland) or from
+;; Finder (macOS) doesn't source ~/.bashrc / ~/.zshrc / config.fish, so
+;; per-user tool directories (~/.bun/bin, ~/.cargo/bin, ~/.local/bin,
+;; nvm shims, asdf shims, ...) are missing from `exec-path'. Without
+;; this, eglot reports "No such file or directory" for LSPs that the
+;; shell can see fine. Daemon Emacs has the same issue.
 (use-package exec-path-from-shell
   :ensure t
-  :if (memq window-system '(mac ns))
+  :if (or (memq window-system '(mac ns x pgtk)) (daemonp))
   :defer 1
   :config
   (exec-path-from-shell-initialize))
