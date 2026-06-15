@@ -1,11 +1,13 @@
 (use-package rust-mode
   :ensure t
+  :defer t
   :init
   (setq rust-mode-treesitter-derive t))
 
 (use-package rustic
   :ensure t
-  :after (rust-mode)
+  :after rust-mode
+  :mode ("\\.rs\\'" . rustic-mode)
   :custom
   (rustic-cargo-use-last-stored-arguments t)
   :config

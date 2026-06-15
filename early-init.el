@@ -67,78 +67,66 @@
   (startup-redirect-eln-cache
    (expand-file-name "eln/" my/var-dir)))
 
+;; Silence native-comp's *Warnings* pop-up. Optional-feature references in
+;; nano-modeline/rustic (mu4e, elfeed, lsp-mode, etc.) generate harmless
+;; "function not known to be defined" noise; demote to log.
+(setq native-comp-async-report-warnings-errors 'silent)
+
 ;; Custom file (DO NOT pollute init)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 ;;;;;;;;;; Elpaca ;;;;;;;;;;;;
 
-;; Elpaca version
-(defvar elpaca-installer-version 0.11)
+;; Elpaca installer (kept in sync with upstream installer.el)
+(defvar elpaca-installer-version 0.12)
 
 ;; 🔽 Move ALL elpaca stuff under var/
 (defvar elpaca-directory (expand-file-name "elpaca/" my/var-dir))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
 
 ;; Elpaca installation, don't mess with it unless you're absolutely sure what you're doing
-(defvar elpaca-order
-  '(elpaca
-       :repo "https://github.com/progfolio/elpaca.git"
-       :ref nil
-       :depth 1
-       :inherit ignore
-       :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-       :build (:not elpaca--activate-package)))
-
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca-activate)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-sources-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
        (default-directory repo))
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
-    (when (<= emacs-major-version 28)
-      (require 'subr-x))
+    (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop
-                    (apply #'call-process
-                           `("git" nil ,buffer t "clone"
-                             ,@(when-let* ((depth (plist-get order :depth)))
-                                 (list (format "--depth=%d" depth)
-                                       "--no-single-branch"))
-                             ,(plist-get order :repo)
-                             ,repo))))
-                  ((zerop
-                    (call-process "git" nil buffer t "checkout"
-                                  (or (plist-get order :ref) "--"))))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
                   (emacs (concat invocation-directory invocation-name))
-                  ((zerop
-                    (call-process emacs nil buffer nil
-                                  "-Q" "-L" "." "--batch"
-                                  "--eval"
-                                  "(byte-recompile-directory \".\" 0 'force)")))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
                   ((require 'elpaca))
                   ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn
-              (message "%s" (buffer-string))
-              (kill-buffer buffer))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
           (error "%s" (with-current-buffer buffer (buffer-string))))
-      (error
-       (warn "%s" err)
-       (delete-directory repo 'recursive))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil))
-      (load "./elpaca-autoloads"))))
-
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
 ;; use-package support
 (elpaca elpaca-use-package
-  (elpaca-use-package-mode))
+  (elpaca-use-package-mode)
+  ;; Default every use-package form to ensure-via-Elpaca (Elpaca's own knob,
+  ;; not use-package-always-ensure which is for package.el).
+  (setq elpaca-use-package-by-default t))
 
 (provide 'early-init)
 ;;; early-init.el ends here

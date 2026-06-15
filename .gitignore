@@ -1,4 +1,6 @@
-/var/
+var/
 custom.el
-/extensions/*.elc
-/elpa/
+*.elc
+*~
+\#*\#
+.\#*
