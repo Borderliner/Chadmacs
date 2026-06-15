@@ -114,14 +114,31 @@
 ;; Open recent files
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-;; Smart find-file: project-wide flat recursive list when inside a project,
-;; regular find-file otherwise.
+;; Smart find-file: ALWAYS show a flat recursive fuzzy list (Doom-style),
+;; rooted at `default-directory'. Resolution order:
+;;
+;;   1. Projectile-known project  -> consult-projectile-find-file (cached,
+;;                                   ignores .gitignore, honours `.projectile').
+;;   2. `fd' binary available     -> consult-fd from default-directory.
+;;   3. GNU `find' available      -> consult-find from default-directory.
+;;   4. Last-resort fallback      -> plain `find-file' (dir listing).
+;;
+;; This means typing "index.html" matches `client/index.html' even from a
+;; non-project directory — no more "type the path one segment at a time".
 (defun my/smart-find-file ()
-  "Find file in current Projectile project (flat fuzzy list) or fall back to `find-file'."
+  "Recursive flat fuzzy file finder rooted at `default-directory'."
   (interactive)
-  (if (and (fboundp 'projectile-project-p) (projectile-project-p))
-      (call-interactively #'consult-projectile-find-file)
-    (call-interactively #'find-file)))
+  (cond
+   ((and (fboundp 'projectile-project-p)
+         (projectile-project-p)
+         (fboundp 'consult-projectile-find-file))
+    (call-interactively #'consult-projectile-find-file))
+   ((and (fboundp 'consult-fd)
+         (or (executable-find "fd") (executable-find "fdfind")))
+    (consult-fd default-directory))
+   ((fboundp 'consult-find)
+    (consult-find default-directory))
+   (t (call-interactively #'find-file))))
 (global-set-key (kbd "C-x C-f") #'my/smart-find-file)
 
 ;; Common keybindings
