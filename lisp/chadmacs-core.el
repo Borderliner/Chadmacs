@@ -114,31 +114,25 @@
 ;; Open recent files
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 
-;; Smart find-file: ALWAYS show a flat recursive fuzzy list (Doom-style),
-;; rooted at `default-directory'. Resolution order:
-;;
-;;   1. Projectile-known project  -> consult-projectile-find-file (cached,
-;;                                   ignores .gitignore, honours `.projectile').
-;;   2. `fd' binary available     -> consult-fd from default-directory.
-;;   3. GNU `find' available      -> consult-find from default-directory.
-;;   4. Last-resort fallback      -> plain `find-file' (dir listing).
-;;
-;; This means typing "index.html" matches `client/index.html' even from a
-;; non-project directory — no more "type the path one segment at a time".
+;; Smart find-file:
+;; - In a project (detected by walking up for .projectile, .git, or any
+;;   Projectile root): flat fuzzy list of every file via
+;;   `consult-projectile-find-file'. Type "index.html" -> matches
+;;   "client/index.html".
+;; - Outside a project: regular `find-file' so you can browse the
+;;   filesystem directory by directory.
 (defun my/smart-find-file ()
-  "Recursive flat fuzzy file finder rooted at `default-directory'."
+  "Find file: project-wide flat fuzzy list inside a project, `find-file' otherwise."
   (interactive)
-  (cond
-   ((and (fboundp 'projectile-project-p)
-         (projectile-project-p)
-         (fboundp 'consult-projectile-find-file))
-    (call-interactively #'consult-projectile-find-file))
-   ((and (fboundp 'consult-fd)
-         (or (executable-find "fd") (executable-find "fdfind")))
-    (consult-fd default-directory))
-   ((fboundp 'consult-find)
-    (consult-find default-directory))
-   (t (call-interactively #'find-file))))
+  (let* ((dir (or default-directory (expand-file-name "~/")))
+         (root (or (and (fboundp 'projectile-project-root)
+                        (ignore-errors (projectile-project-root dir)))
+                   (locate-dominating-file dir ".projectile")
+                   (locate-dominating-file dir ".git"))))
+    (if (and root (fboundp 'consult-projectile-find-file))
+        (let ((default-directory (expand-file-name root)))
+          (call-interactively #'consult-projectile-find-file))
+      (call-interactively #'find-file))))
 (global-set-key (kbd "C-x C-f") #'my/smart-find-file)
 
 ;; Common keybindings
