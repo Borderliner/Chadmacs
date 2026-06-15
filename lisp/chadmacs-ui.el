@@ -164,7 +164,29 @@
   :ensure t
   :config
   (nerd-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+
+  ;; nerd-icons-completion has hardcoded icon names (e.g. `nf-oct-folder_cache')
+  ;; that drift when upstream nerd-icons renames or removes glyphs. Without
+  ;; this advice, opening `find-file' in a directory containing `.cache/'
+  ;; (and a few other names) raises and breaks vertico. Swallow the lookup
+  ;; error and return a blank string so completion still renders.
+  (dolist (fn '(nerd-icons-octicon
+                nerd-icons-faicon
+                nerd-icons-codicon
+                nerd-icons-mdicon
+                nerd-icons-devicon
+                nerd-icons-sucicon
+                nerd-icons-flicon
+                nerd-icons-wicon
+                nerd-icons-pomicon
+                nerd-icons-ipsicon))
+    (when (fboundp fn)
+      (advice-add fn :around
+                  (lambda (orig &rest args)
+                    (condition-case nil
+                        (apply orig args)
+                      (error "")))))))
 
 ;; ---------------------------------------------------- Diff-hl & breaks --
 
