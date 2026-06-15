@@ -205,12 +205,42 @@ cmd_doctor() {
   fi
 
   # ---- Font ----
+  # Nerd-font packagers ship the same font under several family names.
+  # Accept any of the common variants.
   hdr "Fonts"
-  if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd Font"; then
-    ok "JetBrainsMono Nerd Font installed"
+  local font_candidates=(
+    "JetBrainsMono Nerd Font"
+    "JetBrainsMono NF"
+    "JetBrainsMonoNerdFont"
+    "JetBrains Mono Nerd Font"
+    "JetBrainsMono Nerd Font Mono"
+  )
+  local font_found=""
+  if have fc-list; then
+    local fc_output
+    fc_output=$(fc-list 2>/dev/null)
+    # NOTE: we use a here-string (<<<) instead of `printf | grep' because
+    # `grep -q' closes the pipe on first match, which gives the upstream
+    # `printf' a SIGPIPE (exit 141). Combined with `pipefail' that turns
+    # an otherwise-successful match into a pipeline failure, causing the
+    # if-conditional to evaluate as false. Here-strings have no pipe and
+    # avoid the whole class of problem.
+    for cand in "${font_candidates[@]}"; do
+      if grep -qiF "$cand" <<<"$fc_output"; then
+        font_found="$cand"
+        break
+      fi
+    done
+  fi
+  if [ -n "$font_found" ]; then
+    ok "JetBrainsMono Nerd Font installed (family: \"$font_found\")"
   else
-    warn "JetBrainsMono Nerd Font not found."
-    info "  https://www.nerdfonts.com/font-downloads"
+    warn "JetBrainsMono Nerd Font not found (checked all common variants)."
+    info "  Looking for any of:"
+    for cand in "${font_candidates[@]}"; do
+      info "    \"$cand\""
+    done
+    info "  Install: https://www.nerdfonts.com/font-downloads"
     info "  After install: fc-cache -fv"
   fi
 

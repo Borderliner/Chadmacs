@@ -22,11 +22,13 @@
 (setq-default left-fringe-width  1)
 (setq-default right-fringe-width 1)
 
-;; Fallback glyph for truncation/wrap (clean look)
+;; Fallback glyph for truncation/wrap (clean look). Family is intentionally
+;; left unset; the actual JetBrainsMono variant is detected at theme-load
+;; time below and applied to the default face. Inheriting from
+;; font-lock-comment-face is enough to render the glyph in the right tone.
 (require 'disp-table)
 (defface my-fallback-glyph
-  '((t :family "JetBrainsMono Nerd Font"
-       :inherit font-lock-comment-face))
+  '((t :inherit font-lock-comment-face))
   "Fallback face for truncation and wrap glyphs.")
 
 (when (display-graphic-p)
@@ -75,9 +77,19 @@
   (load-theme 'doom-monokai-pro t)
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
-  (when (and (display-graphic-p)
-             (find-font (font-spec :name "JetBrainsMono Nerd Font")))
-    (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 110))
+  ;; Pick the first installed JetBrainsMono variant. Different packagers
+  ;; use different family names — nerd-fonts upstream calls it
+  ;; "JetBrainsMono Nerd Font", but Ubuntu's apt package and Homebrew's
+  ;; tap label it "JetBrainsMono NF", and a few packagers strip spaces.
+  (when (display-graphic-p)
+    (let ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
+                          '("JetBrainsMono Nerd Font"
+                            "JetBrainsMono NF"
+                            "JetBrainsMonoNerdFont"
+                            "JetBrains Mono Nerd Font"
+                            "JetBrainsMono Nerd Font Mono"))))
+      (when font
+        (set-face-attribute 'default nil :font font :height 110))))
 
   ;; Sync nano-modeline faces with current doom-theme (better contrast for
   ;; doom-monokai-pro).
