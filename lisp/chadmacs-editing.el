@@ -103,18 +103,34 @@
   :commands aggressive-indent-mode
   :hook (lisp-data-mode . aggressive-indent-mode))
 
-;; Structural editing of parentheses.
+;; Structural editing.
 ;;
-;; Upstream paredit is effectively unmaintained (last release predates
-;; Emacs 29) and still uses `point-at-eol' / `point-at-bol', which the
-;; byte-compiler now flags as obsolete. The runtime aliases still work,
-;; so the warnings are pure noise. We skip Elpaca's byte-compile step
-;; for paredit so reinstalls / rebuilds produce a clean log. Paredit
-;; loads from .el instead of .elc — a tiny perf hit on a tiny file.
-(use-package paredit
-  :ensure (paredit :build (:not elpaca--byte-compile))
-  :commands paredit-mode
-  :hook (lisp-data-mode . paredit-mode))
+;; smartparens replaces paredit (paredit is unmaintained, ships obsolete
+;; API). smartparens-strict-mode in lisp matches paredit's "never break
+;; balance" guarantee; plain smartparens-mode elsewhere gives auto-pair
+;; for braces, brackets, quotes, etc. across all prog modes.
+;;
+;; `sp-use-paredit-bindings' installs paredit's keymap onto smartparens
+;; so muscle memory carries over (C-) / C-( for slurp, C-} / C-{ for
+;; barf, M-( wrap, M-s splice, M-r raise, C-k smart kill, M-S split,
+;; M-J join, M-? convolute, etc).
+(use-package smartparens
+  :ensure t
+  :hook
+  (prog-mode      . smartparens-mode)
+  (lisp-data-mode . smartparens-strict-mode)
+  :config
+  ;; Sensible default pair definitions for HTML / Markdown / Lisp / C / etc.
+  (require 'smartparens-config)
+  (sp-use-paredit-bindings)
+  ;; Show matching pair in echo area instead of blinking the cursor
+  (setq sp-show-pair-from-inside t)
+  ;; Don't pair single quotes inside Lisp (apostrophes break it)
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'lisp-data-mode  "'" nil :actions nil)
+  (sp-local-pair 'lisp-mode       "'" nil :actions nil)
+  (sp-local-pair 'scheme-mode     "'" nil :actions nil)
+  (sp-local-pair 'clojure-mode    "'" nil :actions nil))
 
 (use-package rainbow-delimiters
   :ensure t

@@ -4,11 +4,13 @@
 ;;   cargo install marksman
 ;;   or: brew install marksman / pacman -S marksman
 ;;
-;; markdown-mode is already installed by chadmacs-tools.el (needed by eldoc
-;; rendering). This file adds writing-friendly hooks and the eglot binding.
+;; markdown-mode is already installed by chadmacs-tools.el (eldoc / eldoc-box
+;; uses it to render LSP doc strings). We use `:ensure nil' here so Elpaca
+;; doesn't queue it a second time (which raises a "Duplicate item ID queued"
+;; warning) - just attach extra modes and hooks.
 
 (use-package markdown-mode
-  :ensure t
+  :ensure nil
   :mode (("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
          ("README\\.md\\'" . gfm-mode))

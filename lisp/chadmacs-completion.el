@@ -170,24 +170,26 @@
   (corfu-popupinfo-mode))
 
 ;; Corfu uses child-frames for its popup, which only render under a GUI.
-;; corfu-terminal swaps in an overlay-popup for TTY Emacs.
+;; corfu-terminal swaps in an overlay-popup for TTY Emacs. Its dependency
+;; `popon' is shipped as a tar release on NonGNU ELPA; Elpaca's tar
+;; handler currently fails on it ("Unable to find main elisp file"), so
+;; both packages are pinned to their Codeberg git remotes directly.
+(use-package popon
+  :ensure (popon :host nil
+                 :repo "https://codeberg.org/akib/emacs-popon.git"))
+
 (use-package corfu-terminal
-  :ensure t
-  :after corfu
+  :ensure (corfu-terminal :host nil
+                          :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :after (corfu popon)
   :unless (display-graphic-p)
   :config
   (corfu-terminal-mode 1))
 
-;; Disable electric-pair inside lisp modes so paredit's pair-handling wins
-(defun my/disable-electric-pair ()
-  "Disable electric-pair-mode (paredit handles pairing in lisp)."
-  (electric-pair-local-mode -1))
-
-;; Built-in-emacs hook & custom block (corfu / vertico shared knobs)
+;; Built-in-emacs hook & custom block (corfu / vertico shared knobs).
+;; Pair handling is owned by `smartparens-mode' globally (see
+;; chadmacs-editing.el), so no electric-pair-mode wiring here.
 (use-package emacs
-  :hook
-  (prog-mode      . electric-pair-mode)
-  (lisp-data-mode . my/disable-electric-pair)
   :custom
   ;; Corfu: TAB completes when no indent
   (tab-always-indent 'complete)
