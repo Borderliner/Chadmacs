@@ -132,27 +132,77 @@ Everything survives restarts.
 
 # 🔧 Installation
 
-### 1️⃣ Backup old config
+### One-liner (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Borderliner/Chadmacs/master/install.sh | bash
+```
+
+What it does:
+
+1. Backs up any existing `~/.emacs.d` to `~/.emacs.d.backup-YYYYMMDD-HHMMSS`.
+2. Clones Chadmacs into `~/.emacs.d`.
+3. Adds `~/.emacs.d/bin` to `$PATH` for bash, zsh, and fish (idempotent).
+4. Prints next steps.
+
+### Manual
 
 ```bash
 mv ~/.emacs.d ~/.emacs.d.backup
-```
-
-### 2️⃣ Clone Chadmacs
-
-```bash
 git clone https://github.com/Borderliner/Chadmacs.git ~/.emacs.d
+~/.emacs.d/install.sh         # same wiring as the curl path
 ```
 
-### 3️⃣ Launch Emacs
+### Launch
 
 🪄 First launch bootstraps **Elpaca** automatically.
 
 🍳 Sit back. Let it cook.
 
-⌛ After **Elpaca** installation, check **async-compilation** buffer (C-x b), and wait for everything to be compiled.
+⌛ After **Elpaca** installation, check `*elpaca-log*` buffer (`C-x b`), and wait for everything to be compiled.
 
 🔁 Once done, ignore warnings, **Restart** Emacs.
+
+---
+
+# 🛠 The `chadmacs` CLI
+
+Installed under `~/.emacs.d/bin/`. After installation the installer wires
+this directory into your shell PATH. Available subcommands:
+
+| Command              | Action                                                      |
+| -------------------- | ----------------------------------------------------------- |
+| `chadmacs help`      | Show usage.                                                 |
+| `chadmacs update`    | `git pull` Chadmacs + run Elpaca fetch for installed pkgs.  |
+| `chadmacs doctor`    | Check Emacs version, fonts, fd/rg/direnv/libvterm, LSP bins.|
+| `chadmacs uninstall` | Remove `~/.emacs.d` after backing up `var/` to `$HOME`.     |
+
+Set `CHADMACS_DIR` to override the install location.
+
+---
+
+# 🌍 Enabling Languages
+
+Language support is opt-in. Each language has a self-contained file in
+`extensions/<lang>-extension.el` listing its LSP binary in the header
+comment. To enable one, edit `~/.emacs.d/custom.el` (auto-generated on
+first launch, **gitignored** — your enabled list survives upstream pulls):
+
+```elisp
+;; --- Backend / scripting ---
+(require 'python-extension)         ;; Python (+ pylsp / pyright)
+(require 'go-extension)             ;; Go + gopls
+(require 'elixir-extension)         ;; Elixir + HEEx + elixir-ls
+
+;; --- Web stack ---
+(require 'typescript-extension)     ;; TS / TSX / JS / JSX
+(require 'web-extension)            ;; HTML / CSS / SCSS / Emmet
+```
+
+Full language list available out of the box: Rust, C/C++, C#, Python, Go,
+TypeScript, JavaScript, Elixir, Ruby, Lua, Haskell, OCaml, Clojure, Zig,
+Swift, Scala, Kotlin, Julia, Web (HTML/CSS/SCSS), YAML, JSON, Markdown,
+Docker, Terraform, Nix, Gerbil.
 
 ---
 

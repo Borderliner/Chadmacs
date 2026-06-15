@@ -231,20 +231,88 @@
 ;; Make the extensions directory loadable (language-specific files)
 (add-to-list 'load-path (expand-file-name "extensions" user-emacs-directory))
 
-(defun create-or-load-custom-file ()
-  "Load the custom.el file (gitignored) if it exists or create if it doesn't."
-  (unless (file-exists-p custom-file)
-    (with-temp-file custom-file
-      (insert ";;; custom.el --- DESCRIPTION -*- no-byte-compile: t; lexical-binding: t; -*-
+(defconst my/custom-file-template
+  ";;; custom.el --- Your Chadmacs overrides -*- no-byte-compile: t; lexical-binding: t; -*-
 ;;;
 ;;; chadmacs --- Your own config files
 ;;;
 ;;; Commentary:
-;;; Instead of polluting init.el and early-init.el, it's better that you add your stuff here
-;;; and let git handle updates from Chadmacs by pulling from git
+;;; This file is GITIGNORED. Put your personal settings, package overrides,
+;;; and the list of language extensions you want here. Pulling new Chadmacs
+;;; versions will never touch it -> no merge conflicts.
+;;;
+;;; To re-generate from scratch: delete this file and restart Emacs (or
+;;; run `chadmacs doctor --reset-custom').
 ;;;
 ;;; Code:
-")))
+
+;; ============================================================
+;; Language extensions
+;; ============================================================
+;; Each line maps to extensions/<name>-extension.el. Uncomment to enable
+;; the language. Each extension's header comment lists the LSP binary you
+;; need to install on your system for completion / errors / rename to work.
+
+;; --- Web stack ---
+;; (require 'typescript-extension)     ;; TS / TSX / JS / JSX
+;; (require 'web-extension)            ;; HTML / CSS / SCSS / Vue / Svelte / Emmet
+;; (require 'json-extension)           ;; JSON / JSONC
+;; (require 'yaml-extension)           ;; YAML
+
+;; --- Backend / scripting ---
+;; (require 'python-extension)         ;; Python (+ optional pyvenv)
+;; (require 'go-extension)             ;; Go (+ go.mod)
+;; (require 'ruby-extension)           ;; Ruby / Rails / Gemfile / Rakefile
+;; (require 'elixir-extension)         ;; Elixir + HEEx (Phoenix templates)
+;; (require 'lua-extension)            ;; Lua
+
+;; --- Systems / native ---
+;; (require 'rust-extension)           ;; Rust + rustic + cargo
+;; (require 'c-cpp-extension)          ;; C / C++ + meson + cmake
+;; (require 'csharp-extension)         ;; C# / .NET
+;; (require 'zig-extension)            ;; Zig
+;; (require 'swift-extension)          ;; Swift
+
+;; --- JVM ---
+;; (require 'scala-extension)          ;; Scala / sbt
+;; (require 'kotlin-extension)         ;; Kotlin
+
+;; --- Functional ---
+;; (require 'haskell-extension)        ;; Haskell + Cabal
+;; (require 'ocaml-extension)          ;; OCaml + Dune
+;; (require 'clojure-extension)        ;; Clojure + CIDER + clj-refactor
+
+;; --- Scientific ---
+;; (require 'julia-extension)          ;; Julia + LanguageServer.jl
+
+;; --- DevOps / infra ---
+;; (require 'docker-extension)         ;; Dockerfile (compose via yaml)
+;; (require 'terraform-extension)      ;; Terraform / HCL
+;; (require 'nix-extension)            ;; Nix
+
+;; --- Docs / writing ---
+;; (require 'markdown-extension)       ;; Markdown / GFM (+ marksman)
+
+;; --- Niche ---
+;; (require 'gerbil-extension)         ;; Gerbil Scheme
+
+;; ============================================================
+;; Your personal overrides go below
+;; ============================================================
+;; e.g. (setq user-full-name \"Jane Doe\")
+;;      (set-face-attribute 'default nil :height 140)
+;;      (load-theme 'doom-one t)
+
+"
+  "Bootstrap content for custom.el on first launch.")
+
+(defun create-or-load-custom-file ()
+  "Load the custom.el file (gitignored) if it exists or create if it doesn't.
+Custom.el is seeded with the language-extension activation template so users
+can enable per-language support without touching upstream files."
+  (unless (file-exists-p custom-file)
+    (with-temp-file custom-file
+      (insert my/custom-file-template)))
   (load custom-file t t))
 
 ;; ----------------------------------------------------------- Optimization --
