@@ -103,9 +103,16 @@
   :commands aggressive-indent-mode
   :hook (lisp-data-mode . aggressive-indent-mode))
 
-;; Structural editing of parentheses
+;; Structural editing of parentheses.
+;;
+;; Upstream paredit is effectively unmaintained (last release predates
+;; Emacs 29) and still uses `point-at-eol' / `point-at-bol', which the
+;; byte-compiler now flags as obsolete. The runtime aliases still work,
+;; so the warnings are pure noise. We skip Elpaca's byte-compile step
+;; for paredit so reinstalls / rebuilds produce a clean log. Paredit
+;; loads from .el instead of .elc — a tiny perf hit on a tiny file.
 (use-package paredit
-  :ensure t
+  :ensure (paredit :build (:not elpaca--byte-compile))
   :commands paredit-mode
   :hook (lisp-data-mode . paredit-mode))
 
