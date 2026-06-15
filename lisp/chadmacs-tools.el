@@ -26,6 +26,11 @@
   ;; Standard key prefix
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
+  ;; On Debian / Ubuntu the fd binary is called `fdfind' (the `fd' name is
+  ;; reserved by an unrelated package). Point projectile at whichever exists.
+  (setq projectile-fd-executable (or (executable-find "fd")
+                                     (executable-find "fdfind")))
+
   ;; Integrate Projectile with project.el so tools that depend on project.el
   ;; (eglot, consult-project-buffer, ...) see Projectile-managed roots.
   (defun my/projectile-project-find-function (dir)

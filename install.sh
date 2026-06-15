@@ -126,6 +126,21 @@ EOF
   fi
 fi
 
+# ---- fd / fdfind shim (Debian / Ubuntu) -------------------------------------
+# fd ships as 'fdfind' on apt-based distros to avoid colliding with the
+# unrelated `fd' chess move tool. Upstream README recommends the same
+# symlink we create here. Skipped silently if fd is already present.
+if ! have fd && have fdfind; then
+  hdr "Linking fdfind as fd"
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
+  ok "Symlinked $HOME/.local/bin/fd -> $(command -v fdfind)"
+  case ":$PATH:" in
+    *":$HOME/.local/bin:"*) ;;
+    *) warn "Add $HOME/.local/bin to \$PATH (re-open your shell or fix in rc files)." ;;
+  esac
+fi
+
 # ---- preflight inside emacs -------------------------------------------------
 hdr "Smoke test"
 if have emacs; then

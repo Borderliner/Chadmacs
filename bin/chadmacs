@@ -58,12 +58,52 @@ ${C_BOLD}USAGE${C_RESET}
 ${C_BOLD}COMMANDS${C_RESET}
   update      Pull upstream changes and rebuild Elpaca packages.
   doctor      Diagnose required + optional dependencies.
+  fix-fd      Symlink Ubuntu/Debian's 'fdfind' as 'fd' in ~/.local/bin.
   uninstall   Remove ~/.emacs.d (your var/ is backed up first).
   help        Show this help.
 
 ${C_BOLD}ENV${C_RESET}
   CHADMACS_DIR    Override install location (default: ~/.emacs.d)
 EOF
+}
+
+cmd_fix_fd() {
+  hdr "Fix fd <- fdfind symlink"
+
+  if have fd; then
+    ok "fd already on PATH ($(command -v fd)). Nothing to do."
+    return 0
+  fi
+
+  if ! have fdfind; then
+    err "fdfind not installed."
+    info "  Debian / Ubuntu: sudo apt install fd-find"
+    info "  Other distros:   see https://github.com/sharkdp/fd#installation"
+    exit 1
+  fi
+
+  local target
+  target=$(command -v fdfind)
+  local link_dir="$HOME/.local/bin"
+  local link="$link_dir/fd"
+
+  mkdir -p "$link_dir"
+  ln -sf "$target" "$link"
+  ok "Symlinked $link -> $target"
+
+  # PATH check
+  case ":$PATH:" in
+    *":$link_dir:"*)
+      ok "$link_dir already on \$PATH."
+      ;;
+    *)
+      warn "$link_dir is NOT on your current \$PATH."
+      info "  Add to your shell rc, e.g.:"
+      info "    bash/zsh:  echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc"
+      info "    fish:      fish_add_path -gP \$HOME/.local/bin"
+      info "  Then restart your shell."
+      ;;
+  esac
 }
 
 cmd_update() {
@@ -133,7 +173,22 @@ cmd_doctor() {
   # ---- Highly recommended ----
   hdr "Recommended"
   check_bin rg "consult-ripgrep / project search" "https://github.com/BurntSushi/ripgrep"
-  check_bin fd "find-file / dirvish fast finder" "https://github.com/sharkdp/fd"
+  # fd on Debian/Ubuntu is packaged as `fd-find' and the binary is
+  # `fdfind' to avoid collision with an unrelated package. Detect both;
+  # if only `fdfind' is present, advise the symlink that upstream
+  # recommends in their README.
+  if have fd; then
+    ok "fd ($(command -v fd)) — find-file / dirvish fast finder"
+  elif have fdfind; then
+    warn "fd not found, but fdfind is ($(command -v fdfind))."
+    info "  Debian / Ubuntu ships fd as 'fdfind'. Symlink it as 'fd':"
+    info "    ${C_BOLD}chadmacs fix-fd${C_RESET}"
+    info "  or manually:"
+    info "    mkdir -p ~/.local/bin && ln -sf \"\$(command -v fdfind)\" ~/.local/bin/fd"
+    info "    (and make sure ~/.local/bin is on PATH)"
+  else
+    warn "fd not found — find-file / dirvish fast finder. install: https://github.com/sharkdp/fd"
+  fi
   check_bin direnv "envrc per-project env" "https://direnv.net"
   check_bin cmake "vterm build" "your package manager"
 
@@ -228,6 +283,7 @@ cmd_uninstall() {
 case "${1:-help}" in
   update)    shift; cmd_update    "$@" ;;
   doctor)    shift; cmd_doctor    "$@" ;;
+  fix-fd)    shift; cmd_fix_fd    "$@" ;;
   uninstall) shift; cmd_uninstall "$@" ;;
   help|-h|--help) cmd_help ;;
   *) err "Unknown command: $1"; cmd_help; exit 1 ;;
