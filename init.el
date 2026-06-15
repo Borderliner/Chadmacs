@@ -36,11 +36,61 @@
 (require 'chadmacs-navigation)
 (require 'chadmacs-help)
 
-;; Language extensions (uncomment as needed)
-;; (require 'c-cpp-extension)
-;; (require 'gerbil-extension)
-;; (require 'clojure-extension)
+;; -----------------------------------------------------------------------
+;; Language extensions
+;; -----------------------------------------------------------------------
+;; Each file in extensions/ bundles a major mode + LSP hook + minor modes
+;; for a single language. Each file's header comment lists the system
+;; binary / package you need to install for LSP to work. Uncomment to
+;; activate; comment again to disable. No conflict between them.
+;;
+;; Tip: put your enabled extensions in custom.el instead of here if you
+;; want to keep your enabled-language list outside the upstream config.
+
+;; --- Always-on baseline ---
 (require 'rust-extension)
+
+;; --- Web stack ---
+;; (require 'typescript-extension)     ;; TypeScript / TSX / JavaScript / JSX
+;; (require 'web-extension)            ;; HTML / CSS / SCSS / Vue / Svelte / Emmet
+;; (require 'json-extension)           ;; JSON / JSONC
+;; (require 'yaml-extension)           ;; YAML
+
+;; --- Backend / scripting ---
+;; (require 'python-extension)         ;; Python (+ optional pyvenv)
+;; (require 'go-extension)             ;; Go (+ go.mod)
+;; (require 'ruby-extension)           ;; Ruby / Rails / Gemfile / Rakefile
+;; (require 'elixir-extension)         ;; Elixir + HEEx (Phoenix templates)
+;; (require 'lua-extension)            ;; Lua
+
+;; --- Systems / native ---
+;; (require 'c-cpp-extension)          ;; C / C++ + meson + cmake
+;; (require 'csharp-extension)         ;; C# / .NET
+;; (require 'zig-extension)            ;; Zig
+;; (require 'swift-extension)          ;; Swift
+
+;; --- JVM ---
+;; (require 'scala-extension)          ;; Scala / sbt
+;; (require 'kotlin-extension)         ;; Kotlin
+
+;; --- Functional ---
+;; (require 'haskell-extension)        ;; Haskell + Cabal
+;; (require 'ocaml-extension)          ;; OCaml + Dune
+;; (require 'clojure-extension)        ;; Clojure + CIDER + clj-refactor
+
+;; --- Scientific ---
+;; (require 'julia-extension)          ;; Julia + LanguageServer.jl
+
+;; --- DevOps / infra ---
+;; (require 'docker-extension)         ;; Dockerfile (compose via yaml)
+;; (require 'terraform-extension)      ;; Terraform / HCL
+;; (require 'nix-extension)            ;; Nix
+
+;; --- Docs / writing ---
+;; (require 'markdown-extension)       ;; Markdown / GFM (+ marksman)
+
+;; --- Niche ---
+;; (require 'gerbil-extension)         ;; Gerbil Scheme (kept for legacy)
 
 ;; Leader key loaded last so all referenced commands are autoloaded
 (require 'chadmacs-leader)

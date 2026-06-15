@@ -71,12 +71,10 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 
 ;; --------------------------------------------------------------- LSP --
 
-;; Eglot ships with `eglot-server-programs' covering most common LSPs
-;; (pylsp/pyright, typescript-language-server, gopls, bash-language-server,
-;; yaml-language-server, marksman, etc). You need the binaries on PATH -
-;; install via the language's own toolchain (pip install python-lsp-server,
-;; npm install -g typescript-language-server, go install golang.org/x/tools/gopls,
-;; pacman/brew install bash-language-server / yaml-language-server / marksman).
+;; Eglot ships with `eglot-server-programs' covering most common LSPs. Each
+;; language's eglot hook lives in its dedicated extensions/<lang>-extension.el
+;; so users opt in per-language by uncommenting (require 'lang-extension) in
+;; init.el. The hooks below are the always-on baseline (sh + bash always work).
 (use-package eglot
   :ensure nil
   :commands (eglot-ensure eglot-rename eglot-format-buffer)
@@ -87,30 +85,8 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
         ("C-c l a" . eglot-code-actions)
         ("C-c l h" . eldoc))
   :hook
-  ;; C family
-  (c-mode             . eglot-ensure)
-  (c++-mode           . eglot-ensure)
-  (csharp-ts-mode     . eglot-ensure)
-  ;; Python
-  (python-mode        . eglot-ensure)
-  (python-ts-mode     . eglot-ensure)
-  ;; JS / TS
-  (js-mode            . eglot-ensure)
-  (js-ts-mode         . eglot-ensure)
-  (typescript-ts-mode . eglot-ensure)
-  (tsx-ts-mode        . eglot-ensure)
-  ;; Go
-  (go-mode            . eglot-ensure)
-  (go-ts-mode         . eglot-ensure)
-  ;; Shell
-  (sh-mode            . eglot-ensure)
-  (bash-ts-mode       . eglot-ensure)
-  ;; YAML
-  (yaml-mode          . eglot-ensure)
-  (yaml-ts-mode       . eglot-ensure)
-  ;; Markdown (marksman) - opt in by uncommenting
-  ;; (markdown-mode   . eglot-ensure)
-  )
+  (sh-mode      . eglot-ensure)
+  (bash-ts-mode . eglot-ensure))
 
 ;; Bridge eglot diagnostics into flycheck (since flycheck is globally enabled)
 (use-package flycheck-eglot
