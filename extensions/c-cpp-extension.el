@@ -23,9 +23,15 @@
   :ensure t
   :mode "meson\\.build\\'")
 
-;; Optional: CMake mode + cmake-language-server
+;; CMake mode + cmake-language-server.
+;;
+;; MELPA's official recipe clones the entire CMake source tree (hundreds
+;; of MB) and looks for the major mode under Auxiliary/. Elpaca's main-
+;; file resolver doesn't descend into Auxiliary/, so the build fails with
+;; "Unable to find main elisp file for cmake-mode". Use the emacsmirror
+;; single-file mirror instead (a tiny repo with cmake-mode.el at root).
 (use-package cmake-mode
-  :ensure t
+  :ensure (cmake-mode :host github :repo "emacsmirror/cmake-mode")
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'"         . cmake-mode))
   :hook (cmake-mode . eglot-ensure))
