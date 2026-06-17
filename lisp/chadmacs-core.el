@@ -121,15 +121,18 @@
 ;;   "client/index.html".
 ;; - Outside a project: regular `find-file' so you can browse the
 ;;   filesystem directory by directory.
-(defun my/smart-find-file ()
-  "Find file: project-wide flat fuzzy list inside a project, `find-file' otherwise."
-  (interactive)
+(defun my/smart-find-file (&optional arg)
+  "Find file: project-wide flat fuzzy list inside a project, `find-file' otherwise.
+With a prefix argument ARG (\\[universal-argument]), always use plain
+`find-file' so you can escape the project context and browse the
+filesystem freely."
+  (interactive "P")
   (let* ((dir (or default-directory (expand-file-name "~/")))
          (root (or (and (fboundp 'projectile-project-root)
                         (ignore-errors (projectile-project-root dir)))
                    (locate-dominating-file dir ".projectile")
                    (locate-dominating-file dir ".git"))))
-    (if (and root (fboundp 'consult-projectile-find-file))
+    (if (and (not arg) root (fboundp 'consult-projectile-find-file))
         (let ((default-directory (expand-file-name root)))
           (call-interactively #'consult-projectile-find-file))
       (call-interactively #'find-file))))
