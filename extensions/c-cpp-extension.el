@@ -30,8 +30,18 @@
 ;; file resolver doesn't descend into Auxiliary/, so the build fails with
 ;; "Unable to find main elisp file for cmake-mode". Use the emacsmirror
 ;; single-file mirror instead (a tiny repo with cmake-mode.el at root).
+;;
+;; `:inherit nil' is required so Elpaca does NOT merge our recipe with
+;; MELPA's - otherwise MELPA's :files ("Auxiliary/*.el") spec leaks in
+;; and tries to find Auxiliary/ in the emacsmirror clone (which has no
+;; such directory), producing the same "Unable to find main elisp file"
+;; error you'd get on the MELPA recipe.
 (use-package cmake-mode
-  :ensure (cmake-mode :host github :repo "emacsmirror/cmake-mode")
+  :ensure (cmake-mode :type git
+                      :host github
+                      :repo "emacsmirror/cmake-mode"
+                      :files (:defaults)
+                      :inherit nil)
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'"         . cmake-mode))
   :hook (cmake-mode . eglot-ensure))
