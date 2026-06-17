@@ -19,45 +19,35 @@
 
 ;; HEEx (Phoenix component templates).
 ;;
-;; Phoenix's tree-sitter-heex grammar repo currently builds with the new
-;; tree-sitter CLI (>= 0.24) which emits ABI 15. Emacs 30.x only supports
-;; ABI 13 / 14, so loading the grammar produces:
+;; phoenixframework/tree-sitter-heex's v0.9.0 release (Mar 2026) bumped
+;; tree-sitter-cli to 0.26.6, which emits ABI 15. Emacs 30.x only supports
+;; ABI 13/14. We pin treesit-auto to the last commit that still used CLI
+;; 0.20.4 (-> ABI 13), which is `248ced3' (Mar 14, 2026, immediately
+;; before the cli bump). When Emacs 31 ships with ABI 15 support, bump
+;; :revision to "main" (or remove the recipe).
 ;;
-;;   Cannot activate tree-sitter, because language grammar for heex is
-;;   unavailable (version-mismatch): 15
-;;
-;; Until Emacs 31 (ABI 15) lands or upstream ships an ABI 14 build, we:
-;;   1. Skip activating heex-ts-mode when the grammar is unusable.
-;;   2. Tell treesit-auto to stop auto-installing it (silences the
-;;      install prompt on every .heex visit).
-;;   3. Fall back to web-mode (if loaded via web-extension) or html-mode
-;;      so .heex files still get reasonable syntax highlighting.
-;;
-;; If you want full heex-ts-mode support, install an older grammar
-;; revision manually:
-;;   M-x treesit-install-language-grammar RET heex RET
-;; and enter a commit hash from before the tree-sitter CLI 0.24 bump.
+;; If you already installed the broken ABI-15 grammar, remove it first:
+;;   rm -f ~/.emacs.d/var/tree-sitter/libtree-sitter-heex.*
+;; then `M-x treesit-install-language-grammar RET heex RET' (or just open
+;; a .heex file - treesit-auto will offer to install).
 
-(defun chadmacs--heex-grammar-usable-p ()
-  "Non-nil when the heex grammar is installed AND at a supported ABI."
-  (and (fboundp 'treesit-language-available-p)
-       (treesit-language-available-p 'heex)))
-
-(defun chadmacs--heex-fallback-mode ()
-  "Pick web-mode if loaded, else html-mode for .heex files."
-  (cond
-   ((fboundp 'web-mode)  (web-mode))
-   (t                    (html-mode))))
-
-(if (chadmacs--heex-grammar-usable-p)
-    (use-package heex-ts-mode
-      :ensure nil
-      :mode "\\.heex\\'"
-      :hook (heex-ts-mode . eglot-ensure))
-  (add-to-list 'auto-mode-alist
-               '("\\.heex\\'" . chadmacs--heex-fallback-mode))
+(use-package heex-ts-mode
+  :ensure nil
+  :mode "\\.heex\\'"
+  :hook (heex-ts-mode . eglot-ensure)
+  :init
   (with-eval-after-load 'treesit-auto
-    (setq treesit-auto-langs (delq 'heex treesit-auto-langs))))
+    (setq treesit-auto-recipe-list
+          (cl-remove-if (lambda (r) (eq (treesit-auto-recipe-lang r) 'heex))
+                        treesit-auto-recipe-list))
+    (add-to-list 'treesit-auto-recipe-list
+                 (make-treesit-auto-recipe
+                  :lang 'heex
+                  :ts-mode 'heex-ts-mode
+                  :url "https://github.com/phoenixframework/tree-sitter-heex"
+                  :revision "248ced3030bb257567cba6074088f25a5dada32d"
+                  :source-dir "src"
+                  :ext "\\.heex\\'"))))
 
 ;; Optional: inf-elixir for IEx REPL integration. Uncomment to enable:
 ;;
