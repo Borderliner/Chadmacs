@@ -191,7 +191,8 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
   ;; upstream CLI bump). If you find a missing language, file a PR with
   ;; treesit-auto so the pin lands upstream for everyone.
   (let ((abi14-pins
-         '((c          . "v0.23.6")
+         '(;; --- already-popular set ---
+           (c          . "v0.23.6")
            (cpp        . "v0.23.4")
            (typescript . "v0.23.2")
            (tsx        . "v0.23.2")
@@ -206,7 +207,17 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
            (lua        . "v0.2.0")
            (php        . "v0.23.12")
            (scala      . "v0.23.4")
-           (sql        . "v0.3.8"))))
+           (sql        . "v0.3.8")
+           ;; --- per-extension set (matches extensions/*-extension.el) ---
+           (haskell    . "v0.23.1")
+           (ocaml      . "v0.23.2")
+           (elixir     . "v0.3.0")
+           (dockerfile . "v0.2.0")
+           (kotlin     . "0.3.8")
+           (zig        . "v1.0.2")
+           (swift      . "0.7.1")
+           (nix        . "v0.0.2")
+           (vue        . "v0.2.1"))))
     (dolist (recipe treesit-auto-recipe-list)
       (when-let ((pin (alist-get (treesit-auto-recipe-lang recipe)
                                  abi14-pins)))
