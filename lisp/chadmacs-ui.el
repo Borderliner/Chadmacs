@@ -53,14 +53,20 @@
 
 ;; ------------------------------------------------------------- Modeline --
 
-;; doom-modeline replaces nano-modeline. Cleaner default layout, native
-;; nerd-icons integration, projectile / VC / LSP / flycheck segments out
-;; of the box, and avoids nano-modeline's reams of "function not known
-;; to be defined" warnings for optional integrations (mu4e, elfeed,
-;; xwidget, elpher, ...).
+;; doom-modeline replaces the default modeline (and nano-modeline before
+;; it). Cleaner layout, nerd-icons integration, projectile / VC / LSP /
+;; flycheck segments out of the box, and no "function not known to be
+;; defined" noise for optional integrations.
+;;
+;; `:demand t' + explicit `(doom-modeline-mode 1)' in :config is required
+;; with Elpaca: hooking onto `after-init-hook' is too late because
+;; Elpaca processes its install queue at that hook, so on a fresh boot
+;; doom-modeline isn't loaded yet when after-init fires - the modeline
+;; stays the default until the *next* restart. Activating in :config
+;; runs after Elpaca finishes installing on the same boot.
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode)
+  :demand t
   :custom
   (doom-modeline-height 28)
   (doom-modeline-bar-width 3)
@@ -76,7 +82,15 @@
   (doom-modeline-vcs-max-length 12)
   (doom-modeline-workspace-name nil)
   (doom-modeline-lsp t)
-  (doom-modeline-time nil))
+  (doom-modeline-time nil)
+  (doom-modeline-percent-position nil)
+  (doom-modeline-buffer-encoding nil)
+  :config
+  ;; Safety: if nano-modeline still lingers from a previous install,
+  ;; turn it off so it doesn't fight doom-modeline for the header line.
+  (when (fboundp 'nano-modeline-mode)
+    (nano-modeline-mode -1))
+  (doom-modeline-mode 1))
 
 ;; --------------------------------------------------------------- Theme --
 
