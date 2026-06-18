@@ -21,10 +21,13 @@
 ;;
 ;; phoenixframework/tree-sitter-heex's v0.9.0 release (Mar 2026) bumped
 ;; tree-sitter-cli to 0.26.6, which emits ABI 15. Emacs 30.x only supports
-;; ABI 13/14. We pin treesit-auto to the last commit that still used CLI
-;; 0.20.4 (-> ABI 13), which is `248ced3' (Mar 14, 2026, immediately
-;; before the cli bump). When Emacs 31 ships with ABI 15 support, bump
-;; :revision to "main" (or remove the recipe).
+;; ABI 13/14, so on Emacs 30 the grammar fails to load with
+;; "version-mismatch: 15".
+;;
+;; Pin via `:abi14-revision' (treesit-auto's blessed field for this exact
+;; case). On Emacs <= 30 treesit-auto clones that commit; on Emacs >= 31
+;; (which supports ABI 15) it falls back to `:revision' / upstream HEAD
+;; automatically - no maintenance when Emacs gets bumped.
 ;;
 ;; If you already installed the broken ABI-15 grammar, remove it first:
 ;;   rm -f ~/.emacs.d/var/tree-sitter/libtree-sitter-heex.*
@@ -45,7 +48,8 @@
                   :lang 'heex
                   :ts-mode 'heex-ts-mode
                   :url "https://github.com/phoenixframework/tree-sitter-heex"
-                  :revision "248ced3030bb257567cba6074088f25a5dada32d"
+                  :revision "main"
+                  :abi14-revision "248ced3030bb257567cba6074088f25a5dada32d"
                   :source-dir "src"
                   :ext "\\.heex\\'"))))
 
