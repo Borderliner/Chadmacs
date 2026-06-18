@@ -191,7 +191,7 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
   ;; upstream CLI bump). If you find a missing language, file a PR with
   ;; treesit-auto so the pin lands upstream for everyone.
   (let ((abi14-pins
-         '(;; --- already-popular set ---
+         '(;; --- mainstream popular ---
            (c          . "v0.23.6")
            (cpp        . "v0.23.4")
            (typescript . "v0.23.2")
@@ -208,7 +208,7 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
            (php        . "v0.23.12")
            (scala      . "v0.23.4")
            (sql        . "v0.3.8")
-           ;; --- per-extension set (matches extensions/*-extension.el) ---
+           ;; --- per-extension set ---
            (haskell    . "v0.23.1")
            (ocaml      . "v0.23.2")
            (elixir     . "v0.3.0")
@@ -217,29 +217,61 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
            (zig        . "v1.0.2")
            (swift      . "0.7.1")
            (nix        . "v0.0.2")
-           (vue        . "v0.2.1"))))
+           (vue        . "v0.2.1")
+           ;; --- niche, but functional with the right pin ---
+           (hyprlang   . "v3.0.0")   ; Feb 2024 release, ABI 14
+           (dart       . "d4d8f3e")  ; Oct 4 2025 commit, last before the
+                                     ; "tree-sitter.json for CLI 0.25" bump
+           (make       . "main"))))  ; alemuller/tree-sitter-make stable since 2022
     (dolist (recipe treesit-auto-recipe-list)
       (when-let ((pin (alist-get (treesit-auto-recipe-lang recipe)
                                  abi14-pins)))
         (setf (treesit-auto-recipe-abi14-revision recipe) pin))))
 
-  ;; Drop niche / broken / unmaintained languages from treesit-auto's
-  ;; managed set. Reasons:
-  ;;   - bibtex, gitcommit, hyprlang, magik, nu, perl, solidity,
-  ;;     typespec       : niche; almost no one opens these in Chadmacs.
-  ;;   - cobol, verilog : upstream grammar builds produce undefined-symbol
-  ;;                      .so files (broken parser generation).
-  ;;   - commonlisp     : upstream repo intermittently unreachable.
-  ;;   - dart, make     : no release tags; nothing pinnable.
+  ;; The remaining warning-list languages stay out of `treesit-auto-langs'.
+  ;; Each has a hard upstream problem - listing them again with pinning
+  ;; would only convert "version-mismatch" into a different error class:
   ;;
-  ;; Users who actually want one of these can re-add the symbol to
-  ;; `treesit-auto-langs' in custom.el and (if needed) `add-to-list'
-  ;; their own recipe.
+  ;;   bibtex      : upstream repo has no tagged releases AND its main
+  ;;                 branch builds with an incompatible CLI; no known
+  ;;                 ABI-14-clean commit to pin to.
+  ;;   cobol       : treesit-auto's recipe builds a .so that doesn't
+  ;;                 export `tree_sitter_cobol' (broken parser-generation
+  ;;                 in the upstream grammar). Pinning to older commits
+  ;;                 reproduces the same undefined-symbol error.
+  ;;   commonlisp  : repo intermittently unreachable from cloning. Not a
+  ;;                 pin problem; treesit-auto fails the clone itself.
+  ;;   gitcommit   : the-mikedavis/tree-sitter-gitcommit was archived
+  ;;                 read-only in July 2025; no fork has taken over.
+  ;;   magik       : no canonical grammar repo exists at the URL
+  ;;                 treesit-auto's recipe expects.
+  ;;   nu          : no release tags AND main branch builds with CLI
+  ;;                 0.24+; no easily-pinnable commit.
+  ;;   perl        : the perl-lang grammar publishes its first tagged
+  ;;                 release (v1.0.0, Mar 2026) AFTER the CLI 0.24 bump;
+  ;;                 every tag is ABI 15.
+  ;;   solidity    : main branch and recent tags all build at ABI 15;
+  ;;                 every older commit chosen in testing failed to build
+  ;;                 against the recipe's `:source-dir' assumption.
+  ;;   typespec    : the recipe's grammar repo has no parser.c at the
+  ;;                 expected path; the build step itself dies.
+  ;;   verilog     : treesit-auto's verilog recipe builds a .so that
+  ;;                 doesn't export `tree_sitter_verilog'. The
+  ;;                 tree-sitter-systemverilog fork works but uses a
+  ;;                 different language symbol; not a drop-in pin.
+  ;;
+  ;; If you actually need one of these, add it back in custom.el:
+  ;;
+  ;;   (with-eval-after-load 'treesit-auto
+  ;;     (add-to-list 'treesit-auto-langs 'perl))
+  ;;
+  ;; and override its recipe with `:url' / `:revision' / `:source-dir'
+  ;; as needed.
   (setq treesit-auto-langs
         (cl-set-difference
          treesit-auto-langs
-         '(bibtex cobol commonlisp dart gitcommit hyprlang magik make
-                  nu perl solidity typespec verilog)))
+         '(bibtex cobol commonlisp gitcommit magik nu
+                  perl solidity typespec verilog)))
 
   (global-treesit-auto-mode))
 
