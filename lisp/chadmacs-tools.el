@@ -201,11 +201,34 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
            (html       . "v0.23.2")
            (css        . "v0.23.2")
            (ruby       . "v0.23.1")
-           (markdown   . "v0.4.1"))))
+           (markdown   . "v0.4.1")
+           (julia      . "v0.23.1")
+           (lua        . "v0.2.0")
+           (php        . "v0.23.12")
+           (scala      . "v0.23.4")
+           (sql        . "v0.3.8"))))
     (dolist (recipe treesit-auto-recipe-list)
       (when-let ((pin (alist-get (treesit-auto-recipe-lang recipe)
                                  abi14-pins)))
         (setf (treesit-auto-recipe-abi14-revision recipe) pin))))
+
+  ;; Drop niche / broken / unmaintained languages from treesit-auto's
+  ;; managed set. Reasons:
+  ;;   - bibtex, gitcommit, hyprlang, magik, nu, perl, solidity,
+  ;;     typespec       : niche; almost no one opens these in Chadmacs.
+  ;;   - cobol, verilog : upstream grammar builds produce undefined-symbol
+  ;;                      .so files (broken parser generation).
+  ;;   - commonlisp     : upstream repo intermittently unreachable.
+  ;;   - dart, make     : no release tags; nothing pinnable.
+  ;;
+  ;; Users who actually want one of these can re-add the symbol to
+  ;; `treesit-auto-langs' in custom.el and (if needed) `add-to-list'
+  ;; their own recipe.
+  (setq treesit-auto-langs
+        (cl-set-difference
+         treesit-auto-langs
+         '(bibtex cobol commonlisp dart gitcommit hyprlang magik make
+                  nu perl solidity typespec verilog)))
 
   (global-treesit-auto-mode))
 

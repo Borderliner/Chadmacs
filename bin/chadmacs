@@ -56,11 +56,14 @@ ${C_BOLD}USAGE${C_RESET}
   chadmacs <command> [options]
 
 ${C_BOLD}COMMANDS${C_RESET}
-  update      Pull upstream changes and rebuild Elpaca packages.
-  doctor      Diagnose required + optional dependencies.
-  fix-fd      Symlink Ubuntu/Debian's 'fdfind' as 'fd' in ~/.local/bin.
-  uninstall   Remove ~/.emacs.d (your var/ is backed up first).
-  help        Show this help.
+  update         Pull upstream changes and rebuild Elpaca packages.
+  doctor         Diagnose required + optional dependencies.
+  fix-fd         Symlink Ubuntu/Debian's 'fdfind' as 'fd' in ~/.local/bin.
+  treesit-clean  Delete all installed tree-sitter grammars (forces
+                 reinstall at pinned ABI 14 revisions on next Emacs
+                 start). Use after a "version-mismatch: 15" warning.
+  uninstall      Remove ~/.emacs.d (your var/ is backed up first).
+  help           Show this help.
 
 ${C_BOLD}ENV${C_RESET}
   CHADMACS_DIR    Override install location (default: ~/.emacs.d)
@@ -278,6 +281,36 @@ cmd_doctor() {
   hdr "Done."
 }
 
+cmd_treesit_clean() {
+  hdr "Clean tree-sitter grammars"
+
+  local ts_dir="$CHADMACS_VAR/tree-sitter"
+  if [ ! -d "$ts_dir" ]; then
+    ok "No grammars installed ($ts_dir does not exist)."
+    return 0
+  fi
+
+  local count
+  count=$(find "$ts_dir" -maxdepth 1 -name 'libtree-sitter-*.so' 2>/dev/null | wc -l)
+  if [ "$count" -eq 0 ]; then
+    ok "No grammars to clean."
+    return 0
+  fi
+
+  info "Found $count installed grammar(s) in $ts_dir."
+  printf 'Delete all of them? Type %sYES%s to proceed: ' "$C_BOLD" "$C_RESET"
+  read -r confirm
+  if [ "$confirm" != "YES" ]; then
+    err "Aborted."
+    exit 1
+  fi
+
+  rm -f "$ts_dir"/libtree-sitter-*.so
+  ok "Deleted $count grammar(s)."
+  info "Open a source file in Emacs and treesit-auto will reinstall at the"
+  info "ABI-14-compatible revisions pinned by Chadmacs."
+}
+
 cmd_uninstall() {
   hdr "Uninstall Chadmacs"
 
@@ -311,10 +344,11 @@ cmd_uninstall() {
 
 # ---- dispatch ---------------------------------------------------------------
 case "${1:-help}" in
-  update)    shift; cmd_update    "$@" ;;
-  doctor)    shift; cmd_doctor    "$@" ;;
-  fix-fd)    shift; cmd_fix_fd    "$@" ;;
-  uninstall) shift; cmd_uninstall "$@" ;;
+  update)        shift; cmd_update        "$@" ;;
+  doctor)        shift; cmd_doctor        "$@" ;;
+  fix-fd)        shift; cmd_fix_fd        "$@" ;;
+  treesit-clean) shift; cmd_treesit_clean "$@" ;;
+  uninstall)     shift; cmd_uninstall     "$@" ;;
   help|-h|--help) cmd_help ;;
   *) err "Unknown command: $1"; cmd_help; exit 1 ;;
 esac
