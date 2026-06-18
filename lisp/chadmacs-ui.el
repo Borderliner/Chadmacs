@@ -53,23 +53,35 @@
 
 ;; ------------------------------------------------------------- Modeline --
 
-(use-package nano-modeline
+;; doom-modeline replaces nano-modeline. Cleaner default layout, native
+;; nerd-icons integration, projectile / VC / LSP / flycheck segments out
+;; of the box, and avoids nano-modeline's reams of "function not known
+;; to be defined" warnings for optional integrations (mu4e, elfeed,
+;; xwidget, elpher, ...).
+(use-package doom-modeline
   :ensure t
-  :config
-  (add-hook 'prog-mode-hook            #'nano-modeline-prog-mode)
-  (add-hook 'text-mode-hook            #'nano-modeline-text-mode)
-  (add-hook 'org-mode-hook             #'nano-modeline-org-mode)
-  (add-hook 'xwidget-webkit-mode-hook  #'nano-modeline-xwidget-mode)
-  (add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
-  (add-hook 'org-capture-mode-hook     #'nano-modeline-org-capture-mode)
-  (add-hook 'org-agenda-mode-hook      #'nano-modeline-org-agenda-mode)
-  (setq nano-modeline-position 'nano-modeline-header))
+  :hook (after-init . doom-modeline-mode)
+  :custom
+  (doom-modeline-height 28)
+  (doom-modeline-bar-width 3)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-buffer-state-icon t)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-enable-word-count nil)
+  (doom-modeline-checker-simple-format t)
+  (doom-modeline-vcs-max-length 12)
+  (doom-modeline-workspace-name nil)
+  (doom-modeline-lsp t)
+  (doom-modeline-time nil))
 
 ;; --------------------------------------------------------------- Theme --
 
 (use-package doom-themes
   :ensure t
-  :after nano-modeline
   :custom
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
@@ -78,7 +90,7 @@
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
   ;; Pick the first installed JetBrainsMono variant. Different packagers
-  ;; use different family names — nerd-fonts upstream calls it
+  ;; use different family names - nerd-fonts upstream calls it
   ;; "JetBrainsMono Nerd Font", but Ubuntu's apt package and Homebrew's
   ;; tap label it "JetBrainsMono NF", and a few packagers strip spaces.
   (when (display-graphic-p)
@@ -89,37 +101,7 @@
                             "JetBrains Mono Nerd Font"
                             "JetBrainsMono Nerd Font Mono"))))
       (when font
-        (set-face-attribute 'default nil :font font :height 110))))
-
-  ;; Sync nano-modeline faces with current doom-theme (better contrast for
-  ;; doom-monokai-pro).
-  (defun my/nano-modeline-sync-simple ()
-    "Sync nano-modeline faces with current doom-theme."
-    (when (fboundp 'doom-color)
-      (let ((bg-main    (doom-color 'bg))
-            (bg-modeline (doom-color 'bg-alt))
-            (fg-main     (doom-color 'fg))
-            (fg-dim      (doom-color 'grey))
-            (accent      (doom-color 'yellow))
-            (status-bg   (doom-darken (doom-color 'bg-alt) 0.12)))
-        (custom-set-faces
-         `(nano-modeline-active
-           ((t (:background ,bg-modeline
-                            :foreground ,accent
-                            :box (:line-width 1 :color ,bg-main)))))
-         `(nano-modeline-inactive
-           ((t (:background ,(doom-darken bg-modeline 0.08)
-                            :foreground ,fg-dim
-                            :box (:line-width 1 :color ,bg-main)))))
-         `(nano-modeline-status
-           ((t (:foreground ,accent
-                            :background ,status-bg
-                            :weight bold
-                            :box (:line-width 1 :color ,status-bg)))))))))
-
-  (add-hook 'doom-load-theme-hook #'my/nano-modeline-sync-simple)
-  (when (fboundp 'doom-color)
-    (my/nano-modeline-sync-simple)))
+        (set-face-attribute 'default nil :font font :height 110)))))
 
 ;; ----------------------------------------------------------- Dashboard --
 

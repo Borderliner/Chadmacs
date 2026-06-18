@@ -68,9 +68,23 @@
    (expand-file-name "eln/" my/var-dir)))
 
 ;; Silence native-comp's *Warnings* pop-up. Optional-feature references in
-;; nano-modeline/rustic (mu4e, elfeed, lsp-mode, etc.) generate harmless
-;; "function not known to be defined" noise; demote to log.
+;; rustic / posframe / etc. generate harmless "function not known to be
+;; defined" noise; demote to log.
 (setq native-comp-async-report-warnings-errors 'silent)
+
+;; Even with the variable above, some Emacs builds still push the
+;; native-compiler warnings into the regular *Warnings* buffer via
+;; `display-warning'. Add (native-compiler) to the suppression lists so
+;; the popup never appears and the log itself is muted.
+(with-eval-after-load 'warnings
+  (setq warning-suppress-types
+        (append warning-suppress-types
+                '((native-compiler)
+                  (comp))))
+  (setq warning-suppress-log-types
+        (append warning-suppress-log-types
+                '((native-compiler)
+                  (comp)))))
 
 ;; Custom file (DO NOT pollute init)
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
