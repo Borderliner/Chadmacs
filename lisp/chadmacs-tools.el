@@ -161,7 +161,9 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 
   (setq treesit-extra-load-path (list my/treesit-dir))
 
-  ;; Custom C# tree-sitter recipe (the default points at the wrong subdir)
+  ;; Custom C# tree-sitter recipe (the default points at the wrong subdir).
+  ;; Pinned to v0.23.5 via :abi14-revision so Emacs 30 (ABI 14 only) gets
+  ;; a loadable grammar; Emacs 31+ (ABI 15) will pick :revision automatically.
   (setq my/csharp-ts-config
         (make-treesit-auto-recipe
          :lang 'c-sharp
@@ -169,9 +171,42 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
          :remap '(csharp-mode)
          :url "https://github.com/tree-sitter/tree-sitter-c-sharp"
          :revision "master"
+         :abi14-revision "v0.23.5"
          :source-dir "src"
          :ext "\\.cs\\'"))
   (add-to-list 'treesit-auto-recipe-list my/csharp-ts-config)
+
+  ;; --- ABI 14 pin set for Emacs <= 30 ----------------------------------
+  ;;
+  ;; Many grammars' `main' branches now build with tree-sitter CLI 0.24+,
+  ;; which emits ABI 15. Emacs 30.x only loads ABI 13/14. Treesit-auto
+  ;; ships :abi14-revision pins for some grammars (python, go, gomod,
+  ;; yaml, bash) but not for all; we add the rest below.
+  ;;
+  ;; `:abi14-revision' is the forward-compatible knob: on Emacs 30 the
+  ;; pinned tag is cloned; on Emacs 31+ treesit-auto uses :revision / HEAD
+  ;; automatically. No maintenance needed when Emacs gets bumped.
+  ;;
+  ;; Each tag below is the most recent v0.23.x (last release before the
+  ;; upstream CLI bump). If you find a missing language, file a PR with
+  ;; treesit-auto so the pin lands upstream for everyone.
+  (let ((abi14-pins
+         '((c          . "v0.23.6")
+           (cpp        . "v0.23.4")
+           (typescript . "v0.23.2")
+           (tsx        . "v0.23.2")
+           (javascript . "v0.23.1")
+           (rust       . "v0.23.3")
+           (json       . "v0.23.0")
+           (html       . "v0.23.2")
+           (css        . "v0.23.2")
+           (ruby       . "v0.23.1")
+           (markdown   . "v0.4.1"))))
+    (dolist (recipe treesit-auto-recipe-list)
+      (when-let ((pin (alist-get (treesit-auto-recipe-lang recipe)
+                                 abi14-pins)))
+        (setf (treesit-auto-recipe-abi14-revision recipe) pin))))
+
   (global-treesit-auto-mode))
 
 ;; ----------------------------------------------------- Misc language --
