@@ -143,6 +143,19 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; high-performance syntax highlighting. Supports Bash, C, C++, C#, CMake,
 ;; CSS, Dockerfile, Go, Java, JavaScript, JSON, Python, Rust, TOML,
 ;; TypeScript, YAML, Elisp, Lua, Markdown, and many others.
+;; Maximum font-lock decoration for tree-sitter modes.
+;;
+;; Emacs treesit feature groups are layered: level 1 = comment/definition,
+;; level 2 += keyword/string/type, level 3 += assignment/builtin/constant
+;; (default), level 4 += function (calls), variable (references), bracket,
+;; delimiter, operator, property.
+;;
+;; At level 3, function *definitions* get colored but function *calls* and
+;; variable *references* don't. Bumping to 4 colors them like every other
+;; modern editor expects. Must be set before any treesit major mode loads,
+;; hence here in :init of the treesit-auto block.
+(setq treesit-font-lock-level 4)
+
 (use-package treesit-auto
   :ensure t
   :init
