@@ -156,6 +156,58 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; hence here in :init of the treesit-auto block.
 (setq treesit-font-lock-level 4)
 
+;; c++-ts-mode's built-in font-lock rules only tag function calls when the
+;; callee is a bare identifier (`foo()`) or a field expression (`x.foo()`).
+;; Namespace-qualified calls (`std::println()`, `auxid::get_thread_logger()`,
+;; `ns::tmpl<T>()`) parse as `qualified_identifier` / `template_function` and
+;; the default queries don't cover those nodes, so they render with no face.
+;; Patch the missing queries in via the mode hook.
+(defun my/c++-ts-extra-function-call-rules ()
+  "Highlight namespace-qualified function calls in `c++-ts-mode'."
+  (setq treesit-font-lock-settings
+        (append
+         treesit-font-lock-settings
+         (treesit-font-lock-rules
+          :language 'cpp
+          :feature 'function
+          '((call_expression
+             function: (qualified_identifier
+                        name: (identifier) @font-lock-function-call-face))
+            (call_expression
+             function: (qualified_identifier
+                        name: (template_function
+                               name: (identifier) @font-lock-function-call-face)))
+            (call_expression
+             function: (template_function
+                        name: (identifier) @font-lock-function-call-face))))))
+  (treesit-font-lock-recompute-features))
+
+(add-hook 'c++-ts-mode-hook #'my/c++-ts-extra-function-call-rules)
+
+;; Same gap exists in rust-ts-mode: `mod::func()` and `Type::method()` parse
+;; as `scoped_identifier` and the bundled queries don't tag the call name.
+(defun my/rust-ts-extra-function-call-rules ()
+  "Highlight path-qualified function calls in `rust-ts-mode'."
+  (setq treesit-font-lock-settings
+        (append
+         treesit-font-lock-settings
+         (treesit-font-lock-rules
+          :language 'rust
+          :feature 'function
+          '((call_expression
+             function: (scoped_identifier
+                        name: (identifier) @font-lock-function-call-face))
+            (call_expression
+             function: (generic_function
+                        function: (identifier) @font-lock-function-call-face))
+            (call_expression
+             function: (generic_function
+                        function: (scoped_identifier
+                                   name: (identifier) @font-lock-function-call-face)))))))
+  (treesit-font-lock-recompute-features))
+
+(add-hook 'rust-ts-mode-hook #'my/rust-ts-extra-function-call-rules)
+
 (use-package treesit-auto
   :ensure t
   :init
