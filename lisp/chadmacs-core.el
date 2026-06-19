@@ -138,11 +138,22 @@ filesystem freely."
       (call-interactively #'find-file))))
 (global-set-key (kbd "C-x C-f") #'my/smart-find-file)
 
-;; Common keybindings
-(global-set-key (kbd "C-x g") 'magit-status)
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "M-/") 'completion-at-point)
+;; Pure-Emacs / canonical-third-party keybindings.
+;;
+;; - C-x g / C-x M-g     Magit: status / dispatch (magit's documented binds)
+;; - C-x C-b             ibuffer instead of vanilla list-buffers (de facto
+;;                       pure-Emacs upgrade since forever)
+;; - C-c a / C-c c / C-c l   Org triad: agenda, capture, store-link
+;;                       (https://orgmode.org/manual/Activation.html)
+;; - M-/                 completion-at-point (so corfu/cape capfs hit it
+;;                       from a stock-feeling key)
+(global-set-key (kbd "C-x g")   'magit-status)
+(global-set-key (kbd "C-x M-g") 'magit-dispatch)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-c a")   'org-agenda)
+(global-set-key (kbd "C-c c")   'org-capture)
+(global-set-key (kbd "C-c l")   'org-store-link)
+(global-set-key (kbd "M-/")     'completion-at-point)
 
 ;; Grab keyboard focus when the first frame is created. Some window managers
 ;; (especially under tiling Wayland/X compositors) leave the new Emacs frame

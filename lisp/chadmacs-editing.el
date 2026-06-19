@@ -35,14 +35,19 @@
   (easysession-switch-to-exclude-current nil)
   (easysession-save-mode-lighter-show-session-name t)
   :config
-  ;; Session keybindings
-  (global-set-key (kbd "C-c sl") #'easysession-switch-to)
-  (global-set-key (kbd "C-c ss") #'easysession-save)
-  (global-set-key (kbd "C-c sL") #'easysession-switch-to-and-restore-geometry)
-  (global-set-key (kbd "C-c sr") #'easysession-rename)
-  (global-set-key (kbd "C-c sR") #'easysession-reset)
-  (global-set-key (kbd "C-c su") #'easysession-unload)
-  (global-set-key (kbd "C-c sd") #'easysession-delete)
+  ;; Session keybindings under `C-c s' as a real prefix-keymap. Using a
+  ;; named map (with (description . command) values) makes which-key
+  ;; show "load / save / rename / ..." instead of bare command names.
+  (defvar my/easysession-map (make-sparse-keymap)
+    "Prefix-keymap for easysession commands under `C-c s'.")
+  (define-key my/easysession-map (kbd "l") '("load"       . easysession-switch-to))
+  (define-key my/easysession-map (kbd "L") '("load+geom"  . easysession-switch-to-and-restore-geometry))
+  (define-key my/easysession-map (kbd "s") '("save"       . easysession-save))
+  (define-key my/easysession-map (kbd "r") '("rename"     . easysession-rename))
+  (define-key my/easysession-map (kbd "R") '("reset"      . easysession-reset))
+  (define-key my/easysession-map (kbd "u") '("unload"     . easysession-unload))
+  (define-key my/easysession-map (kbd "d") '("delete"     . easysession-delete))
+  (global-set-key (kbd "C-c s") my/easysession-map)
 
   ;; Auto-load last session on startup
   (setq easysession-setup-load-session t)

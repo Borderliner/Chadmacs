@@ -86,11 +86,9 @@
          ("C-c k"   . consult-kmacro)
          ("C-c m"   . consult-man)
          ("C-c i"   . consult-info)
-         ;; `C-c s' is owned by easysession (C-c sl, C-c ss, ...) so we
-         ;; can't use it as a leaf bind for ripgrep. `C-c /' is free and
-         ;; mirrors the Doom/Spacemacs "SPC /" search mnemonic.
+         ;; `C-c s' is owned by easysession (C-c s l, C-c s s, ...), so
+         ;; ripgrep gets `C-c /' instead. Mnemonic: "/" = search across.
          ("C-c /"   . consult-ripgrep)
-         ("C-c t T" . consult-theme)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
          ("C-x M-:" . consult-complex-command)
@@ -154,15 +152,23 @@
   ;; same ground without surprising new users.
   (setq consult-async-split-style nil))
 
+(defun my/consult-ripgrep-project ()
+  "Run `consult-ripgrep' at the projectile project root.
+Falls back to `default-directory' when not inside a project.
+
+Exists because `consult-projectile-ripgrep' has a stale-autoload bug
+on some Elpaca builds (\"failed to define function ...\")."
+  (interactive)
+  (let ((dir (or (and (fboundp 'projectile-project-root)
+                      (ignore-errors (projectile-project-root)))
+                 default-directory)))
+    (consult-ripgrep dir)))
+
 (use-package consult-projectile
   :ensure t
   :after (consult projectile)
   :bind (("C-c p p" . consult-projectile-switch-project)
          ("C-c p f" . consult-projectile-find-file)
-         ;; `consult-projectile-ripgrep' has a stale-autoload bug in some
-         ;; Elpaca builds ("failed to define function ..."). Route through
-         ;; our wrapper in chadmacs-leader.el which uses plain
-         ;; `consult-ripgrep' + `projectile-project-root' and never trips it.
          ("C-c p g" . my/consult-ripgrep-project)))
 
 ;; Backend for `projectile-ripgrep' / `M-x rg' / `M-x rg-dwim'. Projectile's

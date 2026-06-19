@@ -8,19 +8,22 @@
 ;; Thin orchestrator. Real configuration lives in lisp/chadmacs-*.el modules.
 ;; Bootstrap order:
 ;;
-;;   1. early-init.el  -> GC tuning, Elpaca bootstrap, paths under var/
-;;   2. chadmacs-core         -> sane defaults, persistence, optimisation
-;;   3. chadmacs-ui           -> frame, theme, modeline, dashboard, which-key
-;;   4. chadmacs-completion   -> vertico / consult / corfu / cape / embark
-;;   5. chadmacs-editing      -> undo, sessions, snippets, paredit, vundo, ...
-;;   6. chadmacs-tools        -> projectile, magit, flycheck, eglot, envrc, ...
-;;   7. chadmacs-org          -> org, buffer-terminator
-;;   8. chadmacs-navigation   -> treemacs, dirvish, popper, vterm
-;;   9. chadmacs-help         -> helpful
-;;  10. <extensions/*>        -> language-specific (rust, etc.)
-;;  11. chadmacs-leader       -> Doom-style C-c SPC menu (last - references
-;;                                commands from every module above)
-;;  12. custom.el             -> user-local overrides (gitignored)
+;;   1. early-init.el       -> GC tuning, Elpaca bootstrap, paths under var/
+;;   2. chadmacs-core       -> sane defaults, persistence, optimisation
+;;   3. chadmacs-ui         -> frame, theme, modeline, dashboard, which-key
+;;   4. chadmacs-completion -> vertico / consult / corfu / cape / embark
+;;   5. chadmacs-editing    -> undo, sessions, snippets, smartparens, ...
+;;   6. chadmacs-tools      -> projectile, magit, flycheck, eglot, envrc, ...
+;;   7. chadmacs-org        -> org, buffer-terminator
+;;   8. chadmacs-navigation -> treemacs, dirvish, popper, vterm
+;;   9. chadmacs-help       -> helpful
+;;  10. <extensions/*>      -> language-specific (rust, etc.)
+;;  11. custom.el           -> user-local overrides (gitignored)
+;;
+;; No leader key. Keybindings live where their owning package lives, on
+;; standard pure-Emacs prefixes: `C-x' for built-ins, `C-c <letter>' for
+;; user/package commands, `M-g' for goto, `M-s' for search, `C-h' for
+;; help. `which-key' makes every prefix self-documenting.
 ;;
 ;;; Code:
 
@@ -41,9 +44,6 @@
 ;; on first launch by `create-or-load-custom-file' (see chadmacs-core).
 ;; This keeps the upstream init.el free of personal selections, so
 ;; pulling new Chadmacs versions never produces merge conflicts.
-
-;; Leader key loaded last so all referenced commands are autoloaded
-(require 'chadmacs-leader)
 
 (create-or-load-custom-file)
 
