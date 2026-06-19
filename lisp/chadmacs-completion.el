@@ -86,8 +86,10 @@
          ("C-c k"   . consult-kmacro)
          ("C-c m"   . consult-man)
          ("C-c i"   . consult-info)
-         ("C-c s"   . consult-ripgrep)
-         ("C-c S"   . my/consult-ripgrep-here)
+         ;; `C-c s' is owned by easysession (C-c sl, C-c ss, ...) so we
+         ;; can't use it as a leaf bind for ripgrep. `C-c /' is free and
+         ;; mirrors the Doom/Spacemacs "SPC /" search mnemonic.
+         ("C-c /"   . consult-ripgrep)
          ("C-c t T" . consult-theme)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
