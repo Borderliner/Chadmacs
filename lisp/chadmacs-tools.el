@@ -156,12 +156,29 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; hence here in :init of the treesit-auto block.
 (setq treesit-font-lock-level 4)
 
-;; c++-ts-mode's built-in font-lock rules only tag function calls when the
-;; callee is a bare identifier (`foo()`) or a field expression (`x.foo()`).
-;; Namespace-qualified calls (`std::println()`, `auxid::get_thread_logger()`,
-;; `ns::tmpl<T>()`) parse as `qualified_identifier` / `template_function` and
-;; the default queries don't cover those nodes, so they render with no face.
-;; Patch the missing queries in via the mode hook.
+;; c++-ts-mode's built-in :feature 'function queries only tag function
+;; calls whose target is a bare identifier (`foo()`) or a field expression
+;; (`x.foo()`). Namespace-qualified calls (`std::println()`,
+;; `auxid::get_thread_logger()`, `ns::tmpl<T>()`) parse as
+;; `qualified_identifier`, `template_function`, or nested combinations of
+;; those, and the bundled queries don't cover any of those node shapes -
+;; the call name renders default-faced.
+;;
+;; Three things matter when patching this in:
+;;
+;;  1. `:override t' is required. The built-in outer rule on
+;;     `call_expression' may already paint the whole `function:' child
+;;     with the default face; without override our nested capture gets
+;;     no-op'd.
+;;  2. Tree-sitter queries don't auto-recurse. For `a::b::c()' the
+;;     grammar nests `qualified_identifier' left-deep, so we need an
+;;     explicit rule for one level of nesting (covers up to a::b::c).
+;;  3. `treesit-font-lock-recompute-features' rebuilds the active query
+;;     set but does NOT re-fontify existing text - call `font-lock-flush'
+;;     so already-painted regions get redone.
+;;
+;; rust-ts-mode handles `scoped_identifier' / `generic_function' upstream
+;; already, so no Rust hook is needed - just `treesit-font-lock-level 4'.
 (defun my/c++-ts-extra-function-call-rules ()
   "Highlight namespace-qualified function calls in `c++-ts-mode'."
   (setq treesit-font-lock-settings
@@ -170,43 +187,34 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
          (treesit-font-lock-rules
           :language 'cpp
           :feature 'function
-          '((call_expression
+          :override t
+          '(;; std::println()  - terminal identifier under qualified_identifier
+            (call_expression
              function: (qualified_identifier
                         name: (identifier) @font-lock-function-call-face))
+            ;; ns::sub::foo()  - one level of nesting (left-deep grammar)
+            (call_expression
+             function: (qualified_identifier
+                        name: (qualified_identifier
+                               name: (identifier) @font-lock-function-call-face)))
+            ;; ns::foo<T>()
             (call_expression
              function: (qualified_identifier
                         name: (template_function
                                name: (identifier) @font-lock-function-call-face)))
+            ;; foo<T>() at top level
             (call_expression
              function: (template_function
-                        name: (identifier) @font-lock-function-call-face))))))
-  (treesit-font-lock-recompute-features))
+                        name: (identifier) @font-lock-function-call-face))
+            ;; obj.foo<T>()  - template method via field expression
+            (call_expression
+             function: (field_expression
+                        field: (template_method
+                                name: (field_identifier) @font-lock-function-call-face)))))))
+  (treesit-font-lock-recompute-features)
+  (font-lock-flush))
 
 (add-hook 'c++-ts-mode-hook #'my/c++-ts-extra-function-call-rules)
-
-;; Same gap exists in rust-ts-mode: `mod::func()` and `Type::method()` parse
-;; as `scoped_identifier` and the bundled queries don't tag the call name.
-(defun my/rust-ts-extra-function-call-rules ()
-  "Highlight path-qualified function calls in `rust-ts-mode'."
-  (setq treesit-font-lock-settings
-        (append
-         treesit-font-lock-settings
-         (treesit-font-lock-rules
-          :language 'rust
-          :feature 'function
-          '((call_expression
-             function: (scoped_identifier
-                        name: (identifier) @font-lock-function-call-face))
-            (call_expression
-             function: (generic_function
-                        function: (identifier) @font-lock-function-call-face))
-            (call_expression
-             function: (generic_function
-                        function: (scoped_identifier
-                                   name: (identifier) @font-lock-function-call-face)))))))
-  (treesit-font-lock-recompute-features))
-
-(add-hook 'rust-ts-mode-hook #'my/rust-ts-extra-function-call-rules)
 
 (use-package treesit-auto
   :ensure t
