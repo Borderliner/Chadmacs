@@ -33,6 +33,17 @@
   (interactive)
   (consult-ripgrep default-directory))
 
+(defun my/consult-ripgrep-project ()
+  "Run consult-ripgrep at the projectile project root.
+Falls back to `default-directory' when not inside a project.
+This is a thin wrapper that exists because `consult-projectile-ripgrep'
+has an Elpaca autoload regression on some builds."
+  (interactive)
+  (let ((dir (or (and (fboundp 'projectile-project-root)
+                      (ignore-errors (projectile-project-root)))
+                 default-directory)))
+    (consult-ripgrep dir)))
+
 ;; -------------------------------------------------- Top-level map --
 
 (define-prefix-command 'my/leader-map)
@@ -92,7 +103,7 @@
 (define-key my/leader-map         (kbd "p") '("project..." . my/leader-project-map))
 (define-key my/leader-project-map (kbd "p") '("switch project" . consult-projectile-switch-project))
 (define-key my/leader-project-map (kbd "f") '("find file" . consult-projectile-find-file))
-(define-key my/leader-project-map (kbd "g") '("ripgrep" . consult-projectile-ripgrep))
+(define-key my/leader-project-map (kbd "g") '("ripgrep" . my/consult-ripgrep-project))
 (define-key my/leader-project-map (kbd "b") '("project buffer" . consult-project-buffer))
 (define-key my/leader-project-map (kbd "c") '("compile" . projectile-compile-project))
 (define-key my/leader-project-map (kbd "r") '("run" . projectile-run-project))

@@ -86,6 +86,8 @@
          ("C-c k"   . consult-kmacro)
          ("C-c m"   . consult-man)
          ("C-c i"   . consult-info)
+         ("C-c s"   . consult-ripgrep)
+         ("C-c S"   . my/consult-ripgrep-here)
          ("C-c t T" . consult-theme)
          ([remap Info-search] . consult-info)
          ;; C-x bindings in `ctl-x-map'
@@ -141,14 +143,33 @@
   ;; Consult-powered xref preview
   (setq xref-show-xrefs-function       #'consult-xref
         xref-show-definitions-function #'consult-xref)
-  (setq consult-preview-key 'any))
+  (setq consult-preview-key 'any)
+  ;; Disable the async split character (default '#'). With `nil', the whole
+  ;; minibuffer input is sent to the async backend (ripgrep, grep, find...)
+  ;; verbatim - no split, no client-side filter pass, no leading-`#' hint
+  ;; in the prompt. Trade-off: you lose `pattern1#pattern2' two-phase
+  ;; narrowing, but in practice orderless + rg's own regex flags cover the
+  ;; same ground without surprising new users.
+  (setq consult-async-split-style nil))
 
 (use-package consult-projectile
   :ensure t
   :after (consult projectile)
   :bind (("C-c p p" . consult-projectile-switch-project)
          ("C-c p f" . consult-projectile-find-file)
-         ("C-c p g" . consult-projectile-ripgrep)))
+         ;; `consult-projectile-ripgrep' has a stale-autoload bug in some
+         ;; Elpaca builds ("failed to define function ..."). Route through
+         ;; our wrapper in chadmacs-leader.el which uses plain
+         ;; `consult-ripgrep' + `projectile-project-root' and never trips it.
+         ("C-c p g" . my/consult-ripgrep-project)))
+
+;; Backend for `projectile-ripgrep' / `M-x rg' / `M-x rg-dwim'. Projectile's
+;; ripgrep command delegates to whichever of the `rg' or `ripgrep' packages
+;; is installed; without one it errors with "Packages 'ripgrep' and 'rg'
+;; are not available". `rg' is the actively maintained one.
+(use-package rg
+  :ensure t
+  :commands (rg rg-dwim rg-project rg-menu))
 
 ;; ----------------------------------------------------------- In-buffer --
 
