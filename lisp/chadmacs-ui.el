@@ -159,10 +159,23 @@
 
 ;; --------------------------------------------------- Scrolling & icons --
 
+;; ultra-scroll: precise pixel-by-pixel scrolling for trackpads and mouse
+;; wheels. Lives on GitHub only (not MELPA), so the recipe is pinned
+;; explicitly. Internally drives `pixel-scroll-precision-mode' - do NOT
+;; enable that mode separately or the two will fight each other.
+;;
+;; `scroll-conservatively' MUST be > 100 for ultra-scroll to feel right:
+;; any value <= 100 lets Emacs recenter the buffer when point scrolls
+;; off-screen, which produces a jarring snap on top of the smooth pixel
+;; scroll. The upstream README flags this as the #1 gotcha. We set 101
+;; (the canonical "disable recentering" sentinel).
+;;
+;; ultra-scroll auto-disables on TTY (no graphics) so it's safe to enable
+;; unconditionally; the mode is a no-op in terminal Emacs.
 (use-package ultra-scroll
-  :ensure t
+  :ensure (ultra-scroll :host github :repo "jdtsmith/ultra-scroll")
   :init
-  (setq scroll-conservatively 3
+  (setq scroll-conservatively 101
         scroll-margin 0)
   :config
   (ultra-scroll-mode 1))
