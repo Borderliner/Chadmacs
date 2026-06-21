@@ -180,28 +180,28 @@
   :config
   (ultra-scroll-mode 1))
 
-;; Half-page scroll instead of full-page for `C-v' / `M-v' (and any other
-;; key bound to scroll-up-command / scroll-down-command, like <next> and
-;; <prior>). Stock Emacs scrolls (window-height - next-screen-context-lines)
-;; lines per command - almost a full screen - which makes it easy to lose
-;; orientation in deep code. Half-page matches what most other editors do
-;; and what view-mode's C-d / C-u already use.
+;; Third-of-a-page scroll instead of full-page for `C-v' / `M-v' (and any
+;; other key bound to scroll-up-command / scroll-down-command, including
+;; <next> and <prior>). Stock Emacs scrolls (window-height -
+;; next-screen-context-lines) lines per command - almost a full screen -
+;; which makes it easy to lose orientation in deep code. A 1/3 jump stays
+;; close enough that the surrounding context stays familiar.
 ;;
 ;; Using [remap ...] (instead of `(kbd "C-v")') makes the wrappers follow
 ;; the commands wherever they're bound, including keys other modes attach
 ;; them to. The `max 1' guard avoids a zero-scroll in tiny minibuffers.
-(defun my/scroll-half-page-down ()
-  "Scroll forward half a window (like `C-v', but half the distance)."
+(defun my/scroll-third-page-down ()
+  "Scroll forward 1/3 of a window (like `C-v', but a third of the distance)."
   (interactive)
-  (scroll-up-command (max 1 (/ (window-body-height) 2))))
+  (scroll-up-command (max 1 (/ (window-body-height) 3))))
 
-(defun my/scroll-half-page-up ()
-  "Scroll backward half a window (like `M-v', but half the distance)."
+(defun my/scroll-third-page-up ()
+  "Scroll backward 1/3 of a window (like `M-v', but a third of the distance)."
   (interactive)
-  (scroll-down-command (max 1 (/ (window-body-height) 2))))
+  (scroll-down-command (max 1 (/ (window-body-height) 3))))
 
-(global-set-key [remap scroll-up-command]   #'my/scroll-half-page-down)
-(global-set-key [remap scroll-down-command] #'my/scroll-half-page-up)
+(global-set-key [remap scroll-up-command]   #'my/scroll-third-page-down)
+(global-set-key [remap scroll-down-command] #'my/scroll-third-page-up)
 
 ;; Nerd icons in completion (looks great with nano)
 (use-package nerd-icons-completion
