@@ -180,6 +180,29 @@
   :config
   (ultra-scroll-mode 1))
 
+;; Half-page scroll instead of full-page for `C-v' / `M-v' (and any other
+;; key bound to scroll-up-command / scroll-down-command, like <next> and
+;; <prior>). Stock Emacs scrolls (window-height - next-screen-context-lines)
+;; lines per command - almost a full screen - which makes it easy to lose
+;; orientation in deep code. Half-page matches what most other editors do
+;; and what view-mode's C-d / C-u already use.
+;;
+;; Using [remap ...] (instead of `(kbd "C-v")') makes the wrappers follow
+;; the commands wherever they're bound, including keys other modes attach
+;; them to. The `max 1' guard avoids a zero-scroll in tiny minibuffers.
+(defun my/scroll-half-page-down ()
+  "Scroll forward half a window (like `C-v', but half the distance)."
+  (interactive)
+  (scroll-up-command (max 1 (/ (window-body-height) 2))))
+
+(defun my/scroll-half-page-up ()
+  "Scroll backward half a window (like `M-v', but half the distance)."
+  (interactive)
+  (scroll-down-command (max 1 (/ (window-body-height) 2))))
+
+(global-set-key [remap scroll-up-command]   #'my/scroll-half-page-down)
+(global-set-key [remap scroll-down-command] #'my/scroll-half-page-up)
+
 ;; Nerd icons in completion (looks great with nano)
 (use-package nerd-icons-completion
   :ensure t
