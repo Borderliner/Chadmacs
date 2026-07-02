@@ -15,7 +15,7 @@
 ;;   5. chadmacs-editing    -> undo, sessions, snippets, smartparens, ...
 ;;   6. chadmacs-tools      -> projectile, magit, flycheck, eglot, envrc, ...
 ;;   7. chadmacs-org        -> org, buffer-terminator
-;;   8. chadmacs-navigation -> treemacs, dirvish, popper, vterm
+;;   8. chadmacs-navigation -> treemacs, dirvish, popper, ghostel
 ;;   9. chadmacs-help       -> helpful
 ;;  10. <extensions/*>      -> language-specific (rust, etc.)
 ;;  11. custom.el           -> user-local overrides (gitignored)

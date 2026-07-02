@@ -5,7 +5,7 @@
 ;;     - Treemacs (sidebar tree)
 ;;     - Dirvish (dired replacement)
 ;;     - Popper (popup window manager)
-;;     - vterm (libvterm terminal)
+;;     - Ghostel (ghostty-vt terminal)
 ;;
 ;;; Code:
 
@@ -175,28 +175,121 @@
           "\\*Warnings\\*"
           "\\*Backtrace\\*"
           "\\*eldoc\\*"
+          "\\*ghostel"          ; matches *ghostel*, *ghostel-compile*, *ghostel: DIR*
           help-mode
           helpful-mode
           compilation-mode
           eshell-mode
           shell-mode
-          vterm-mode))
+          ghostel-mode))
   (popper-mode 1)
   (popper-echo-mode 1))
 
-;; ---------------------------------------------------------- vterm --
+;; --------------------------------------------------------- Ghostel --
 
-;; Fast libvterm-backed terminal. Needs libvterm + cmake at build time; if
-;; install fails, install libvterm-devel / libvterm-dev on your system and
-;; run M-x elpaca-rebuild vterm.
-(use-package vterm
+;; Ghostel is a terminal emulator backed by libghostty-vt (the VT engine
+;; from the Ghostty terminal). Replaces vterm. Advantages over vterm for
+;; this config:
+;;
+;;   - Native module is a prebuilt binary that auto-downloads on first
+;;     `M-x ghostel'. No cmake, libvterm-dev, or 3-minute compile step.
+;;   - True color, Kitty keyboard + graphics protocols (image previews
+;;     in yazi/tui apps work), hyperlinks, desktop notifications, sync
+;;     output - all out of the box.
+;;   - Shell integration (directory tracking, prompt navigation) works
+;;     for bash / zsh / fish / nushell without any dotfile changes.
+;;   - Multiple input modes (semi-char default, char, line, emacs, copy)
+;;     so switching between "typing in the terminal" and "reading it
+;;     like a normal Emacs buffer" is fluid: `C-c C-t' freezes for copy,
+;;     `C-c C-j' back to interactive.
+;;
+;; Requires Emacs 28.1+ with dynamic module support, on macOS / Linux /
+;; FreeBSD. Auto-disabled everywhere else.
+(use-package ghostel
   :ensure t
-  :commands (vterm vterm-other-window)
-  :bind (("C-c v" . vterm)
-         ("C-c V" . vterm-other-window))
-  :custom
-  (vterm-max-scrollback 10000)
-  (vterm-buffer-name-string "vterm: %s"))
+  :commands (ghostel
+             ghostel-project
+             ghostel-next
+             ghostel-previous
+             ghostel-list-buffers
+             ghostel-project-next
+             ghostel-project-previous
+             ghostel-project-list-buffers)
+  :bind (("C-c v" . ghostel)
+         ("C-c V" . my/ghostel-other-window)
+         ;; Emacs 28+ project.el hook: `C-x p m' opens a Ghostel buffer
+         ;; scoped to the current project; `C-x p M' lists project
+         ;; ghostel buffers for switching.
+         :map project-prefix-map
+         ("m" . ghostel-project)
+         ("M" . ghostel-project-list-buffers))
+  :init
+  (defun my/ghostel-other-window ()
+    "Open a Ghostel terminal in another window (splits if there's only one)."
+    (interactive)
+    (unless (> (length (window-list)) 1)
+      (split-window-right))
+    (other-window 1)
+    (call-interactively #'ghostel))
+  :config
+  ;; Surface Ghostel entries in the `C-x p p' project-switch dispatcher.
+  (with-eval-after-load 'project
+    (add-to-list 'project-switch-commands
+                 '(ghostel-project "Ghostel") t)
+    (add-to-list 'project-switch-commands
+                 '(ghostel-project-list-buffers "Ghostel buffers") t)))
+
+;; --- Ghostel extensions (ship inside the ghostel package) ---
+;;
+;; These are separate use-package forms with `:ensure nil' because
+;; installing `ghostel' above already pulls their .el files onto the
+;; load-path. Each mode has an autoload cookie, so `:hook' is enough
+;; to defer loading until the hook fires.
+
+;; Route `eshell-visual-commands' (tmux, htop, less, ...) into a
+;; Ghostel buffer instead of eshell's raw terminfo emulation.
+(use-package ghostel-eshell
+  :ensure nil
+  :after ghostel
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
+
+;; Run `M-x compile' and every compile-command inside a Ghostel buffer.
+;; Colored output, escape codes, and progress bars work.
+(use-package ghostel-compile
+  :ensure nil
+  :after ghostel
+  :hook (after-init . ghostel-compile-global-mode))
+
+;; Replace comint's `ansi-color-process-output' with Ghostel's VT parser,
+;; so every comint buffer (shell, gud, python-shell, sql-*, ...) gets
+;; true color + escape handling.
+(use-package ghostel-comint
+  :ensure nil
+  :after ghostel
+  :hook (after-init . ghostel-comint-global-mode))
+
+;; --- Ghostel IME (opt-in) ---
+;;
+;; `ghostel-ime' adds support for Emacs Lisp input methods (Korean
+;; Hangul via quail, etc.) inside Ghostel buffers. It has zero effect
+;; for users on OS-level IMEs (fcitx / ibus / macOS input source /
+;; Windows IME) - those work with Ghostel unconditionally. So we gate
+;; it behind an opt-in defvar to keep the default lean.
+;;
+;; To enable, put in `custom.el':
+;;   (setq my/enable-ghostel-ime t)
+;; and restart Emacs.
+(defvar my/enable-ghostel-ime nil
+  "Non-nil to enable `ghostel-ime-mode' in every Ghostel buffer.
+Only useful when you use an Emacs Lisp input method (e.g. Korean
+Hangul via `M-x set-input-method'). Ghostel handles OS-level IMEs
+(fcitx, ibus, macOS input sources, Windows IME) without this.")
+
+(use-package ghostel-ime
+  :ensure nil
+  :if my/enable-ghostel-ime
+  :after ghostel
+  :hook (ghostel-mode . ghostel-ime-mode))
 
 (provide 'chadmacs-navigation)
 ;;; chadmacs-navigation.el ends here

@@ -3,7 +3,7 @@
 #
 # Subcommands:
 #   update    Pull latest from upstream and update Elpaca packages.
-#   doctor    Diagnose dependencies (Emacs, fonts, fd, rg, direnv, libvterm, ...).
+#   doctor    Diagnose dependencies (Emacs, fonts, fd, rg, direnv, modules, ...).
 #   uninstall Remove ~/.emacs.d (with confirmation; var/ backed up first).
 #   help      Show this help.
 
@@ -193,18 +193,16 @@ cmd_doctor() {
     warn "fd not found — find-file / dirvish fast finder. install: https://github.com/sharkdp/fd"
   fi
   check_bin direnv "envrc per-project env" "https://direnv.net"
-  check_bin cmake "vterm build" "your package manager"
 
-  # libvterm — header check (no command). Best effort:
-  if [ -f /usr/include/vterm.h ] || [ -f /usr/local/include/vterm.h ] || \
-     ldconfig -p 2>/dev/null | grep -q libvterm; then
-    ok "libvterm headers/lib found — vterm should build"
+  # Ghostel replaces vterm. Its native module is a prebuilt binary that
+  # auto-downloads on first `M-x ghostel', so no cmake / libvterm needed.
+  # Sanity-check that Emacs was built with dynamic module support.
+  if emacs --batch --eval '(prin1 (bound-and-true-p module-file-suffix))' 2>/dev/null \
+       | grep -qE '"\.(so|dylib|dll)"'; then
+    ok "Emacs has dynamic module support — Ghostel will auto-install its native module."
   else
-    warn "libvterm not found — vterm package will fail to build."
-    info "  Arch:    sudo pacman -S libvterm"
-    info "  Fedora:  sudo dnf install libvterm-devel"
-    info "  Debian:  sudo apt install libvterm-dev"
-    info "  macOS:   brew install libvterm"
+    warn "Emacs lacks dynamic module support — Ghostel cannot load its native module."
+    info "  Rebuild Emacs with --with-modules, or install a build that has it."
   fi
 
   # ---- Font ----

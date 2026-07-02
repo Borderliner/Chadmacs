@@ -36,7 +36,7 @@ No spaghetti. No distro bloat. Just Emacs — refined.
 │   ├── chadmacs-editing.el      # undo, sessions, snippets, smartparens, ...
 │   ├── chadmacs-tools.el        # projectile/magit/flycheck/eglot/envrc
 │   ├── chadmacs-org.el          # org, buffer-terminator
-│   ├── chadmacs-navigation.el   # treemacs, dirvish, popper, vterm
+│   ├── chadmacs-navigation.el   # treemacs, dirvish, popper, ghostel
 │   └── chadmacs-help.el         # helpful
 ├── extensions/            # opt-in language modules, one per language
 ├── bin/chadmacs           # CLI: update / doctor / treesit-clean / ...
@@ -100,7 +100,7 @@ Modern. Fast. Cohesive.
 * envrc (per-project `.envrc` / direnv — auto PATH/env per repo)
 * dirvish (dired with sidebar + preview + git-state)
 * Treemacs (sidebar file tree)
-* vterm (libvterm terminal)
+* ghostel (libghostty-vt terminal — replaces vterm; prebuilt native module, no cmake step)
 * popper (toggleable popup windows for *Help*, compile, eldoc, …)
 
 ## 📝 Editing Enhancements
@@ -337,14 +337,77 @@ Stock `C-x 0/1/2/3` window ops + a few canonical additions.
 | `C-M-<`      | Cycle popups                                   |
 | `` C-M-` ``  | Promote window ⇄ popup                         |
 
-Targets: `*Help*`, `*Warnings*`, compile, eldoc, eshell, vterm, …
+Targets: `*Help*`, `*Warnings*`, compile, eldoc, eshell, ghostel, …
 
-## Terminal (`vterm`)
+## Terminal (`ghostel`)
 
-| Key     | Action                       |
-| ------- | ---------------------------- |
-| `C-c v` | Open vterm                   |
-| `C-c V` | Open vterm in another window |
+Ghostel is a libghostty-vt-backed terminal that replaces vterm. First
+`M-x ghostel` triggers an auto-download of a small prebuilt native
+module (no cmake, no libvterm-dev). Everything after that just works —
+true color, Kitty keyboard + graphics protocols (image previews in
+tools like `yazi` work), hyperlinks, and shell integration for bash /
+zsh / fish / nushell without any dotfile changes.
+
+### Opening
+
+| Key       | Action                                          |
+| --------- | ----------------------------------------------- |
+| `C-c v`   | Open a Ghostel terminal                         |
+| `C-c V`   | Open a Ghostel terminal in another window       |
+| `C-x p m` | Open Ghostel in the current project's root      |
+| `C-x p M` | List Ghostel buffers in the current project     |
+
+Also surfaces in the `C-x p p` project-switch dispatcher menu.
+
+### Input modes (eat.el-style)
+
+Ghostel offers five input modes. You'll spend most of your time in
+`semi-char` (the default). Switch inside a Ghostel buffer:
+
+| Key       | Mode        | What it does                                  |
+| --------- | ----------- | --------------------------------------------- |
+| `C-c C-j` | semi-char   | Default. Almost all keys go to the terminal.  |
+| `C-c M-d` | char        | *All* keys go to the terminal. `M-RET` exits. |
+| `C-c C-l` | line        | Emacs edits the line; ENTER sends it whole.   |
+| `C-c C-e` | emacs       | Read-only Emacs nav over live output.         |
+| `C-c C-t` | copy        | Freezes the terminal for selecting / copying. |
+
+The read-only modes auto-exit on any key that would send input, so
+"see something → `C-c C-t` → copy → keep typing" is one flow.
+
+### Extensions (all on by default)
+
+- **`ghostel-eshell-visual-command-mode`** — visual commands (`tmux`,
+  `htop`, `less`, …) launched from eshell run inside a Ghostel buffer.
+- **`ghostel-compile-global-mode`** — `M-x compile` and every derived
+  compile command runs in a Ghostel buffer, so ANSI colors, escape
+  codes, and progress bars render correctly.
+- **`ghostel-comint-global-mode`** — replaces comint's built-in
+  `ansi-color-process-output` with Ghostel's VT parser, so every
+  comint-based shell (`M-x shell`, `M-x sql-*`, `M-x python-shell`,
+  gud, …) gets true-color / escape handling.
+
+### IME (opt-in)
+
+Ghostel handles OS-level input methods (fcitx, ibus, macOS input
+sources, Windows IME) natively. If you use an **Emacs Lisp** input
+method (e.g. Korean Hangul via `M-x set-input-method`), turn on
+`ghostel-ime-mode` too. In `custom.el`:
+
+```elisp
+(setq my/enable-ghostel-ime t)
+```
+
+then restart. See the `M-x describe-variable my/enable-ghostel-ime`
+docstring for details.
+
+### Shell integration
+
+Directory tracking and prompt navigation are on automatically for
+local bash / zsh / fish / nushell sessions. To call Emacs commands
+from inside the terminal (e.g. `e file.txt` to open in Emacs), see
+[ghostel's shell integration docs](https://dakra.github.io/ghostel/#shell-integration)
+for the small shell function block to add to your rc file.
 
 ## Projects (`C-c p` — projectile prefix)
 
@@ -575,7 +638,7 @@ Optional:
 * ripgrep
 * fd
 * direnv (for envrc)
-* libvterm + cmake (for vterm)
+* Emacs built with `--with-modules` (for ghostel — auto-checked by `chadmacs doctor`)
 * language servers (per-language)
 
 ---

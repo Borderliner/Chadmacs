@@ -311,6 +311,15 @@ filesystem freely."
 ;; (require 'gerbil-extension)         ;; Gerbil Scheme
 
 ;; ============================================================
+;; Optional feature toggles
+;; ============================================================
+
+;; Ghostel-IME: only needed if you use an Emacs Lisp input method
+;; (Korean Hangul via `M-x set-input-method', etc). OS-level IMEs
+;; (fcitx / ibus / macOS / Windows) work in Ghostel without this.
+;; (setq my/enable-ghostel-ime t)
+
+;; ============================================================
 ;; Your personal overrides go below
 ;; ============================================================
 ;; e.g. (setq user-full-name \"Jane Doe\")
