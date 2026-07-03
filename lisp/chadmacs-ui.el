@@ -119,42 +119,97 @@
 
 ;; ----------------------------------------------------------- Dashboard --
 
+;; Dashboard: startup screen with a custom ASCII banner, action navigator,
+;; and lists of recents / projects / bookmarks. Designed to work identically
+;; on GUI and TTY - the banner is a plain UTF-8 text file (block characters
+;; from the Unicode Box Drawing set + one dot / dash decoration line), no
+;; PNG or SVG anywhere. Nerd-icon glyphs in the navigator degrade to plain
+;; text if the terminal lacks a Nerd Font.
+(defconst my/dashboard-banner-file
+  (expand-file-name "banner.txt" user-emacs-directory)
+  "Absolute path to Chadmacs' ASCII dashboard banner.
+Kept at the repo root so `chadmacs update' pulls new versions cleanly.")
+
 (use-package dashboard
   :ensure t
-  :after projectile
+  :after (projectile nerd-icons)
   :init
-  (setq dashboard-projects-backend 'projectile)
-  (setq dashboard-banner-logo-title (concat "Welcome, " (user-full-name) "!"))
-  (setq dashboard-startup-banner 2)
-  (setq dashboard-center-content t)
-  (setq dashboard-vertically-center-content t)
-  (setq dashboard-navigation-cycle t)
-  (setq dashboard-show-shortcuts t)
-  (setq dashboard-heading-shorcut-format " [shortcut: %s]")
-  (setq dashboard-display-icons-p t)
-  (setq dashboard-icon-type 'nerd-icons)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-startupify-list '(dashboard-insert-banner
-                                    dashboard-insert-newline
-                                    dashboard-insert-banner-title
-                                    dashboard-insert-newline
-                                    dashboard-insert-navigator
-                                    dashboard-insert-newline
-                                    dashboard-insert-init-info
-                                    dashboard-insert-items
-                                    dashboard-insert-newline))
+  ;; --- Data / layout ---
+  (setq dashboard-projects-backend         'projectile
+        dashboard-startup-banner           my/dashboard-banner-file
+        dashboard-banner-logo-title        nil     ; tagline is in banner.txt
+        dashboard-center-content           t
+        dashboard-vertically-center-content t
+        dashboard-navigation-cycle         t
+        dashboard-show-shortcuts           t
+        dashboard-heading-shorcut-format   "  %s"
+        dashboard-display-icons-p          t
+        dashboard-icon-type                'nerd-icons
+        dashboard-set-heading-icons        t
+        dashboard-set-file-icons           t
+        dashboard-set-init-info            t
+        dashboard-set-footer               t
+        dashboard-set-navigator            t)
+
+  ;; --- Init info line: "◆ ready in 1.42s · 3 GCs" ---
+  (setq dashboard-init-info
+        (lambda ()
+          (format "◆ ready in %s  ·  %d GCs"
+                  (emacs-init-time "%.2fs")
+                  gcs-done)))
+
+  ;; --- Footer: rotating chad-flavored tagline (built-in random picker) ---
+  (setq dashboard-footer-icon     "◆"
+        dashboard-footer-messages '("built to last  ·  tuned to be sharp"
+                                    "sharp tools for sharp minds"
+                                    "minimal  ·  fast  ·  intentional"
+                                    "the config other configs look up to"
+                                    "you are not your framework"
+                                    "sharp edges, no bloat"
+                                    "ultra clean  ·  ultra fast  ·  ultra chad"))
+
+  ;; --- Section list & shortcut letters ---
   (setq dashboard-items '((recents   . 5)
-                          (bookmarks . 5)
                           (projects  . 5)
-                          (agenda    . 5)
-                          (registers . 5)))
+                          (bookmarks . 3)))
   (setq dashboard-item-shortcuts '((recents   . "r")
-                                   (bookmarks . "m")
                                    (projects  . "p")
-                                   (agenda    . "a")
-                                   (registers . "e")))
+                                   (bookmarks . "m")))
+
+  ;; --- Assembly order: banner → info → navigator → items → footer ---
+  (setq dashboard-startupify-list
+        '(dashboard-insert-banner
+          dashboard-insert-newline
+          dashboard-insert-init-info
+          dashboard-insert-newline
+          dashboard-insert-navigator
+          dashboard-insert-newline
+          dashboard-insert-items
+          dashboard-insert-newline
+          dashboard-insert-footer))
+
   :config
+  ;; Navigator is defined here (not :init) so nerd-icons is guaranteed
+  ;; loaded - dashboard :after already pulled it, but the icon glyphs
+  ;; are evaluated eagerly and would nil-out at :init if we lost the race.
+  (require 'nerd-icons)
+  (let ((icon (lambda (name)
+                (nerd-icons-octicon name :face 'font-lock-keyword-face))))
+    (setq dashboard-navigator-buttons
+          `(((,(funcall icon "nf-oct-file_directory")
+              "Files" "Open a file manager (dirvish)"
+              (lambda (&rest _) (dirvish)))
+             (,(funcall icon "nf-oct-search")
+              "Search" "Ripgrep in the current project"
+              (lambda (&rest _) (call-interactively #'consult-ripgrep)))
+             (,(funcall icon "nf-oct-terminal")
+              "Terminal" "Open a Ghostel terminal"
+              (lambda (&rest _) (call-interactively #'ghostel)))
+             (,(funcall icon "nf-oct-repo")
+              "Projects" "Switch to another project"
+              (lambda (&rest _)
+                (call-interactively #'projectile-switch-project)))))))
+
   (dashboard-setup-startup-hook))
 
 ;; --------------------------------------------------- Scrolling & icons --
