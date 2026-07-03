@@ -159,10 +159,11 @@ Kept at the repo root so `chadmacs update' pulls new versions cleanly.")
                   gcs-done)))
 
   ;; --- Footer: rotating chad-flavored tagline (built-in random picker) ---
+  ;; NOTE: banner.txt already carries the "minimal · fast · intentional"
+  ;; tagline, so the footer messages skip it to avoid restating the theme.
   (setq dashboard-footer-icon     "◆"
         dashboard-footer-messages '("built to last  ·  tuned to be sharp"
                                     "sharp tools for sharp minds"
-                                    "minimal  ·  fast  ·  intentional"
                                     "the config other configs look up to"
                                     "you are not your framework"
                                     "sharp edges, no bloat"
