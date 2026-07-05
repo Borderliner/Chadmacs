@@ -74,6 +74,49 @@
 ;; Minimum window height
 (setq window-min-height 1)
 
+;; Safeguard: a file opened on the command line should own the whole frame.
+;; Startup can pop up a second window before the file is shown - a warning or
+;; error buffer (a broken custom.el, a package's `display-warning', ...), a
+;; restored session, and so on - which shoves the file you launched into a
+;; tiny split under *scratch*. Once startup settles, if Emacs was started with
+;; a file argument, give that file the whole frame. This does NOT suppress the
+;; warning: it still lands in *Warnings* for you to read.
+(defun my/cli-file-take-full-frame ()
+  "Give a file opened on the command line the entire frame.
+No-op for a bare `emacs' launch (no file argument) and under a daemon.
+Detection uses `command-line-args' (which still holds the filename here)
+rather than the buffer list, since this may run before the file is visited."
+  (when (and (not (daemonp))
+             (seq-some (lambda (arg) (not (string-prefix-p "-" arg)))
+                       (cdr command-line-args)))
+    (let ((file-windows (seq-filter (lambda (w) (buffer-file-name (window-buffer w)))
+                                    (window-list))))
+      ;; Only act when exactly one file window is showing: that is the
+      ;; tell-tale of an unwanted split (file + *scratch* / *Warnings* / ...).
+      ;; Two or more file windows means an intentional multi-file open
+      ;; (`emacs a.txt b.txt') - leave that arrangement alone.
+      (when (= (length file-windows) 1)
+        ;; Hide side windows first (popup managers like popper, treemacs, ...
+        ;; display in side windows, which `delete-other-windows' refuses to
+        ;; collapse - "Cannot make side window the only window"). Then make the
+        ;; file's buffer the sole normal window. Grab the buffer before toggling
+        ;; side windows, since that can invalidate the window object.
+        (let ((buf (window-buffer (car file-windows))))
+          (ignore-errors (window-toggle-side-windows))
+          (switch-to-buffer buf)
+          (ignore-errors (delete-other-windows)))))))
+
+;; Run on a short idle timer so it fires after session restore, asynchronous
+;; package `:config' blocks, and any warning popups have settled. Trigger from
+;; both `emacs-startup-hook' (always fires, right after command-line files are
+;; visited) and `elpaca-after-init-hook' (a backstop for anything Elpaca pops
+;; up later). Running twice is harmless - it's a no-op once the file is alone.
+(defun my/cli-file-take-full-frame-soon ()
+  "Schedule `my/cli-file-take-full-frame' once Emacs goes idle."
+  (run-with-idle-timer 0.3 nil #'my/cli-file-take-full-frame))
+(add-hook 'emacs-startup-hook     #'my/cli-file-take-full-frame-soon)
+(add-hook 'elpaca-after-init-hook #'my/cli-file-take-full-frame-soon)
+
 ;; UTF-8 everywhere
 (prefer-coding-system       'utf-8)
 (set-default-coding-systems 'utf-8)
@@ -323,8 +366,22 @@ filesystem freely."
 ;; Your personal overrides go below
 ;; ============================================================
 ;; e.g. (setq user-full-name \"Jane Doe\")
-;;      (set-face-attribute 'default nil :height 140)
-;;      (load-theme 'doom-one t)
+
+;; --- Font ---
+;; set-face-attribute's 2nd arg is the FRAME (nil = all frames); the font
+;; itself goes through :font, and :height is 1/10 pt (140 = 14pt). Point it
+;; at a font installed on your system, then uncomment:
+;; (set-face-attribute 'default nil :font \"JetBrainsMono Nerd Font\" :height 140)
+
+;; --- Theme ---
+;; Chadmacs enables doom-monokai-pro. To use a different theme, load it AFTER
+;; Elpaca finishes init - otherwise the default loads afterwards (Elpaca is
+;; asynchronous) and overwrites yours. Disable any enabled theme first for a
+;; clean swap. Every doom-theme ships with Chadmacs (e.g. doom-one):
+;; (add-hook 'elpaca-after-init-hook
+;;           (lambda ()
+;;             (mapc #'disable-theme custom-enabled-themes)
+;;             (load-theme 'doom-one t)))
 
 "
   "Bootstrap content for custom.el on first launch.")
