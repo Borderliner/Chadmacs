@@ -169,16 +169,72 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
                   (emacs-init-time "%.2fs")
                   gcs-done)))
 
-  ;; --- Footer: rotating chad-flavored tagline (built-in random picker) ---
-  ;; NOTE: the banner already carries the "minimal · fast · intentional"
-  ;; tagline, so the footer messages skip it to avoid restating the theme.
-  (setq dashboard-footer-icon     "◆"
-        dashboard-footer-messages '("built to last  ·  tuned to be sharp"
-                                    "sharp tools for sharp minds"
-                                    "the config other configs look up to"
-                                    "you are not your framework"
-                                    "sharp edges, no bloat"
-                                    "ultra clean  ·  ultra fast  ·  ultra chad"))
+  ;; --- Footer: one message picked at random each startup ---
+  ;; The original Chadmacs taglines plus a large pool of deep zen, strategy,
+  ;; and stoic quotes. NOTE: the banner already carries the "minimal · fast ·
+  ;; intentional" tagline, so the pool skips it to avoid restating the theme.
+  (setq dashboard-footer-icon "◆")
+  (setq dashboard-footer-messages
+        '(;; --- Chadmacs ---
+          "built to last  ·  tuned to be sharp"
+          "sharp tools for sharp minds"
+          "the config other configs look up to"
+          "you are not your framework"
+          "sharp edges, no bloat"
+          "ultra clean  ·  ultra fast  ·  ultra chad"
+          ;; --- Zen & Tao ---
+          "The obstacle is the path.  — Zen proverb"
+          "Let go, or be dragged.  — Zen proverb"
+          "When walking, walk. When eating, eat.  — Zen proverb"
+          "No snowflake ever falls in the wrong place.  — Zen proverb"
+          "Knock on the sky and listen to the sound.  — Zen proverb"
+          "When the student is ready, the teacher appears.  — Zen proverb"
+          "Sitting quietly, doing nothing, spring comes and the grass grows by itself.  — Zen proverb"
+          "Muddy water is best cleared by leaving it alone.  — Alan Watts"
+          "The quieter you become, the more you can hear.  — Ram Dass"
+          "Fall seven times, stand up eight.  — Japanese proverb"
+          "The bamboo that bends is stronger than the oak that resists.  — Japanese proverb"
+          "Nature does not hurry, yet everything is accomplished.  — Lao Tzu"
+          "To the mind that is still, the whole universe surrenders.  — Lao Tzu"
+          "Mastering others is strength; mastering yourself is true power.  — Lao Tzu"
+          "Silence is a source of great strength.  — Lao Tzu"
+          "A good traveler has no fixed plans and is not intent on arriving.  — Lao Tzu"
+          "Do not seek to follow the wise; seek what they sought.  — Bashō"
+          ;; --- War & strategy ---
+          "The supreme art of war is to subdue the enemy without fighting.  — Sun Tzu"
+          "In the midst of chaos, there is also opportunity.  — Sun Tzu"
+          "Victorious warriors win first and then go to war.  — Sun Tzu"
+          "The greatest victory is that which requires no battle.  — Sun Tzu"
+          "Know yourself and you will win all battles.  — Sun Tzu"
+          "Opportunities multiply as they are seized.  — Sun Tzu"
+          "Move swift as the wind, stay silent as the forest.  — Sun Tzu"
+          "The wise warrior avoids the battle.  — Sun Tzu"
+          "Do nothing which is of no use.  — Miyamoto Musashi"
+          "Perceive that which cannot be seen with the eye.  — Miyamoto Musashi"
+          "Today is victory over yourself of yesterday.  — Miyamoto Musashi"
+          "There is more than one path to the top of the mountain.  — Miyamoto Musashi"
+          "It is not the mountain we conquer, but ourselves.  — Edmund Hillary"
+          "Amateurs talk strategy; professionals talk logistics.  — military maxim"
+          "No plan survives contact with the enemy.  — Helmuth von Moltke"
+          "He who defends everything defends nothing.  — Frederick the Great"
+          "Discipline equals freedom.  — Jocko Willink"
+          ;; --- Stoic & philosophical ---
+          "What stands in the way becomes the way.  — Marcus Aurelius"
+          "You have power over your mind, not outside events.  — Marcus Aurelius"
+          "Waste no more time arguing what a good man should be. Be one.  — Marcus Aurelius"
+          "The best revenge is to be unlike him who performed the injury.  — Marcus Aurelius"
+          "We suffer more often in imagination than in reality.  — Seneca"
+          "Luck is what happens when preparation meets opportunity.  — Seneca"
+          "It is not that we have a short time to live, but that we waste much of it.  — Seneca"
+          "The man who moves a mountain begins by carrying away small stones.  — Confucius"
+          "It does not matter how slowly you go, so long as you do not stop.  — Confucius"
+          "The journey of a thousand miles begins with a single step.  — Lao Tzu"
+          "He who has a why to live can bear almost any how.  — Nietzsche"
+          "That which does not kill us makes us stronger.  — Nietzsche"
+          "Those who were seen dancing were thought insane by those who could not hear the music.  — Nietzsche"
+          "The cave you fear to enter holds the treasure you seek.  — Joseph Campbell"
+          "Out of the mountain of despair, a stone of hope.  — Martin Luther King Jr."
+          "First we make our habits, then our habits make us.  — John Dryden"))
 
   ;; --- Section list & shortcut letters ---
   (setq dashboard-items '((recents   . 5)
