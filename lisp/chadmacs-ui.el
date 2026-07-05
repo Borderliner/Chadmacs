@@ -121,14 +121,24 @@
 
 ;; Dashboard: startup screen with a custom ASCII banner, action navigator,
 ;; and lists of recents / projects / bookmarks. Designed to work identically
-;; on GUI and TTY - the banner is a plain UTF-8 text file (block characters
+;; on GUI and TTY - the banner is an embedded UTF-8 string (block characters
 ;; from the Unicode Box Drawing set + one dot / dash decoration line), no
 ;; PNG or SVG anywhere. Nerd-icon glyphs in the navigator degrade to plain
 ;; text if the terminal lacks a Nerd Font.
-(defconst my/dashboard-banner-file
-  (expand-file-name "banner.txt" user-emacs-directory)
-  "Absolute path to Chadmacs' ASCII dashboard banner.
-Kept at the repo root so `chadmacs update' pulls new versions cleanly.")
+(defconst my/dashboard-banner
+  "
+ ██████╗██╗  ██╗ █████╗ ██████╗ ███╗   ███╗ █████╗  ██████╗███████╗
+██╔════╝██║  ██║██╔══██╗██╔══██╗████╗ ████║██╔══██╗██╔════╝██╔════╝
+██║     ███████║███████║██║  ██║██╔████╔██║███████║██║     ███████╗
+██║     ██╔══██║██╔══██║██║  ██║██║╚██╔╝██║██╔══██║██║     ╚════██║
+╚██████╗██║  ██║██║  ██║██████╔╝██║ ╚═╝ ██║██║  ██║╚██████╗███████║
+ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝
+
+              ── minimal  ·  fast  ·  intentional ──
+
+"
+  "Chadmacs' ASCII dashboard banner (block-character CHADMACS wordmark).
+Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
 
 (use-package dashboard
   :ensure t
@@ -136,8 +146,9 @@ Kept at the repo root so `chadmacs update' pulls new versions cleanly.")
   :init
   ;; --- Data / layout ---
   (setq dashboard-projects-backend         'projectile
-        dashboard-startup-banner           my/dashboard-banner-file
-        dashboard-banner-logo-title        nil     ; tagline is in banner.txt
+        dashboard-startup-banner           'ascii  ; use the embedded string below
+        dashboard-banner-ascii             my/dashboard-banner
+        dashboard-banner-logo-title        nil     ; tagline is in the banner
         dashboard-center-content           t
         dashboard-vertically-center-content t
         dashboard-navigation-cycle         t
@@ -159,7 +170,7 @@ Kept at the repo root so `chadmacs update' pulls new versions cleanly.")
                   gcs-done)))
 
   ;; --- Footer: rotating chad-flavored tagline (built-in random picker) ---
-  ;; NOTE: banner.txt already carries the "minimal · fast · intentional"
+  ;; NOTE: the banner already carries the "minimal · fast · intentional"
   ;; tagline, so the footer messages skip it to avoid restating the theme.
   (setq dashboard-footer-icon     "◆"
         dashboard-footer-messages '("built to last  ·  tuned to be sharp"
