@@ -38,7 +38,7 @@ No spaghetti. No distro bloat. Just Emacs — refined.
 │   ├── chadmacs-org.el          # org, buffer-terminator
 │   ├── chadmacs-navigation.el   # treemacs, dirvish, popper, ghostel
 │   └── chadmacs-help.el         # helpful
-├── extensions/            # opt-in language modules, one per language
+├── lang/                  # opt-in language modules, one per language
 ├── bin/chadmacs           # CLI: update / doctor / treesit-clean / ...
 ├── install.sh             # one-shot installer (used by curl-install)
 ├── custom.el              # gitignored — your local overrides
@@ -184,19 +184,19 @@ Set `CHADMACS_DIR` to override the install location.
 # 🌍 Enabling Languages
 
 Language support is opt-in. Each language has a self-contained file in
-`extensions/<lang>-extension.el` listing its LSP binary in the header
+`lang/<lang>-lang.el` listing its LSP binary in the header
 comment. To enable one, edit `~/.emacs.d/custom.el` (auto-generated on
 first launch, **gitignored** — your enabled list survives upstream pulls):
 
 ```elisp
 ;; --- Backend / scripting ---
-(require 'python-extension)         ;; Python (+ pylsp / pyright)
-(require 'go-extension)             ;; Go + gopls
-(require 'elixir-extension)         ;; Elixir + HEEx + elixir-ls
+(require 'python-lang)         ;; Python (+ pylsp / pyright)
+(require 'go-lang)             ;; Go + gopls
+(require 'elixir-lang)         ;; Elixir + HEEx + elixir-ls
 
 ;; --- Web stack ---
-(require 'typescript-extension)     ;; TS / TSX / JS / JSX
-(require 'web-extension)            ;; HTML / CSS / SCSS / Emmet
+(require 'typescript-lang)     ;; TS / TSX / JS / JSX
+(require 'web-lang)            ;; HTML / CSS / SCSS / Emmet
 ```
 
 Full language list available out of the box: Rust, C/C++, C#, Python, Go,
@@ -462,8 +462,8 @@ it becomes the eglot prefix instead.
 | `C-c l h` | Eldoc at point    |
 
 Eglot auto-starts in core modes Chadmacs ships (C / C++ / C# / Bash).
-Per-language extensions in `extensions/` enable Eglot for their
-language when you `(require '<lang>-extension)` in `custom.el`. You
+Per-language modules in `lang/` enable Eglot for their
+language when you `(require '<lang>-lang)` in `custom.el`. You
 must install each language server binary yourself.
 
 | Language       | Mode                                  | Server                       |

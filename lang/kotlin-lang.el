@@ -1,4 +1,4 @@
-;;; kotlin-extension.el --- Kotlin support -*- lexical-binding: t; -*-
+;;; kotlin-lang.el --- Kotlin support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: kotlin-language-server
 ;;   download: https://github.com/fwcd/kotlin-language-server/releases
@@ -11,5 +11,5 @@
          ("\\.kts\\'" . kotlin-ts-mode))
   :hook (kotlin-ts-mode . eglot-ensure))
 
-(provide 'kotlin-extension)
-;;; kotlin-extension.el ends here
+(provide 'kotlin-lang)
+;;; kotlin-lang.el ends here

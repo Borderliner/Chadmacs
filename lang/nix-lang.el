@@ -1,4 +1,4 @@
-;;; nix-extension.el --- Nix language support -*- lexical-binding: t; -*-
+;;; nix-lang.el --- Nix language support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary (pick one):
 ;;   nix profile install nixpkgs#nil     ;; nil — community LSP
@@ -9,5 +9,5 @@
   :mode "\\.nix\\'"
   :hook (nix-mode . eglot-ensure))
 
-(provide 'nix-extension)
-;;; nix-extension.el ends here
+(provide 'nix-lang)
+;;; nix-lang.el ends here

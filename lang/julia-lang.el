@@ -1,4 +1,4 @@
-;;; julia-extension.el --- Julia support -*- lexical-binding: t; -*-
+;;; julia-lang.el --- Julia support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: LanguageServer.jl
 ;;   Set up in your Julia env:
@@ -17,5 +17,5 @@
   :after julia-mode
   :hook (julia-mode . (lambda () (eglot-jl-init) (eglot-ensure))))
 
-(provide 'julia-extension)
-;;; julia-extension.el ends here
+(provide 'julia-lang)
+;;; julia-lang.el ends here

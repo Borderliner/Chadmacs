@@ -1,4 +1,4 @@
-;;; typescript-extension.el --- TypeScript / TSX / JavaScript support -*- lexical-binding: t; -*-
+;;; typescript-lang.el --- TypeScript / TSX / JavaScript support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   npm install -g typescript typescript-language-server
@@ -36,5 +36,5 @@
   (js-ts-mode . eglot-ensure)
   (js-ts-mode . subword-mode))
 
-(provide 'typescript-extension)
-;;; typescript-extension.el ends here
+(provide 'typescript-lang)
+;;; typescript-lang.el ends here

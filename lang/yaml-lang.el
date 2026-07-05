@@ -1,4 +1,4 @@
-;;; yaml-extension.el --- YAML support -*- lexical-binding: t; -*-
+;;; yaml-lang.el --- YAML support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   npm install -g yaml-language-server
@@ -11,5 +11,5 @@
          ("\\.eyaml\\'"   . yaml-ts-mode))
   :hook (yaml-ts-mode . eglot-ensure))
 
-(provide 'yaml-extension)
-;;; yaml-extension.el ends here
+(provide 'yaml-lang)
+;;; yaml-lang.el ends here

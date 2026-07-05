@@ -1,4 +1,4 @@
-;;; python-extension.el --- Python support -*- lexical-binding: t; -*-
+;;; python-lang.el --- Python support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary (pick one):
 ;;   pip install python-lsp-server     ;; pylsp (default fallback)
@@ -29,5 +29,5 @@
 ;;   :ensure t
 ;;   :hook (python-ts-mode . pyvenv-mode))
 
-(provide 'python-extension)
-;;; python-extension.el ends here
+(provide 'python-lang)
+;;; python-lang.el ends here

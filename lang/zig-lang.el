@@ -1,4 +1,4 @@
-;;; zig-extension.el --- Zig support -*- lexical-binding: t; -*-
+;;; zig-lang.el --- Zig support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: zls (Zig Language Server)
 ;;   Download from https://github.com/zigtools/zls/releases
@@ -11,5 +11,5 @@
   :custom
   (zig-format-on-save nil))
 
-(provide 'zig-extension)
-;;; zig-extension.el ends here
+(provide 'zig-lang)
+;;; zig-lang.el ends here

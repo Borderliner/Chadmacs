@@ -1,4 +1,4 @@
-;;; csharp-extension.el --- C# / .NET support -*- lexical-binding: t; -*-
+;;; csharp-lang.el --- C# / .NET support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary (pick one):
 ;;   csharp-ls   — dotnet tool install -g csharp-ls
@@ -17,5 +17,5 @@
   (csharp-mode    . subword-mode)
   (csharp-ts-mode . subword-mode))
 
-(provide 'csharp-extension)
-;;; csharp-extension.el ends here
+(provide 'csharp-lang)
+;;; csharp-lang.el ends here

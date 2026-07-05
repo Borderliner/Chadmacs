@@ -1,4 +1,4 @@
-;;; web-extension.el --- HTML, CSS, SCSS, Vue support -*- lexical-binding: t; -*-
+;;; web-lang.el --- HTML, CSS, SCSS, Vue support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binaries:
 ;;   npm install -g vscode-langservers-extracted  ;; HTML / CSS / JSON
@@ -47,5 +47,5 @@
   :hook
   ((html-ts-mode css-ts-mode scss-mode web-mode) . emmet-mode))
 
-(provide 'web-extension)
-;;; web-extension.el ends here
+(provide 'web-lang)
+;;; web-lang.el ends here

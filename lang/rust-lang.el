@@ -15,4 +15,4 @@
   (setq rustic-lsp-client 'eglot)
   (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1))))
 
-(provide 'rust-extension)
+(provide 'rust-lang)

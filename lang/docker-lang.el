@@ -1,4 +1,4 @@
-;;; docker-extension.el --- Dockerfile / docker-compose support -*- lexical-binding: t; -*-
+;;; docker-lang.el --- Dockerfile / docker-compose support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   npm install -g dockerfile-language-server-nodejs
@@ -11,7 +11,7 @@
          ("\\.dockerfile\\'" . dockerfile-ts-mode))
   :hook (dockerfile-ts-mode . eglot-ensure))
 
-;; docker-compose.yml files are picked up by yaml-extension; activate that
+;; docker-compose.yml files are picked up by yaml-lang; activate that
 ;; together with this one for a full Docker workflow.
 
 ;; Optional: full docker management UI (containers, images, networks, volumes).
@@ -21,5 +21,5 @@
 ;;   :ensure t
 ;;   :bind ("C-c C-d" . docker))
 
-(provide 'docker-extension)
-;;; docker-extension.el ends here
+(provide 'docker-lang)
+;;; docker-lang.el ends here

@@ -84,8 +84,8 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; --------------------------------------------------------------- LSP --
 
 ;; Eglot ships with `eglot-server-programs' covering most common LSPs. Each
-;; language's eglot hook lives in its dedicated extensions/<lang>-extension.el
-;; so users opt in per-language by uncommenting (require 'lang-extension) in
+;; language's eglot hook lives in its dedicated lang/<lang>-lang.el
+;; so users opt in per-language by uncommenting (require '<lang>-lang) in
 ;; init.el. The hooks below are the always-on baseline (sh + bash always work).
 (use-package eglot
   :ensure nil
@@ -288,7 +288,7 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
            (php        . "v0.23.12")
            (scala      . "v0.23.4")
            (sql        . "v0.3.8")
-           ;; --- per-extension set ---
+           ;; --- per-language-module set ---
            (haskell    . "v0.23.1")
            (ocaml      . "v0.23.2")
            (elixir     . "v0.3.0")

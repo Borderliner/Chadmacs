@@ -1,4 +1,4 @@
-;;; c-cpp-extension.el --- C / C++ support -*- lexical-binding: t; -*-
+;;; c-cpp-lang.el --- C / C++ support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: clangd
 ;;   pacman -S clang        ;; Arch (clang package ships clangd)
@@ -46,5 +46,5 @@
          ("\\.cmake\\'"         . cmake-mode))
   :hook (cmake-mode . eglot-ensure))
 
-(provide 'c-cpp-extension)
-;;; c-cpp-extension.el ends here
+(provide 'c-cpp-lang)
+;;; c-cpp-lang.el ends here

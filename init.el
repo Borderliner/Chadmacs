@@ -17,7 +17,7 @@
 ;;   7. chadmacs-org        -> org, buffer-terminator
 ;;   8. chadmacs-navigation -> treemacs, dirvish, popper, ghostel
 ;;   9. chadmacs-help       -> helpful
-;;  10. <extensions/*>      -> language-specific (rust, etc.)
+;;  10. <lang/*>            -> language-specific (rust, etc.)
 ;;  11. custom.el           -> user-local overrides (gitignored)
 ;;
 ;; No leader key. Keybindings live where their owning package lives, on
@@ -28,7 +28,7 @@
 ;;; Code:
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "extensions" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lang" user-emacs-directory))
 
 (require 'chadmacs-core)
 (require 'chadmacs-ui)
@@ -39,7 +39,7 @@
 (require 'chadmacs-navigation)
 (require 'chadmacs-help)
 
-;; Language extensions are enabled per-user in custom.el (gitignored).
+;; Language modules are enabled per-user in custom.el (gitignored).
 ;; A pre-populated template with every available language is installed
 ;; on first launch by `create-or-load-custom-file' (see chadmacs-core).
 ;; This keeps the upstream init.el free of personal selections, so

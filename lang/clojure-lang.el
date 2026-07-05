@@ -39,4 +39,4 @@
 
   :hook ((prog-mode text-mode) . idle-highlight-mode))
 
-(provide 'clojure-extension)
+(provide 'clojure-lang)

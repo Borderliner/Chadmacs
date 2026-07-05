@@ -1,4 +1,4 @@
-;;; elixir-extension.el --- Elixir / Phoenix support -*- lexical-binding: t; -*-
+;;; elixir-lang.el --- Elixir / Phoenix support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: elixir-ls (or lexical for newer alternative)
 ;;   git clone https://github.com/elixir-lsp/elixir-ls
@@ -62,5 +62,5 @@
 ;;               ("C-c C-l" . inf-elixir-send-buffer)
 ;;               ("C-c C-r" . inf-elixir-send-region)))
 
-(provide 'elixir-extension)
-;;; elixir-extension.el ends here
+(provide 'elixir-lang)
+;;; elixir-lang.el ends here

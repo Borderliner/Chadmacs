@@ -1,4 +1,4 @@
-;;; lua-extension.el --- Lua support -*- lexical-binding: t; -*-
+;;; lua-lang.el --- Lua support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   pacman -S lua-language-server     ;; Arch
@@ -12,5 +12,5 @@
   :custom
   (lua-indent-level 2))
 
-(provide 'lua-extension)
-;;; lua-extension.el ends here
+(provide 'lua-lang)
+;;; lua-lang.el ends here

@@ -1,4 +1,4 @@
-;;; swift-extension.el --- Swift support -*- lexical-binding: t; -*-
+;;; swift-lang.el --- Swift support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: sourcekit-lsp (bundled with Swift toolchain on macOS,
 ;; install Swift toolchain on Linux).
@@ -10,5 +10,5 @@
   (swift-mode . eglot-ensure)
   (swift-mode . subword-mode))
 
-(provide 'swift-extension)
-;;; swift-extension.el ends here
+(provide 'swift-lang)
+;;; swift-lang.el ends here

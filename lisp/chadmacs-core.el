@@ -242,8 +242,8 @@ filesystem freely."
       kept-old-versions 2
       version-control t)
 
-;; Make the extensions directory loadable (language-specific files)
-(add-to-list 'load-path (expand-file-name "extensions" user-emacs-directory))
+;; Make the lang directory loadable (language-specific files)
+(add-to-list 'load-path (expand-file-name "lang" user-emacs-directory))
 
 (defconst my/custom-file-template
   ";;; custom.el --- Your Chadmacs overrides -*- no-byte-compile: t; lexical-binding: t; -*-
@@ -252,7 +252,7 @@ filesystem freely."
 ;;;
 ;;; Commentary:
 ;;; This file is GITIGNORED. Put your personal settings, package overrides,
-;;; and the list of language extensions you want here. Pulling new Chadmacs
+;;; and the list of language modules you want here. Pulling new Chadmacs
 ;;; versions will never touch it -> no merge conflicts.
 ;;;
 ;;; To re-generate from scratch: delete this file and restart Emacs (or
@@ -261,54 +261,54 @@ filesystem freely."
 ;;; Code:
 
 ;; ============================================================
-;; Language extensions
+;; Language modules
 ;; ============================================================
-;; Each line maps to extensions/<name>-extension.el. Uncomment to enable
-;; the language. Each extension's header comment lists the LSP binary you
+;; Each line maps to lang/<name>-lang.el. Uncomment to enable
+;; the language. Each module's header comment lists the LSP binary you
 ;; need to install on your system for completion / errors / rename to work.
 
 ;; --- Web stack ---
-;; (require 'typescript-extension)     ;; TS / TSX / JS / JSX
-;; (require 'web-extension)            ;; HTML / CSS / SCSS / Vue / Svelte / Emmet
-;; (require 'json-extension)           ;; JSON / JSONC
-;; (require 'yaml-extension)           ;; YAML
+;; (require 'typescript-lang)     ;; TS / TSX / JS / JSX
+;; (require 'web-lang)            ;; HTML / CSS / SCSS / Vue / Svelte / Emmet
+;; (require 'json-lang)           ;; JSON / JSONC
+;; (require 'yaml-lang)           ;; YAML
 
 ;; --- Backend / scripting ---
-;; (require 'python-extension)         ;; Python (+ optional pyvenv)
-;; (require 'go-extension)             ;; Go (+ go.mod)
-;; (require 'ruby-extension)           ;; Ruby / Rails / Gemfile / Rakefile
-;; (require 'elixir-extension)         ;; Elixir + HEEx (Phoenix templates)
-;; (require 'lua-extension)            ;; Lua
+;; (require 'python-lang)         ;; Python (+ optional pyvenv)
+;; (require 'go-lang)             ;; Go (+ go.mod)
+;; (require 'ruby-lang)           ;; Ruby / Rails / Gemfile / Rakefile
+;; (require 'elixir-lang)         ;; Elixir + HEEx (Phoenix templates)
+;; (require 'lua-lang)            ;; Lua
 
 ;; --- Systems / native ---
-;; (require 'rust-extension)           ;; Rust + rustic + cargo
-;; (require 'c-cpp-extension)          ;; C / C++ + meson + cmake
-;; (require 'csharp-extension)         ;; C# / .NET
-;; (require 'zig-extension)            ;; Zig
-;; (require 'swift-extension)          ;; Swift
+;; (require 'rust-lang)           ;; Rust + rustic + cargo
+;; (require 'c-cpp-lang)          ;; C / C++ + meson + cmake
+;; (require 'csharp-lang)         ;; C# / .NET
+;; (require 'zig-lang)            ;; Zig
+;; (require 'swift-lang)          ;; Swift
 
 ;; --- JVM ---
-;; (require 'scala-extension)          ;; Scala / sbt
-;; (require 'kotlin-extension)         ;; Kotlin
+;; (require 'scala-lang)          ;; Scala / sbt
+;; (require 'kotlin-lang)         ;; Kotlin
 
 ;; --- Functional ---
-;; (require 'haskell-extension)        ;; Haskell + Cabal
-;; (require 'ocaml-extension)          ;; OCaml + Dune
-;; (require 'clojure-extension)        ;; Clojure + CIDER + clj-refactor
+;; (require 'haskell-lang)        ;; Haskell + Cabal
+;; (require 'ocaml-lang)          ;; OCaml + Dune
+;; (require 'clojure-lang)        ;; Clojure + CIDER + clj-refactor
 
 ;; --- Scientific ---
-;; (require 'julia-extension)          ;; Julia + LanguageServer.jl
+;; (require 'julia-lang)          ;; Julia + LanguageServer.jl
 
 ;; --- DevOps / infra ---
-;; (require 'docker-extension)         ;; Dockerfile (compose via yaml)
-;; (require 'terraform-extension)      ;; Terraform / HCL
-;; (require 'nix-extension)            ;; Nix
+;; (require 'docker-lang)         ;; Dockerfile (compose via yaml)
+;; (require 'terraform-lang)      ;; Terraform / HCL
+;; (require 'nix-lang)            ;; Nix
 
 ;; --- Docs / writing ---
-;; (require 'markdown-extension)       ;; Markdown / GFM (+ marksman)
+;; (require 'markdown-lang)       ;; Markdown / GFM (+ marksman)
 
 ;; --- Niche ---
-;; (require 'gerbil-extension)         ;; Gerbil Scheme
+;; (require 'gerbil-lang)         ;; Gerbil Scheme
 
 ;; ============================================================
 ;; Optional feature toggles
@@ -331,7 +331,7 @@ filesystem freely."
 
 (defun create-or-load-custom-file ()
   "Load the custom.el file (gitignored) if it exists or create if it doesn't.
-Custom.el is seeded with the language-extension activation template so users
+Custom.el is seeded with the language-module activation template so users
 can enable per-language support without touching upstream files."
   (unless (file-exists-p custom-file)
     (with-temp-file custom-file

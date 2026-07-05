@@ -1,4 +1,4 @@
-;;; scala-extension.el --- Scala support -*- lexical-binding: t; -*-
+;;; scala-lang.el --- Scala support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: metals
 ;;   cs install metals
@@ -13,5 +13,5 @@
   (scala-mode . eglot-ensure)
   (scala-mode . subword-mode))
 
-(provide 'scala-extension)
-;;; scala-extension.el ends here
+(provide 'scala-lang)
+;;; scala-lang.el ends here

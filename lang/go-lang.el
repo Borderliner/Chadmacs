@@ -1,4 +1,4 @@
-;;; go-extension.el --- Go support -*- lexical-binding: t; -*-
+;;; go-lang.el --- Go support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: gopls
 ;;   go install golang.org/x/tools/gopls@latest
@@ -15,5 +15,5 @@
   :custom
   (go-ts-mode-indent-offset 4))
 
-(provide 'go-extension)
-;;; go-extension.el ends here
+(provide 'go-lang)
+;;; go-lang.el ends here

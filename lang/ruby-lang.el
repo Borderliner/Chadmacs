@@ -1,4 +1,4 @@
-;;; ruby-extension.el --- Ruby / Rails support -*- lexical-binding: t; -*-
+;;; ruby-lang.el --- Ruby / Rails support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary (pick one):
 ;;   gem install solargraph                          ;; classic
@@ -20,5 +20,5 @@
   :custom
   (ruby-indent-level 2))
 
-(provide 'ruby-extension)
-;;; ruby-extension.el ends here
+(provide 'ruby-lang)
+;;; ruby-lang.el ends here

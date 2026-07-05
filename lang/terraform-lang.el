@@ -1,4 +1,4 @@
-;;; terraform-extension.el --- Terraform / HCL support -*- lexical-binding: t; -*-
+;;; terraform-lang.el --- Terraform / HCL support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   brew install hashicorp/tap/terraform-ls
@@ -14,5 +14,5 @@
   :custom
   (terraform-indent-level 2))
 
-(provide 'terraform-extension)
-;;; terraform-extension.el ends here
+(provide 'terraform-lang)
+;;; terraform-lang.el ends here

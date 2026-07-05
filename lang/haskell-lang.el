@@ -1,4 +1,4 @@
-;;; haskell-extension.el --- Haskell support -*- lexical-binding: t; -*-
+;;; haskell-lang.el --- Haskell support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: haskell-language-server (HLS)
 ;;   ghcup install hls
@@ -16,5 +16,5 @@
   :custom
   (haskell-indentation-electric-flag t))
 
-(provide 'haskell-extension)
-;;; haskell-extension.el ends here
+(provide 'haskell-lang)
+;;; haskell-lang.el ends here

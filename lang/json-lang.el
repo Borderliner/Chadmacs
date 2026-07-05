@@ -1,4 +1,4 @@
-;;; json-extension.el --- JSON / JSONC support -*- lexical-binding: t; -*-
+;;; json-lang.el --- JSON / JSONC support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary:
 ;;   npm install -g vscode-langservers-extracted   ;; provides vscode-json-language-server
@@ -13,5 +13,5 @@
   :custom
   (json-ts-mode-indent-offset 2))
 
-(provide 'json-extension)
-;;; json-extension.el ends here
+(provide 'json-lang)
+;;; json-lang.el ends here

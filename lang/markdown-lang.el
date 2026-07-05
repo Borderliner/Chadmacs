@@ -1,4 +1,4 @@
-;;; markdown-extension.el --- Markdown writing setup -*- lexical-binding: t; -*-
+;;; markdown-lang.el --- Markdown writing setup -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary (optional, useful for note-taking with cross-links):
 ;;   cargo install marksman
@@ -22,5 +22,5 @@
   (markdown-header-scaling t)
   (markdown-asymmetric-header t))
 
-(provide 'markdown-extension)
-;;; markdown-extension.el ends here
+(provide 'markdown-lang)
+;;; markdown-lang.el ends here

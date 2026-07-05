@@ -1,4 +1,4 @@
-;;; ocaml-extension.el --- OCaml / Reason support -*- lexical-binding: t; -*-
+;;; ocaml-lang.el --- OCaml / Reason support -*- lexical-binding: t; -*-
 ;;
 ;; LSP binary: ocaml-lsp
 ;;   opam install ocaml-lsp-server
@@ -13,5 +13,5 @@
   :ensure t
   :after tuareg)
 
-(provide 'ocaml-extension)
-;;; ocaml-extension.el ends here
+(provide 'ocaml-lang)
+;;; ocaml-lang.el ends here
