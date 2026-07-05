@@ -1,4 +1,9 @@
 var/
+# Native-comp cache and package.el dir live under var/ (see early-init.el).
+# Ignore any strays that land in the repo root anyway (e.g. from `emacs -Q',
+# which skips early-init.el and its redirects).
+/eln-cache/
+/elpa/
 custom.el
 *.elc
 *~
