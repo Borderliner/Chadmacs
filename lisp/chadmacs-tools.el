@@ -23,6 +23,13 @@
   (setq projectile-indexing-method 'alien)
   (setq projectile-enable-caching t)
 
+  ;; Persist the file-frecency history under var/ instead of the repo root.
+  ;; `projectile-frecency-file' defaults to `user-emacs-directory', which
+  ;; drops projectile-frecency.eld right next to init.el; var/ is where all
+  ;; other generated state lives (and is gitignored).
+  (setq projectile-frecency-file
+        (expand-file-name "projectile-frecency.eld" my/var-dir))
+
   ;; Standard key prefix
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
