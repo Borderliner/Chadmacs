@@ -49,8 +49,26 @@
   (define-key my/easysession-map (kbd "d") '("delete"     . easysession-delete))
   (global-set-key (kbd "C-c s") my/easysession-map)
 
-  ;; Auto-load last session on startup
+  ;; Auto-load last session on startup...
   (setq easysession-setup-load-session t)
+
+  ;; ...but only for a "bare" `emacs' launch. When Emacs is started with a
+  ;; file argument (e.g. `emacs -nw foo.txt'), restoring the previous
+  ;; session's saved window layout buries that file in a tiny one-line split
+  ;; under *scratch* / the last session buffer. Skip the restore in that case
+  ;; so the file you asked for owns the frame.
+  ;;
+  ;; Detection must use `command-line-args', NOT the buffer list: under Elpaca,
+  ;; easysession restores on `elpaca-after-init-hook', which fires *before*
+  ;; `command-line-1' visits the file, so at predicate time no file-visiting
+  ;; buffer exists yet. `command-line-args' still holds the filename here
+  ;; (`-nw' and friends are already stripped by C), so a non-option argument
+  ;; means "a file was passed -> don't restore". Bare `emacs' has no such
+  ;; argument and still restores the full session.
+  (setq easysession-setup-load-predicate
+        (lambda ()
+          (not (seq-some (lambda (arg) (not (string-prefix-p "-" arg)))
+                         (cdr command-line-args)))))
 
   (with-eval-after-load 'easysession
     (require 'easysession-scratch)

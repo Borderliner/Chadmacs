@@ -211,7 +211,14 @@ on some Elpaca builds (\"failed to define function ...\")."
   :ensure (corfu-terminal :host nil
                           :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
   :after (corfu popon)
-  :unless (display-graphic-p)
+  ;; Only needed on TTY Emacs *older than 31*. Emacs 31 renders child frames
+  ;; natively in the terminal, so corfu's own popup already works there.
+  ;; Loading corfu-terminal on Emacs 31 just emits a `display-warning'
+  ;; ("`corfu-terminal' is not needed on Emacs 31"), which pops up *Warnings*
+  ;; during startup. That popup splits the initial frame, so a file opened
+  ;; with `emacs -nw FILE' lands in a tiny split under *scratch* instead of
+  ;; owning the frame. Skip it on 31+ to keep startup single-window.
+  :unless (or (display-graphic-p) (>= emacs-major-version 31))
   :config
   (corfu-terminal-mode 1))
 
