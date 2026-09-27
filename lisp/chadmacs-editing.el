@@ -83,6 +83,17 @@
     (easysession-magit-mode 1))
   (easysession-setup)
 
+  ;; Outside a daemon, easysession-setup restores the session from
+  ;; `elpaca-after-init-hook', which fires inside `after-init-hook' - before
+  ;; Emacs has set up a text terminal or applied the frame parameters - and
+  ;; the saved window layout was lost there (every `emacs -nw' came back as
+  ;; a single window). Restore from `window-setup-hook' instead, the last
+  ;; startup hook, once the frame is fully initialized. The daemon path
+  ;; (server-after-make-frame-hook) is left as is.
+  (unless (daemonp)
+    (remove-hook 'elpaca-after-init-hook #'easysession--setup-load-session)
+    (add-hook 'window-setup-hook #'easysession--setup-load-session))
+
   ;; When easysession restores a real session, suppress dashboard so the
   ;; restored buffers stay visible instead of being shadowed by the splash.
   (add-hook 'easysession-after-load-hook
