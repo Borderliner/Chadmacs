@@ -47,11 +47,12 @@ exists."
                        (funcall fn)))))
       (add-hook 'server-after-make-frame-hook once))))
 
-;; Mouse in terminal
-(unless (display-graphic-p)
-  (xterm-mouse-mode 1)
-  (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-  (global-set-key (kbd "<mouse-5>") 'scroll-up-line))
+;; Mouse in terminal frames. `xterm-mouse-mode' only acts on text
+;; terminals, so it is enabled unconditionally - a load-time
+;; `display-graphic-p' check skipped it under a daemon, leaving
+;; `emacsclient -t' frames without mouse support. The wheel needs no extra
+;; bindings: mwheel handles it (xterm-mouse reports wheel-up / wheel-down).
+(xterm-mouse-mode 1)
 
 ;; Disable all GUI chrome
 (tool-bar-mode -1)
