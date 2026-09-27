@@ -31,11 +31,12 @@
   '((t :inherit font-lock-comment-face))
   "Fallback face for truncation and wrap glyphs.")
 
-(when (display-graphic-p)
-  (set-display-table-slot standard-display-table 'truncation
-                          (make-glyph-code ?… 'my-fallback-glyph))
-  (set-display-table-slot standard-display-table 'wrap
-                          (make-glyph-code ?↩ 'my-fallback-glyph)))
+(my/when-graphical
+ (lambda ()
+   (set-display-table-slot standard-display-table 'truncation
+                           (make-glyph-code ?… 'my-fallback-glyph))
+   (set-display-table-slot standard-display-table 'wrap
+                           (make-glyph-code ?↩ 'my-fallback-glyph))))
 
 ;; No ugly widget buttons (nice with custom themes)
 (setq widget-image-enable nil)
@@ -128,9 +129,7 @@ Set it in custom.el.")
       (message "Chadmacs: font %S is not installed" my/font))))
 
 (add-hook 'after-init-hook
-          (lambda ()
-            (when (display-graphic-p)
-              (my/apply-font))))
+          (lambda () (my/when-graphical #'my/apply-font)))
 
 ;; --------------------------------------------------------------- Theme --
 

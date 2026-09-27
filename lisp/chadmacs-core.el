@@ -30,6 +30,23 @@
 ;; Org
 (setq org-return-follows-link t)
 
+;; Graphical-only setup. A daemon runs its init files before any frame
+;; exists, so `display-graphic-p' checked at load time is always nil there
+;; and GUI-only setup never reached `emacsclient -c' frames. Route such
+;; setup through this instead.
+(defun my/when-graphical (fn)
+  "Call FN now if the selected frame is graphical, else on the first one.
+Under a daemon, init runs without any graphical frame; FN then runs from
+`server-after-make-frame-hook' once the first graphical client frame
+exists."
+  (if (display-graphic-p)
+      (funcall fn)
+    (letrec ((once (lambda ()
+                     (when (display-graphic-p)
+                       (remove-hook 'server-after-make-frame-hook once)
+                       (funcall fn)))))
+      (add-hook 'server-after-make-frame-hook once))))
+
 ;; Mouse in terminal
 (unless (display-graphic-p)
   (xterm-mouse-mode 1)

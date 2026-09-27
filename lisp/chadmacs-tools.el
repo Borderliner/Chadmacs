@@ -71,14 +71,21 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
   (setq flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (global-flycheck-mode))
 
+;; Child-frame popups need a graphical frame. Decided per buffer rather than
+;; once at load time, so daemon sessions (no frame while init runs) still
+;; get them in `emacsclient -c' frames.
+(defun my/flycheck-posframe-maybe ()
+  "Enable `flycheck-posframe-mode' when on a graphical frame."
+  (when (display-graphic-p)
+    (flycheck-posframe-mode 1)))
+
 (use-package flycheck-posframe
   :ensure t
   :after flycheck
-  :if (display-graphic-p)
   :init
   (setq flycheck-posframe-border-width 16)
   :config
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)
+  (add-hook 'flycheck-mode-hook #'my/flycheck-posframe-maybe)
   (flycheck-posframe-configure-pretty-defaults))
 
 ;; --------------------------------------------------------------- LSP --
@@ -377,13 +384,19 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 
 ;; -------------------------------------------------------- Eldoc UI --
 
+;; Like flycheck-posframe above: child frames, so graphical frames only,
+;; decided per buffer so it works for daemon client frames too.
+(defun my/eldoc-box-hover-maybe ()
+  "Enable `eldoc-box-hover-mode' when on a graphical frame."
+  (when (display-graphic-p)
+    (eldoc-box-hover-mode 1)))
+
 (use-package eldoc-box
   :ensure t
-  :if (display-graphic-p)
   :bind
   (("C-<prior>" . eldoc-box-scroll-down)
    ("C-<next>"  . eldoc-box-scroll-up))
-  :hook (prog-mode . eldoc-box-hover-mode)
+  :hook (prog-mode . my/eldoc-box-hover-maybe)
   :config
   (when (fboundp 'doom-color)
     (set-face-attribute 'eldoc-box-border nil
