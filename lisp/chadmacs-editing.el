@@ -94,12 +94,15 @@
     (remove-hook 'elpaca-after-init-hook #'easysession--setup-load-session)
     (add-hook 'window-setup-hook #'easysession--setup-load-session))
 
-  ;; When easysession restores a real session, suppress dashboard so the
-  ;; restored buffers stay visible instead of being shadowed by the splash.
+  ;; When easysession restores a real session, drop the dashboard so it
+  ;; doesn't linger behind the restored buffers - unless the restored
+  ;; layout itself shows it (a session saved while on the dashboard), in
+  ;; which case killing it would leave *scratch* in its place.
   (add-hook 'easysession-after-load-hook
             (lambda ()
               (when-let* ((db (get-buffer "*dashboard*")))
-                (kill-buffer db)))))
+                (unless (get-buffer-window db t)
+                  (kill-buffer db))))))
 
 ;; ------------------------------------------------------------ Snippets --
 
