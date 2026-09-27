@@ -11,7 +11,11 @@
   :init
   (add-hook 'clojure-mode-hook #'yas-minor-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  (add-hook 'clojure-mode-hook #'paredit-mode)
+  ;; Structural editing via smartparens strict mode, as in every other
+  ;; Lisp buffer (paredit-style keys come with it - see
+  ;; chadmacs-editing.el). Running paredit-mode on top of the
+  ;; prog-mode-wide smartparens-mode left two pair managers fighting.
+  (add-hook 'clojure-mode-hook #'smartparens-strict-mode)
   (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'clojure-mode-hook #'eldoc-mode)
   (add-hook 'clojure-mode-hook #'idle-highlight-mode)
