@@ -574,11 +574,16 @@ Custom C# recipe included.
 
 ### Change Font
 
-Inside `lisp/chadmacs-ui.el`:
+In `custom.el` (`:height` is 1/10 pt, so 140 = 14pt):
 
 ```elisp
-(set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 110)
+(setq my/font "JetBrainsMono Nerd Font"
+      my/font-height 140)
 ```
+
+Leave `my/font` unset to use the first installed JetBrainsMono Nerd Font
+variant. Chadmacs applies the font after `custom.el` loads, so don't call
+`set-face-attribute` there - it would be overridden.
 
 ### Change Theme
 

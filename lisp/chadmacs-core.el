@@ -351,10 +351,12 @@ the project context and browse the filesystem freely."
 ;; e.g. (setq user-full-name \"Jane Doe\")
 
 ;; --- Font ---
-;; set-face-attribute's 2nd arg is the FRAME (nil = all frames); the font
-;; itself goes through :font, and :height is 1/10 pt (140 = 14pt). Point it
-;; at a font installed on your system, then uncomment:
-;; (set-face-attribute 'default nil :font \"JetBrainsMono Nerd Font\" :height 140)
+;; Chadmacs applies these after this file loads (a plain set-face-attribute
+;; here would be overridden). :height is 1/10 pt (140 = 14pt). With
+;; my/font left nil, the first installed JetBrainsMono Nerd Font variant
+;; is used. Point it at a font installed on your system, then uncomment:
+;; (setq my/font \"JetBrainsMono Nerd Font\"
+;;       my/font-height 140)
 
 ;; --- Theme ---
 ;; Chadmacs enables doom-monokai-pro. To use a different theme, load it AFTER

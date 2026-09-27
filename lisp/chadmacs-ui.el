@@ -92,6 +92,46 @@
     (nano-modeline-mode -1))
   (doom-modeline-mode 1))
 
+;; ---------------------------------------------------------------- Font --
+
+;; The default font is applied from `after-init-hook', i.e. after custom.el
+;; (loaded at the end of init.el), so the two variables below can be set
+;; there. It used to be set from doom-themes' :config, which Elpaca runs
+;; after init - silently overriding any font chosen in custom.el.
+(defvar my/font nil
+  "Default font family, e.g. \"Iosevka\".
+When nil, use the first installed variant in `my/font-candidates'.
+Set it in custom.el.")
+
+(defvar my/font-height 110
+  "Height of the default face in 1/10 pt (110 = 11pt).
+Set it in custom.el.")
+
+;; Different packagers use different family names for the same font -
+;; nerd-fonts upstream calls it "JetBrainsMono Nerd Font", but Ubuntu's apt
+;; package and Homebrew's tap label it "JetBrainsMono NF", and a few
+;; packagers strip spaces.
+(defconst my/font-candidates
+  '("JetBrainsMono Nerd Font"
+    "JetBrainsMono NF"
+    "JetBrainsMonoNerdFont"
+    "JetBrains Mono Nerd Font"
+    "JetBrainsMono Nerd Font Mono")
+  "Font families tried in order when `my/font' is nil.")
+
+(defun my/apply-font ()
+  "Set the default face to `my/font' (or a candidate) at `my/font-height'."
+  (if-let* ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
+                            (if my/font (list my/font) my/font-candidates))))
+      (set-face-attribute 'default nil :font font :height my/font-height)
+    (when my/font
+      (message "Chadmacs: font %S is not installed" my/font))))
+
+(add-hook 'after-init-hook
+          (lambda ()
+            (when (display-graphic-p)
+              (my/apply-font))))
+
 ;; --------------------------------------------------------------- Theme --
 
 (use-package doom-themes
@@ -102,20 +142,7 @@
   :config
   (load-theme 'doom-monokai-pro t)
   (doom-themes-treemacs-config)
-  (doom-themes-org-config)
-  ;; Pick the first installed JetBrainsMono variant. Different packagers
-  ;; use different family names - nerd-fonts upstream calls it
-  ;; "JetBrainsMono Nerd Font", but Ubuntu's apt package and Homebrew's
-  ;; tap label it "JetBrainsMono NF", and a few packagers strip spaces.
-  (when (display-graphic-p)
-    (let ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
-                          '("JetBrainsMono Nerd Font"
-                            "JetBrainsMono NF"
-                            "JetBrainsMonoNerdFont"
-                            "JetBrains Mono Nerd Font"
-                            "JetBrainsMono Nerd Font Mono"))))
-      (when font
-        (set-face-attribute 'default nil :font font :height 110)))))
+  (doom-themes-org-config))
 
 ;; ----------------------------------------------------------- Dashboard --
 
