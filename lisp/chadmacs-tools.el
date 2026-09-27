@@ -257,6 +257,22 @@
   (advice-add 'treesit-install-language-grammar
               :around #'my/treesit-install-redirect)
 
+  ;; With `treesit-auto-install' set to `prompt', opening a file whose
+  ;; grammar is missing asks with `y-or-n-p'. When there is no terminal to
+  ;; ask on - a daemon restoring the session before any client connects,
+  ;; `emacsclient --eval', batch - that question blocks Emacs for good.
+  ;; Skip the offer there; it comes back the next time the file is opened
+  ;; from a real frame.
+  (defun my/treesit-auto-prompt-only-with-terminal (orig-fn &rest args)
+    "Call ORIG-FN with ARGS unless its prompt could never be answered."
+    (unless (and (eq treesit-auto-install 'prompt)
+                 (or noninteractive
+                     (equal (terminal-name) "initial_terminal")))
+      (apply orig-fn args)))
+
+  (advice-add 'treesit-auto--prompt-to-install-package
+              :around #'my/treesit-auto-prompt-only-with-terminal)
+
   (setq treesit-extra-load-path (list my/treesit-dir))
 
   ;; Custom C# tree-sitter recipe (the default points at the wrong subdir).
