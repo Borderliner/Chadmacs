@@ -310,8 +310,12 @@ cmd_treesit_clean() {
     return 0
   fi
 
+  # Grammar libraries use the platform's shared-library suffix.
+  local -a grammar_match=( -maxdepth 1 -type f \(
+    -name 'libtree-sitter-*.so' -o -name 'libtree-sitter-*.dylib'
+    -o -name 'libtree-sitter-*.dll' \) )
   local count
-  count=$(find "$ts_dir" -maxdepth 1 -name 'libtree-sitter-*.so' 2>/dev/null | wc -l)
+  count=$(find "$ts_dir" "${grammar_match[@]}" 2>/dev/null | wc -l)
   if [ "$count" -eq 0 ]; then
     ok "No grammars to clean."
     return 0
@@ -325,7 +329,7 @@ cmd_treesit_clean() {
     exit 1
   fi
 
-  rm -f "$ts_dir"/libtree-sitter-*.so
+  find "$ts_dir" "${grammar_match[@]}" -delete
   ok "Deleted $count grammar(s)."
   info "Open a source file in Emacs and treesit-auto will reinstall at the"
   info "ABI-14-compatible revisions pinned by Chadmacs."
