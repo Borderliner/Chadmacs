@@ -30,7 +30,7 @@
         cider-prompt-save-file-on-load 'always-save
         cider-font-lock-dynamically '(macro core function var)
         nrepl-hide-special-buffers t
-        cider-overlays-use-font-lock t
+        cider-eval-result-font-lock 'clojure
         ;; Set explicitly: `cider-repl-toggle-pretty-printing' flips the
         ;; current value, and since CIDER already defaults to t, calling it
         ;; here turned pretty-printing *off*.
