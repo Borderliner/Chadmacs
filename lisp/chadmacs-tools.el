@@ -43,7 +43,7 @@
   (defun my/projectile-project-find-function (dir)
     "Identify Projectile-managed projects for project.el.
 Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
-    (when-let ((root (projectile-project-root dir)))
+    (when-let* ((root (projectile-project-root dir)))
       (cons 'transient root)))
 
   (add-to-list 'project-find-functions #'my/projectile-project-find-function))
@@ -327,8 +327,8 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
                                      ; "tree-sitter.json for CLI 0.25" bump
            (make       . "main"))))  ; alemuller/tree-sitter-make stable since 2022
     (dolist (recipe treesit-auto-recipe-list)
-      (when-let ((pin (alist-get (treesit-auto-recipe-lang recipe)
-                                 abi14-pins)))
+      (when-let* ((pin (alist-get (treesit-auto-recipe-lang recipe)
+                                  abi14-pins)))
         (setf (treesit-auto-recipe-abi14-revision recipe) pin))))
 
   ;; The remaining warning-list languages stay out of `treesit-auto-langs'.

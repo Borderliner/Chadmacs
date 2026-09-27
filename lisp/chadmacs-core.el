@@ -181,7 +181,6 @@ since this may run before the file is visited."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse
       uniquify-separator " • "
-      uniquify-after-kill-buffer-p t
       uniquify-ignore-buffers-re "^\\*")
 
 ;; Kill terminal buffer when the process exits

@@ -77,7 +77,7 @@
   ;; restored buffers stay visible instead of being shadowed by the splash.
   (add-hook 'easysession-after-load-hook
             (lambda ()
-              (when-let ((db (get-buffer "*dashboard*")))
+              (when-let* ((db (get-buffer "*dashboard*")))
                 (kill-buffer db)))))
 
 ;; ------------------------------------------------------------ Snippets --
