@@ -42,11 +42,13 @@
   :after (cider clojure-mode)
   :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
+;; Enabled from clojure-mode-hook above only. It used to hook every
+;; prog-mode and text-mode buffer, so turning on Clojure support changed
+;; all other languages too.
 (use-package idle-highlight-mode
   :ensure t
-  :config (setq idle-highlight-idle-time 0.2)
-
-  :hook ((prog-mode text-mode) . idle-highlight-mode))
+  :defer t
+  :config (setq idle-highlight-idle-time 0.2))
 
 (provide 'clojure-lang)
 ;;; clojure-lang.el ends here
