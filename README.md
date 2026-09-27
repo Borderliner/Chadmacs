@@ -105,7 +105,7 @@ Modern. Fast. Cohesive.
 
 ## 📝 Editing Enhancements
 
-* undo-fu + session persistence
+* undo-fu-session (undo history persisted across restarts)
 * vundo (visual undo tree)
 * Yasnippet
 * Strip trailing whitespace

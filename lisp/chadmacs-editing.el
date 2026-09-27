@@ -8,16 +8,14 @@
 
 ;; -------------------------------------------------------------- Undo --
 
-(use-package undo-fu
-  :ensure t)
-
+;; Undo / redo are stock Emacs (C-/ undo, C-? / C-M-_ undo-redo).
+;; undo-fu-session persists each file's undo history across restarts.
 (use-package undo-fu-session
   :ensure t
-  :after undo-fu
   :config
   (undo-fu-session-global-mode))
 
-;; Visual undo tree on top of undo-fu
+;; Visual undo tree
 (use-package vundo
   :ensure t
   :commands vundo
