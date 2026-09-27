@@ -297,10 +297,9 @@ Consult's standard binds. `M-s` is "search across", `M-g` is "go to".
 | `M-/`           | completion-at-point                             |
 | `M-;`           | comment line / region (Emacs default)           |
 | `C-=`           | Expand region                                   |
-| `C--`           | Contract region                                 |
+| `C-=` then `-`  | Contract region (expand-region repeat key)      |
 | `M-<up>` `M-<down>` | Move line / region                          |
 | `C-S-k`         | Kill whole line (crux)                          |
-| `C-<backspace>` | Kill line backwards (crux)                      |
 | `C-c d`         | Duplicate line / region (crux)                  |
 | `C-c o`         | Open line below (crux)                          |
 | `C-c O`         | Open line above (crux)                          |
@@ -508,7 +507,7 @@ Eglot diagnostics flow into Flycheck via `flycheck-eglot`.
 
 | Key         | Action                  |
 | ----------- | ----------------------- |
-| `M-0`       | Select treemacs window  |
+| `C-c T s`   | Select treemacs window  |
 | `C-c T t`   | Toggle treemacs         |
 | `C-c T 1`   | Delete other windows    |
 | `C-c T d`   | Select directory        |

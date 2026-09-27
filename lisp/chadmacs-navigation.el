@@ -20,19 +20,18 @@
              treemacs-bookmark
              treemacs-find-file
              treemacs-find-tag)
-  ;; Treemacs prefix moved to C-c T to avoid clobbering tab-bar's C-x t map
+  ;; Treemacs prefix moved to C-c T to avoid clobbering tab-bar's C-x t map.
+  ;; Window selection lives there too (C-c T s) rather than on M-0, which
+  ;; stays stock `digit-argument'.
   :bind
   (:map global-map
-        ("M-0"       . treemacs-select-window)
+        ("C-c T s"   . treemacs-select-window)
         ("C-c T 1"   . treemacs-delete-other-windows)
         ("C-c T t"   . treemacs)
         ("C-c T d"   . treemacs-select-directory)
         ("C-c T B"   . treemacs-bookmark)
         ("C-c T C-t" . treemacs-find-file)
         ("C-c T M-t" . treemacs-find-tag))
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
   (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
         treemacs-deferred-git-apply-delay        0.5

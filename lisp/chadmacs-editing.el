@@ -173,10 +173,12 @@
 
 ;; ------------------------------------------------- Selection & jumping --
 
+;; Contract with `-' right after C-= (expand-region's repeat keys: `=' grows,
+;; `-' shrinks, `0' resets) or with C-- C-=. `C--' itself stays
+;; `negative-argument', as in stock Emacs.
 (use-package expand-region
   :ensure t
-  :bind (("C-=" . er/expand-region)
-         ("C--" . er/contract-region)))
+  :bind ("C-=" . er/expand-region))
 
 (use-package avy
   :ensure t
@@ -207,7 +209,8 @@
   :bind (("M-<up>"   . move-text-up)
          ("M-<down>" . move-text-down)))
 
-;; QoL: smart C-a, duplicate-line, open-line, kill-line-backwards, file ops
+;; QoL: smart C-a, duplicate-line, open-line, file ops. C-<backspace> stays
+;; stock `backward-kill-word'; kill to line start with C-0 C-k.
 (use-package crux
   :ensure t
   :bind (("C-a"           . crux-move-beginning-of-line)
@@ -216,8 +219,7 @@
          ("C-c r"         . crux-rename-file-and-buffer)
          ("C-c o"         . crux-smart-open-line)
          ("C-c O"         . crux-smart-open-line-above)
-         ("C-S-k"         . crux-kill-whole-line)
-         ("C-<backspace>" . crux-kill-line-backwards)))
+         ("C-S-k"         . crux-kill-whole-line)))
 
 (use-package multiple-cursors
   :ensure t
