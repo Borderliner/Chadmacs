@@ -191,12 +191,12 @@ since this may run before the file is visited."
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
 
 ;; M-n for new frame (M-n is unbound in vanilla emacs)
-(defun new-frame ()
-  "\\<M-n> for new frame (\\<M-n> is unbound in vanilla Emacs)."
+(defun my/new-frame ()
+  "Open a new frame showing *scratch*."
   (interactive)
   (select-frame (make-frame))
   (switch-to-buffer "*scratch*"))
-(global-set-key (kbd "M-n") 'new-frame)
+(global-set-key (kbd "M-n") #'my/new-frame)
 (global-set-key (kbd "M-`") 'other-frame)
 (global-set-key (kbd "<M-return>") #'toggle-frame-fullscreen)
 
