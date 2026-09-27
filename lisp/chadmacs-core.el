@@ -2,9 +2,9 @@
 ;;
 ;; Commentary:
 ;;   Core defaults that should hold before any UI or package is initialised:
-;;   coding system, GUI chrome, modern editing knobs, persistence redirects
-;;   (everything under ~/.emacs.d/var/), and the small set of optimisation
-;;   packages (gcmh, exec-path-from-shell, no-littering).
+;;   coding system, GUI chrome, modern editing knobs, persistence (every
+;;   state file under var/, via no-littering), and the small set of
+;;   optimisation packages (gcmh, exec-path-from-shell).
 ;;
 ;;; Code:
 
@@ -215,68 +215,26 @@ filesystem freely."
 
 ;; ------------------------------------------------------------ Persistence --
 
-;; Backups (~)
+;; no-littering decides where every package keeps its state (minibuffer
+;; history, recentf, save-place, bookmarks, tramp, transient, projectile,
+;; eshell, url, ...) - all under var/. It `setq's those paths the moment
+;; it loads, so it must be loaded *before* any mode reads its file below.
+;; Under Elpaca a plain `use-package' only loads after init, which let
+;; savehist/recentf read one file and later save to another: every
+;; session started with empty history. `:ensure (:wait t)' makes Elpaca
+;; install and load it right here instead.
+(use-package no-littering
+  :ensure (:wait t)
+  :demand t
+  :init
+  (setq no-littering-etc-directory (expand-file-name "etc/" my/var-dir)
+        no-littering-var-directory my/var-dir))
+
+;; Backups (~) and auto-saves (#) - no-littering leaves these alone
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backup/" my/var-dir))))
-
-;; Auto-saves (#)
 (setq auto-save-file-name-transforms
       `((".*" ,(expand-file-name "auto-save/" my/var-dir) t)))
-(setq auto-save-list-file-prefix
-      (expand-file-name "auto-save/.saves-" my/var-dir))
-
-;; Savehist (minibuffer history)
-(setq savehist-file (expand-file-name "history" my/var-dir))
-(savehist-mode 1)
-
-;; Recentf (recent files/places)
-(setq recentf-save-file (expand-file-name "recentf" my/var-dir))
-(recentf-mode 1)
-
-;; Save-place (cursor positions in files)
-(setq save-place-file (expand-file-name "places" my/var-dir))
-(save-place-mode 1)
-
-;; Bookmarks
-(setq bookmark-default-file (expand-file-name "bookmarks" my/var-dir))
-(setq bookmark-save-flag 1)
-
-;; Tramp (remote connections)
-(setq tramp-persistency-file-name (expand-file-name "tramp" my/var-dir))
-(setq tramp-histfile-override (expand-file-name "tramp-history" my/var-dir))
-
-;; Project list
-(setq project-list-file (expand-file-name "projects" my/var-dir))
-
-;; undo-fu session
-(setq undo-fu-session-directory
-      (expand-file-name "undo-fu-session/" my/var-dir))
-
-;; Eshell
-(setq eshell-directory-name (expand-file-name "eshell/" my/var-dir))
-
-;; Transient persistence files
-(let ((transient-dir (expand-file-name "transient/" my/var-dir)))
-  (setq transient-history-file (expand-file-name "history.el" transient-dir)
-        transient-levels-file  (expand-file-name "levels.el" transient-dir)
-        transient-values-file  (expand-file-name "values.el" transient-dir)))
-
-;; Projectile state
-(setq projectile-cache-file
-      (expand-file-name "projectile.cache" my/var-dir))
-(setq projectile-known-projects-file
-      (expand-file-name "projectile-bookmarks.eld" my/var-dir))
-
-;; Yasnippet user-snippet dir (consumed by chadmacs-editing.el)
-(defvar my/yas-user-snippet-dir (expand-file-name "snippets" my/var-dir))
-
-;; Catch-all redirects for other state files that some packages write to
-;; ~/.emacs.d/ by default. Setting them up front prevents future leaks.
-(setq url-configuration-directory (expand-file-name "url/" my/var-dir))
-(setq nsm-settings-file           (expand-file-name "network-security.data" my/var-dir))
-(setq package-quickstart-file     (expand-file-name "package-quickstart.el" my/var-dir))
-(with-eval-after-load 'request
-  (setq request-storage-directory (expand-file-name "request/" my/var-dir)))
 
 ;; Backup retention policy
 (setq backup-by-copying t
@@ -284,6 +242,21 @@ filesystem freely."
       kept-new-versions 6
       kept-old-versions 2
       version-control t)
+
+;; Minibuffer history, recent files, cursor positions (files under var/,
+;; placed by no-littering above)
+(savehist-mode 1)
+(recentf-mode 1)
+(save-place-mode 1)
+
+;; Save bookmarks on every change
+(setq bookmark-save-flag 1)
+
+;; Tramp's remote shell history (no-littering doesn't redirect this one)
+(setq tramp-histfile-override (expand-file-name "tramp-history" my/var-dir))
+
+;; Yasnippet user-snippet dir (consumed by chadmacs-editing.el)
+(defvar my/yas-user-snippet-dir (expand-file-name "snippets" my/var-dir))
 
 ;; Make the lang directory loadable (language-specific files)
 (add-to-list 'load-path (expand-file-name "lang" user-emacs-directory))
@@ -423,14 +396,6 @@ can enable per-language support without touching upstream files."
   :defer 1
   :config
   (exec-path-from-shell-initialize))
-
-;; Standardize package state paths under var/ (used by future packages)
-(use-package no-littering
-  :ensure t
-  :demand t
-  :init
-  (setq no-littering-etc-directory (expand-file-name "etc/" my/var-dir)
-        no-littering-var-directory my/var-dir))
 
 (provide 'chadmacs-core)
 ;;; chadmacs-core.el ends here
