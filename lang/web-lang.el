@@ -17,10 +17,11 @@
   :mode "\\.css\\'"
   :hook (css-ts-mode . eglot-ensure))
 
-;; SCSS - scss-mode is third-party but lightweight
-(use-package scss-mode
-  :ensure t
-  :mode "\\.scss\\'"
+;; SCSS - `scss-mode' is built in (css-mode.el, derived from css-mode). The
+;; old MELPA package of the same name would shadow it, so don't install it.
+(use-package css-mode
+  :ensure nil
+  :mode ("\\.scss\\'" . scss-mode)
   :hook (scss-mode . eglot-ensure))
 
 ;; web-mode for templating files (.erb, .hbs, .vue, mixed-content .html)
