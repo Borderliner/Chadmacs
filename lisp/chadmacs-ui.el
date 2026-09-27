@@ -390,10 +390,8 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
   (prog-mode . diff-hl-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh)
   :init
-  (setq diff-hl-flydiff-delay 0.4)
   (setq diff-hl-show-staged-changes nil)
-  (setq diff-hl-update-async t)
-  (setq diff-hl-global-modes '(not pdf-view-mode image-mode)))
+  (setq diff-hl-update-async t))
 
 ;; Visible indicators for page breaks
 (use-package page-break-lines
