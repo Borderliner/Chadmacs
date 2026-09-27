@@ -131,11 +131,28 @@ cmd_update() {
   git pull --ff-only
 
   hdr "Updating Elpaca packages"
-  info "Launching Emacs in batch to run elpaca-update-all..."
-  emacs --batch -l "$CHADMACS_DIR/early-init.el" -l "$CHADMACS_DIR/init.el" \
-    --eval '(when (fboundp (quote elpaca-fetch-all)) (elpaca-fetch-all))' \
-    --eval '(when (fboundp (quote elpaca-process-queues)) (elpaca-process-queues))' \
-    2>&1 | tail -40 || warn "Elpaca update returned non-zero; run M-x elpaca-manager in Emacs to inspect."
+  info "Launching Emacs in batch to fetch, merge and rebuild every package..."
+  # Elpaca is asynchronous: every step has to be followed by `elpaca-wait',
+  # otherwise batch Emacs exits (killing the git processes) as soon as the
+  # last --eval returns. `elpaca-after-init-hook' is cleared first so the
+  # batch run doesn't restore your session or open the dashboard.
+  if emacs --batch -l "$CHADMACS_DIR/early-init.el" -l "$CHADMACS_DIR/init.el" \
+       --eval '(progn
+                 (setq elpaca-after-init-hook nil)
+                 (elpaca-wait)
+                 (elpaca-pull-all t)
+                 (elpaca-wait)
+                 (let ((failed (cl-loop for (id . e) in (elpaca--queued)
+                                        when (eq (elpaca<-status e) (quote failed))
+                                        collect id)))
+                   (when failed
+                     (message "Failed to update: %S" (delete-dups failed))
+                     (kill-emacs 1))))' \
+       2>&1 | tail -40; then
+    ok "Elpaca packages updated."
+  else
+    warn "Elpaca update reported failures; run M-x elpaca-manager in Emacs to inspect."
+  fi
 
   ok "Chadmacs is up to date."
   info "Restart Emacs and watch *elpaca-log* for any build failures."
