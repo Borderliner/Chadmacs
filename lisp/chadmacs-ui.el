@@ -23,9 +23,9 @@
 (setq-default right-fringe-width 1)
 
 ;; Fallback glyph for truncation/wrap (clean look). Family is intentionally
-;; left unset; the actual JetBrainsMono variant is detected at theme-load
-;; time below and applied to the default face. Inheriting from
-;; font-lock-comment-face is enough to render the glyph in the right tone.
+;; left unset: the glyph uses the default face's font, which is chosen by
+;; `my/apply-font' below. Inheriting from font-lock-comment-face is enough
+;; to render the glyph in the right tone.
 (require 'disp-table)
 (defface my-fallback-glyph
   '((t :inherit font-lock-comment-face))
