@@ -35,10 +35,12 @@
 ;;;;;;;;; UI ;;;;;;;;;;;;;;;
 
 ;; Disable GUI chrome *before* the initial frame is created
-;; (no flash, works reliably even with themes/packages)
+;; (no flash, works reliably even with themes/packages). The only place
+;; this is done; tool-bar / scroll-bar modes are guarded because builds
+;; without GUI support may not define them.
 (menu-bar-mode 0)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
+(when (fboundp 'tool-bar-mode)   (tool-bar-mode 0))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
 
 ;; Also set frame parameters (extra safety for the very first frame)
 (add-to-list 'default-frame-alist '(menu-bar-lines . 0))

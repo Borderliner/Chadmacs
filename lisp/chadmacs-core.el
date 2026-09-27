@@ -54,12 +54,6 @@ exists."
 ;; bindings: mwheel handles it (xterm-mouse reports wheel-up / wheel-down).
 (xterm-mouse-mode 1)
 
-;; Disable all GUI chrome
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-
 ;; y/n instead of yes/no
 (setq use-short-answers t)
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -329,9 +323,6 @@ the project context and browse the filesystem freely."
 
 ;; Yasnippet user-snippet dir (consumed by chadmacs-editing.el)
 (defvar my/yas-user-snippet-dir (expand-file-name "snippets" my/var-dir))
-
-;; Make the lang directory loadable (language-specific files)
-(add-to-list 'load-path (expand-file-name "lang" user-emacs-directory))
 
 (defconst my/custom-file-template
   ";;; custom.el --- Your Chadmacs overrides -*- no-byte-compile: t; lexical-binding: t; -*-
