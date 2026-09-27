@@ -160,24 +160,27 @@ rather than the buffer list, since this may run before the file is visited."
 ;; Smart find-file:
 ;; - In a project (detected by walking up for .projectile, .git, or any
 ;;   Projectile root): flat fuzzy list of every file via
-;;   `consult-projectile-find-file'. Type "index.html" -> matches
-;;   "client/index.html".
+;;   `projectile-find-file'. Type "index.html" -> matches
+;;   "client/index.html". Input that matches no file visits it as a new
+;;   file relative to the project root, so C-x C-f still creates files.
+;;   (`consult-projectile-find-file' silently ignores such input.)
 ;; - Outside a project: regular `find-file' so you can browse the
 ;;   filesystem directory by directory.
 (defun my/smart-find-file (&optional arg)
   "Find file: project-wide flat fuzzy list inside a project, `find-file' otherwise.
-With a prefix argument ARG (\\[universal-argument]), always use plain
-`find-file' so you can escape the project context and browse the
-filesystem freely."
+Inside a project, input that matches no existing file creates that file
+relative to the project root.  With a prefix argument ARG
+(\\[universal-argument]), always use plain `find-file' so you can escape
+the project context and browse the filesystem freely."
   (interactive "P")
   (let* ((dir (or default-directory (expand-file-name "~/")))
          (root (or (and (fboundp 'projectile-project-root)
                         (ignore-errors (projectile-project-root dir)))
                    (locate-dominating-file dir ".projectile")
                    (locate-dominating-file dir ".git"))))
-    (if (and (not arg) root (fboundp 'consult-projectile-find-file))
+    (if (and (not arg) root (fboundp 'projectile-find-file))
         (let ((default-directory (expand-file-name root)))
-          (call-interactively #'consult-projectile-find-file))
+          (call-interactively #'projectile-find-file))
       (call-interactively #'find-file))))
 (global-set-key (kbd "C-x C-f") #'my/smart-find-file)
 
