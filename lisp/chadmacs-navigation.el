@@ -295,18 +295,25 @@ Checked without loading ghostel.el itself."
 ;;
 ;; To enable, put in `custom.el':
 ;;   (setq my/enable-ghostel-ime t)
-;; and restart Emacs.
+;;
+;; The flag is read each time a Ghostel buffer starts, not when this file
+;; loads: custom.el is loaded at the very end of init.el, after this
+;; module, so a load-time `:if' would always see the nil default.
 (defvar my/enable-ghostel-ime nil
   "Non-nil to enable `ghostel-ime-mode' in every Ghostel buffer.
 Only useful when you use an Emacs Lisp input method (e.g. Korean
 Hangul via `M-x set-input-method'). Ghostel handles OS-level IMEs
 (fcitx, ibus, macOS input sources, Windows IME) without this.")
 
+(defun my/ghostel-maybe-enable-ime ()
+  "Enable `ghostel-ime-mode' when `my/enable-ghostel-ime' is non-nil."
+  (when my/enable-ghostel-ime
+    (ghostel-ime-mode 1)))
+
 (use-package ghostel-ime
   :ensure nil
-  :if my/enable-ghostel-ime
-  :after ghostel
-  :hook (ghostel-mode . ghostel-ime-mode))
+  :commands ghostel-ime-mode
+  :hook (ghostel-mode . my/ghostel-maybe-enable-ime))
 
 (provide 'chadmacs-navigation)
 ;;; chadmacs-navigation.el ends here
