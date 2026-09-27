@@ -39,11 +39,13 @@
   (completion-category-defaults nil)
   (completion-pcm-leading-wildcard t))
 
-;; Marginalia: rich annotations in completion candidates
+;; Marginalia: rich annotations in completion candidates. Enabled in :init -
+;; with `:commands' + `:config' the package only loaded once one of its
+;; commands ran, and the only call to one was that very :config, so it
+;; never loaded at all.
 (use-package marginalia
   :ensure t
-  :commands (marginalia-mode marginalia-cycle)
-  :config
+  :init
   (marginalia-mode))
 
 ;; Embark: context-sensitive actions / right-click menu
