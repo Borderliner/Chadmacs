@@ -94,7 +94,9 @@
 (use-package yasnippet
   :ensure t
   :commands (yas-minor-mode yas-global-mode)
-  :hook (after-init . yas-global-mode)
+  ;; `elpaca-after-init', not `after-init': Elpaca evaluates this form after
+  ;; `after-init-hook' has already run, so that hook would never fire.
+  :hook (elpaca-after-init . yas-global-mode)
   :custom
   (yas-also-auto-indent-first-line t)
   (yas-also-indent-empty-lines t)

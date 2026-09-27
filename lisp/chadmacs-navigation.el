@@ -241,32 +241,49 @@
 
 ;; --- Ghostel extensions (ship inside the ghostel package) ---
 ;;
-;; These are separate use-package forms with `:ensure nil' because
-;; installing `ghostel' above already pulls their .el files onto the
-;; load-path. Each mode has an autoload cookie, so `:hook' is enough
-;; to defer loading until the hook fires.
+;; Installing `ghostel' above already puts these files on the load-path
+;; and each mode has an autoload cookie, so nothing here needs its own
+;; Elpaca order. None of them may wait for ghostel itself to load (no
+;; `:after ghostel'): that only happens on the first `M-x ghostel', so
+;; the hooks below would never be registered in time.
 
 ;; Route `eshell-visual-commands' (tmux, htop, less, ...) into a
 ;; Ghostel buffer instead of eshell's raw terminfo emulation.
 (use-package ghostel-eshell
   :ensure nil
-  :after ghostel
   :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
-;; Run `M-x compile' and every compile-command inside a Ghostel buffer.
-;; Colored output, escape codes, and progress bars work.
-(use-package ghostel-compile
-  :ensure nil
-  :after ghostel
-  :hook (after-init . ghostel-compile-global-mode))
+;; `ghostel-compile-global-mode' runs `M-x compile' and every
+;; compile-command inside a Ghostel buffer (colored output, escape codes
+;; and progress bars work). `ghostel-comint-global-mode' replaces comint's
+;; `ansi-color-process-output' with Ghostel's VT parser, so every comint
+;; buffer (shell, gud, python-shell, sql-*, ...) gets true color + escape
+;; handling.
+;;
+;; Both modes load ghostel.el, which warns at load time while its native
+;; module is missing (the first `M-x ghostel' downloads it). So turn them
+;; on at startup only once the module is on disk; on a fresh install they
+;; switch on as soon as ghostel is first loaded.
+(defun my/ghostel-module-installed-p ()
+  "Return non-nil if ghostel's native module is already on disk.
+Checked without loading ghostel.el itself."
+  (and (require 'ghostel-module-install nil t)
+       (fboundp 'ghostel--module-directory)
+       (when-let* ((dir (ghostel--module-directory)))
+         (file-exists-p
+          (expand-file-name (concat "ghostel-module" module-file-suffix) dir)))))
 
-;; Replace comint's `ansi-color-process-output' with Ghostel's VT parser,
-;; so every comint buffer (shell, gud, python-shell, sql-*, ...) gets
-;; true color + escape handling.
-(use-package ghostel-comint
-  :ensure nil
-  :after ghostel
-  :hook (after-init . ghostel-comint-global-mode))
+(defun my/ghostel-enable-integrations ()
+  "Turn on Ghostel's global compile and comint integrations."
+  (ghostel-compile-global-mode 1)
+  (ghostel-comint-global-mode 1))
+
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (if (my/ghostel-module-installed-p)
+                (my/ghostel-enable-integrations)
+              (with-eval-after-load 'ghostel
+                (my/ghostel-enable-integrations)))))
 
 ;; --- Ghostel IME (opt-in) ---
 ;;

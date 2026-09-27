@@ -113,10 +113,12 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; compile commands then see the correct PATH / env vars (rust-toolchain,
 ;; nix-shell, devbox, asdf shims, etc). Requires the `direnv' binary on PATH.
 ;; envrc MUST initialize after other minor modes so its env-injection applies
-;; everywhere - that's why it hooks `after-init' globally rather than per-mode.
+;; everywhere - that's why it hooks in globally at the end of startup rather
+;; than per-mode. Under Elpaca that is `elpaca-after-init-hook': plain
+;; `after-init-hook' has already run by the time this form is evaluated.
 (use-package envrc
   :ensure t
-  :hook (after-init . envrc-global-mode)
+  :hook (elpaca-after-init . envrc-global-mode)
   :bind (:map envrc-mode-map
               ("C-c E" . envrc-command-map)))
 
