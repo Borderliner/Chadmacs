@@ -1,3 +1,8 @@
+;;; clojure-lang.el --- Clojure support -*- lexical-binding: t; -*-
+;;
+;; No LSP hook here: CIDER talks to a running nREPL for completion,
+;; evaluation and docs. Install the Clojure CLI or Leiningen, then run
+;; M-x cider-jack-in from inside a project.
 
 (use-package clojure-mode
   :ensure t
@@ -40,3 +45,4 @@
   :hook ((prog-mode text-mode) . idle-highlight-mode))
 
 (provide 'clojure-lang)
+;;; clojure-lang.el ends here
