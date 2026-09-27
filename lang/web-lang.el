@@ -2,7 +2,7 @@
 ;;
 ;; LSP binaries:
 ;;   npm install -g vscode-langservers-extracted  ;; HTML / CSS / JSON
-;;   npm install -g @vue/language-server          ;; Vue (volar)
+;;   npm install -g @vue/language-server          ;; Vue (volar) - opt-in, see web-mode below
 ;;   npm install -g emmet-ls                      ;; emmet expansion via LSP
 ;;
 ;; Tree-sitter: html, css grammars auto-install.
@@ -24,7 +24,11 @@
   :mode ("\\.scss\\'" . scss-mode)
   :hook (scss-mode . eglot-ensure))
 
-;; web-mode for templating files (.erb, .hbs, .vue, mixed-content .html)
+;; web-mode for templating files (.erb, .hbs, .vue, mixed-content .html).
+;; No `eglot-ensure' hook: eglot has no server mapping for web-mode (one
+;; mode for many template languages), so it could only fail on every
+;; file. For Vue, map web-mode to the Vue server in `eglot-server-programs'
+;; in custom.el and hook eglot-ensure there.
 (use-package web-mode
   :ensure t
   :mode (("\\.vue\\'"      . web-mode)
@@ -39,8 +43,7 @@
   (web-mode-css-indent-offset 2)
   (web-mode-code-indent-offset 2)
   (web-mode-enable-current-element-highlight t)
-  (web-mode-enable-auto-pairing t)
-  :hook (web-mode . eglot-ensure))
+  (web-mode-enable-auto-pairing t))
 
 ;; Emmet: HTML/CSS abbreviation expansion (Cmd-style: div>ul>li*3 TAB)
 (use-package emmet-mode
