@@ -402,9 +402,12 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
 
 ;; ----------------------------------------------------------- which-key --
 
-;; Popup showing key completions after a prefix (built-in on Emacs 30+)
+;; Popup showing key completions after a prefix. Built in since Emacs 30,
+;; so only fetched on older Emacs; installing it anyway shadowed the
+;; built-in copy with a second one. (Elpaca's :ensure evaluates a
+;; backquoted value: t -> install, nil -> use what ships with Emacs.)
 (use-package which-key
-  :ensure t
+  :ensure `,(< emacs-major-version 30)
   :demand t
   :custom
   (which-key-idle-delay 0.4)
