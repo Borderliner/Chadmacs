@@ -182,11 +182,10 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
         dashboard-heading-shorcut-format   "  %s"
         dashboard-display-icons-p          t
         dashboard-icon-type                'nerd-icons
+        ;; Which sections appear (init info, navigator, footer, ...) is
+        ;; decided by `dashboard-startupify-list' below.
         dashboard-set-heading-icons        t
-        dashboard-set-file-icons           t
-        dashboard-set-init-info            t
-        dashboard-set-footer               t
-        dashboard-set-navigator            t)
+        dashboard-set-file-icons           t)
 
   ;; --- Init info line: "◆ ready in 1.42s · 3 GCs" ---
   (setq dashboard-init-info
