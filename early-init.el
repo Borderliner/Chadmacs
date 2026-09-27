@@ -14,12 +14,21 @@
 ;; Disable Emacs's built-in package manager, package.el
 (setq package-enable-at-startup nil)
 
-;; Disable file-name handlers during startup
+;; Disable file-name handlers while the init files load (every `load' and
+;; `require' consults them), and restore them at the end of
+;; `after-init-hook'. That is the last point before Emacs visits files named
+;; on the command line - which it does *before* `emacs-startup-hook' - so
+;; `emacs notes.txt.gz' and `emacs /ssh:host:file' still go through
+;; jka-compr / TRAMP. Merge instead of overwriting, so handlers registered
+;; during init are kept.
 (defvar my/file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
-(add-hook 'emacs-startup-hook
+(add-hook 'after-init-hook
           (lambda ()
-            (setq file-name-handler-alist my/file-name-handler-alist)))
+            (setq file-name-handler-alist
+                  (delete-dups (append file-name-handler-alist
+                                       my/file-name-handler-alist))))
+          100)
 ;; Increase GC threshold. Decrease if you don't have sufficient RAM.I have 32GiB so 300MiB is nothing.
 (setq gc-cons-threshold (* 300 1024 1024)) ;; 300MiB
 
