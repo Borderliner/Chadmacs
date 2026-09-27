@@ -173,7 +173,7 @@ this directory into your shell PATH. Available subcommands:
 | Command              | Action                                                      |
 | -------------------- | ----------------------------------------------------------- |
 | `chadmacs help`      | Show usage.                                                 |
-| `chadmacs update`    | `git pull` Chadmacs + run Elpaca fetch for installed pkgs.  |
+| `chadmacs update`    | `git pull` Chadmacs + fetch, merge and rebuild every package. |
 | `chadmacs doctor`    | Check Emacs version, fonts, fd/rg/direnv, module support, LSP bins.|
 | `chadmacs uninstall` | Remove `~/.emacs.d` after backing up `var/` to `$HOME`.     |
 
