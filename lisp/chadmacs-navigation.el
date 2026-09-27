@@ -120,6 +120,14 @@
 (use-package dirvish
   :ensure t
   :init
+  ;; `dired-listing-switches' below uses GNU ls flags. macOS ships BSD ls,
+  ;; which rejects them and every Dired buffer fails to list. Use
+  ;; coreutils' gls when it's installed (brew install coreutils), else
+  ;; switch to flags BSD ls understands. (:init runs after :custom.)
+  (when (eq system-type 'darwin)
+    (if (executable-find "gls")
+        (setq insert-directory-program "gls")
+      (setq dired-listing-switches "-lAh")))
   (dirvish-override-dired-mode)
   :custom
   (dirvish-quick-access-entries
