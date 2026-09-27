@@ -15,7 +15,9 @@
 
 set -euo pipefail
 
-CHADMACS_REPO="${CHADMACS_REPO:-git@github.com:Borderliner/Chadmacs.git}"
+# HTTPS so the curl | bash one-liner works without a GitHub SSH key.
+# Contributors can override: CHADMACS_REPO=git@github.com:Borderliner/Chadmacs.git
+CHADMACS_REPO="${CHADMACS_REPO:-https://github.com/Borderliner/Chadmacs.git}"
 CHADMACS_BRANCH="${CHADMACS_BRANCH:-master}"
 CHADMACS_DIR="${CHADMACS_DIR:-$HOME/.emacs.d}"
 
