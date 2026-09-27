@@ -136,7 +136,12 @@ cmd_update() {
   # otherwise batch Emacs exits (killing the git processes) as soon as the
   # last --eval returns. `elpaca-after-init-hook' is cleared first so the
   # batch run doesn't restore your session or open the dashboard.
-  if emacs --batch -l "$CHADMACS_DIR/early-init.el" -l "$CHADMACS_DIR/init.el" \
+  # Batch Emacs loads no init files itself, so point user-emacs-directory
+  # at the install first; otherwise it stays ~/.emacs.d even when
+  # CHADMACS_DIR is elsewhere.
+  if emacs --batch \
+       --eval "(setq user-emacs-directory (file-name-as-directory \"$CHADMACS_DIR\"))" \
+       -l "$CHADMACS_DIR/early-init.el" -l "$CHADMACS_DIR/init.el" \
        --eval '(progn
                  (setq elpaca-after-init-hook nil)
                  (elpaca-wait)

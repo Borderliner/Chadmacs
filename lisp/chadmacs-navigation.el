@@ -121,10 +121,10 @@
   (dirvish-override-dired-mode)
   :custom
   (dirvish-quick-access-entries
-   '(("h" "~/"                          "Home")
+   `(("h" "~/"                          "Home")
      ("d" "~/Downloads/"                "Downloads")
      ("c" "~/.config/"                  "Config")
-     ("e" "~/.emacs.d/"                 "Emacs config")))
+     ("e" ,user-emacs-directory         "Emacs config")))
   (dirvish-mode-line-format
    '(:left (sort symlink) :right (omit yank index)))
   (dirvish-attributes

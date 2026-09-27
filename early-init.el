@@ -57,8 +57,9 @@
 
 ;;;;;;;;;; Paths ;;;;;;;;;;;;
 
-;; Base dirs
-(setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
+;; Base dirs. `user-emacs-directory' is left as Emacs set it - the directory
+;; this file was loaded from (~/.emacs.d, ~/.config/emacs, or
+;; --init-directory) - so Chadmacs runs from wherever it is installed.
 (defconst my/var-dir (expand-file-name "var/" user-emacs-directory))
 
 ;; Make sure it exists
