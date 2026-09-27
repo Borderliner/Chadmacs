@@ -334,8 +334,7 @@ the project context and browse the filesystem freely."
 ;;; and the list of language modules you want here. Pulling new Chadmacs
 ;;; versions will never touch it -> no merge conflicts.
 ;;;
-;;; To re-generate from scratch: delete this file and restart Emacs (or
-;;; run `chadmacs doctor --reset-custom').
+;;; To re-generate from scratch: delete this file and restart Emacs.
 ;;;
 ;;; Code:
 
