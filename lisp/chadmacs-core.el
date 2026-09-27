@@ -246,8 +246,15 @@ filesystem freely."
 ;; Minibuffer history, recent files, cursor positions (files under var/,
 ;; placed by no-littering above)
 (savehist-mode 1)
-(recentf-mode 1)
 (save-place-mode 1)
+
+;; Keep Chadmacs' own state files (treemacs persist, bookmarks, ...) out of
+;; the recent-files list. Added before the mode starts so its startup
+;; cleanup also drops entries recorded by earlier sessions.
+(require 'recentf)
+(add-to-list 'recentf-exclude
+             (concat "\\`" (regexp-quote (recentf-expand-file-name my/var-dir))))
+(recentf-mode 1)
 
 ;; Save bookmarks on every change
 (setq bookmark-save-flag 1)
