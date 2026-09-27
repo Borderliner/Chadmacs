@@ -166,12 +166,17 @@ on some Elpaca builds (\"failed to define function ...\")."
                  default-directory)))
     (consult-ripgrep dir)))
 
+;; Bound inside `projectile-command-map' (the `C-c p' prefix), not the
+;; global map: `projectile-mode-map' binds `C-c p' to that prefix map and
+;; minor-mode maps take precedence, so global `C-c p p/f/g' bindings were
+;; always shadowed by projectile's own commands.
 (use-package consult-projectile
   :ensure t
-  :after (consult projectile)
-  :bind (("C-c p p" . consult-projectile-switch-project)
-         ("C-c p f" . consult-projectile-find-file)
-         ("C-c p g" . my/consult-ripgrep-project)))
+  :after projectile
+  :bind (:map projectile-command-map
+              ("p" . consult-projectile-switch-project)
+              ("f" . consult-projectile-find-file)
+              ("g" . my/consult-ripgrep-project)))
 
 ;; Backend for `projectile-ripgrep' / `M-x rg' / `M-x rg-dwim'. Projectile's
 ;; ripgrep command delegates to whichever of the `rg' or `ripgrep' packages
