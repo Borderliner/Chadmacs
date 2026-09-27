@@ -586,13 +586,19 @@ variant. Chadmacs applies the font after `custom.el` loads, so don't call
 
 ### Change Theme
 
-Replace:
+Chadmacs loads `doom-monokai-pro` once Elpaca has finished loading
+packages, so load yours from `elpaca-after-init-hook` in `custom.el`
+(otherwise the default is applied after it). Every Doom theme ships with
+Chadmacs:
 
 ```elisp
-(load-theme 'doom-monokai-pro t)
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (mapc #'disable-theme custom-enabled-themes)
+            (load-theme 'doom-one t)))
 ```
 
-With another Doom theme — or use `C-c t T` to preview interactively.
+To try themes interactively, use `M-x consult-theme`.
 
 ---
 
