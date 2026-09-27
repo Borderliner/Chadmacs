@@ -339,9 +339,13 @@ cmd_uninstall() {
     exit 1
   fi
 
+  # Timestamp once, so the path shown here is the one actually used below
+  # even if the confirmation prompt sits for a while.
+  local backup
+  backup="$HOME/chadmacs-var-backup-$(date +%Y%m%d-%H%M%S)"
+
   printf '%sThis will remove %s%s\n' "$C_YELLOW" "$CHADMACS_DIR" "$C_RESET"
   if [ -d "$CHADMACS_VAR" ]; then
-    local backup="$HOME/chadmacs-var-backup-$(date +%Y%m%d-%H%M%S)"
     printf '%svar/ will be moved to %s%s\n' "$C_BLUE" "$backup" "$C_RESET"
   fi
   printf 'Type %sYES%s to proceed: ' "$C_BOLD" "$C_RESET"
@@ -352,7 +356,6 @@ cmd_uninstall() {
   fi
 
   if [ -d "$CHADMACS_VAR" ]; then
-    local backup="$HOME/chadmacs-var-backup-$(date +%Y%m%d-%H%M%S)"
     mv "$CHADMACS_VAR" "$backup"
     ok "Backed up var/ to $backup"
   fi
