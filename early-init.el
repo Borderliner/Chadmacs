@@ -145,12 +145,10 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-;; use-package support
+;; use-package support: `:ensure' now means "install via Elpaca". Every
+;; Chadmacs form says `:ensure t' or `:ensure nil' explicitly.
 (elpaca elpaca-use-package
-  (elpaca-use-package-mode)
-  ;; Default every use-package form to ensure-via-Elpaca (Elpaca's own knob,
-  ;; not use-package-always-ensure which is for package.el).
-  (setq elpaca-use-package-by-default t))
+  (elpaca-use-package-mode))
 
 (provide 'early-init)
 ;;; early-init.el ends here

@@ -446,8 +446,6 @@ can enable per-language support without touching upstream files."
 ;; ----------------------------------------------------------- Optimization --
 
 ;; Skip theme-load confirmation prompt
-;; (Elpaca's own elpaca-use-package-by-default is set in early-init.el to
-;; default every use-package form to ensure-via-Elpaca.)
 (setq custom-safe-themes t)
 
 ;; Adaptive GC - defers garbage collection to idle, smoother typing
