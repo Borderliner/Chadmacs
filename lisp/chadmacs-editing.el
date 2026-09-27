@@ -23,10 +23,20 @@
 
 ;; ------------------------------------------------------------ Session --
 
+;; Frames easysession may restore the saved layout into. Under a daemon the
+;; invisible initial frame is one of the candidates, and for text-terminal
+;; frames frameset picks it first: the session went into that hidden frame
+;; and the new `emacsclient -t' frame was deleted as unused, so the client
+;; exited the moment it connected. Never reuse the daemon's initial frame.
+(defun my/easysession-reusable-frame-p (frame)
+  "Return non-nil if easysession may restore a saved frame into FRAME."
+  (not (equal (terminal-name (frame-terminal frame)) "initial_terminal")))
+
 (use-package easysession
   :ensure t
   :demand t
   :custom
+  (easysession-frameset-restore-reuse-frames #'my/easysession-reusable-frame-p)
   (easysession-directory (expand-file-name "easysession/" my/var-dir))
   (easysession-save-interval (* 10 60))
   (easysession-switch-to-save-session t)
