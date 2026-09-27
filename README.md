@@ -602,7 +602,7 @@ With another Doom theme — or use `C-c t T` to preview interactively.
 * 🚀 GC threshold raised during startup (gcmh adapts after)
 * 🚀 File-name handlers disabled during init
 * 🚀 Native compilation cache redirected
-* 🚀 Startup time printed on emacs-startup-hook
+* 🚀 Startup time printed once Elpaca has loaded every package
 
 Startup is snappy.
 

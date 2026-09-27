@@ -262,12 +262,22 @@ the project context and browse the filesystem freely."
             (when (display-graphic-p)
               (select-frame-set-input-focus (selected-frame)))))
 
-;; Print init time + GC count when Emacs finishes starting. Lets you spot
-;; regressions after editing config (typical: ~1.5-3s with cold cache).
-(add-hook 'emacs-startup-hook
+;; Startup time. `emacs-init-time' stops at the end of init.el, but Elpaca
+;; loads and configures nearly every package after that, so it reported a
+;; fraction of the real time (0.13s against ~0.6s until usable). Measure
+;; up to the point Elpaca has finished instead.
+(defun my/startup-seconds ()
+  "Seconds from startup until Elpaca finished loading (or until now)."
+  (float-time (time-subtract (or (bound-and-true-p elpaca-after-init-time)
+                                 (current-time))
+                             before-init-time)))
+
+;; Print startup time + GC count once everything is loaded. Lets you spot
+;; regressions after editing config.
+(add-hook 'elpaca-after-init-hook
           (lambda ()
-            (message "Chadmacs ready in %s with %d GCs"
-                     (emacs-init-time) gcs-done)))
+            (message "Chadmacs ready in %.2fs with %d GCs"
+                     (my/startup-seconds) gcs-done)))
 
 ;; ------------------------------------------------------------ Persistence --
 

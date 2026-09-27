@@ -191,8 +191,8 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
   ;; --- Init info line: "◆ ready in 1.42s · 3 GCs" ---
   (setq dashboard-init-info
         (lambda ()
-          (format "◆ ready in %s  ·  %d GCs"
-                  (emacs-init-time "%.2fs")
+          (format "◆ ready in %.2fs  ·  %d GCs"
+                  (my/startup-seconds)
                   gcs-done)))
 
   ;; --- Footer: one message picked at random each startup ---
