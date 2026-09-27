@@ -100,8 +100,11 @@
 
   (treemacs-hide-gitignored-files-mode t))
 
+;; treemacs-magit requires both treemacs and magit, so loading it eagerly
+;; dragged both into every startup. Load it once both are in use anyway.
 (use-package treemacs-magit
-  :ensure t)
+  :ensure t
+  :after (treemacs magit))
 
 (use-package treemacs-icons-dired
   :ensure t

@@ -51,15 +51,19 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; -------------------------------------------------------------- Git --
 
 (use-package transient
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package pinentry
   :ensure t
   :config
   (pinentry-start))
 
+;; Deferred: magit's entry points (C-x g, C-x M-g, magit-* commands) are
+;; autoloaded, so there is no reason to load it at every startup.
 (use-package magit
-  :ensure t)
+  :ensure t
+  :defer t)
 
 ;; ----------------------------------------------------------- Flycheck --
 
