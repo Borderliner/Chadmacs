@@ -156,8 +156,6 @@
   (pcase-dolist (`(,key . ,command) sp-paredit-bindings)
     (unless (member key my/sp-paredit-skipped-keys)
       (define-key smartparens-strict-mode-map (kbd key) command)))
-  ;; Show matching pair in echo area instead of blinking the cursor
-  (setq sp-show-pair-from-inside t)
   ;; Don't pair single quotes inside Lisp (apostrophes break it)
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'lisp-data-mode  "'" nil :actions nil)
