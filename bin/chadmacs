@@ -295,7 +295,7 @@ cmd_doctor() {
   if [ -f "$CHADMACS_DIR/custom.el" ]; then
     ok "custom.el present at $CHADMACS_DIR/custom.el"
   else
-    info "custom.el will be auto-created with the language-extension template on next start."
+    info "custom.el will be auto-created with the language-module template on next start."
   fi
 
   hdr "Done."

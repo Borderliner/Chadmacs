@@ -174,7 +174,7 @@ this directory into your shell PATH. Available subcommands:
 | -------------------- | ----------------------------------------------------------- |
 | `chadmacs help`      | Show usage.                                                 |
 | `chadmacs update`    | `git pull` Chadmacs + run Elpaca fetch for installed pkgs.  |
-| `chadmacs doctor`    | Check Emacs version, fonts, fd/rg/direnv/libvterm, LSP bins.|
+| `chadmacs doctor`    | Check Emacs version, fonts, fd/rg/direnv, module support, LSP bins.|
 | `chadmacs uninstall` | Remove `~/.emacs.d` after backing up `var/` to `$HOME`.     |
 
 Set `CHADMACS_DIR` to override the install location.
