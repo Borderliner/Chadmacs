@@ -110,7 +110,7 @@ Modern. Fast. Cohesive.
 * Yasnippet
 * Strip trailing whitespace
 * Aggressive indent (Lisp)
-* smartparens (with paredit-style keybindings via `sp-use-paredit-bindings`)
+* smartparens (paredit-style keybindings in Lisp buffers)
 * expand-region, avy, ace-window, crux
 * multiple-cursors
 * move-text (M-up/M-down)
@@ -311,9 +311,13 @@ Consult's standard binds. `M-s` is "search across", `M-g` is "go to".
 | `C-c C-<`       | Multiple-cursors: mark all like this            |
 | `C-S-c C-S-c`   | Multiple-cursors: edit lines                    |
 
-Lisp buffers also get the full `smartparens` paredit-style keymap
-(`C-)` / `C-(` slurp, `C-}` / `C-{` barf, `M-(` wrap, `M-s` splice,
-`M-r` raise, `C-k` smart kill, etc).
+Lisp buffers (smartparens strict mode) also get the paredit-style keymap
+(`C-)` / `C-(` slurp, `C-}` / `C-{` barf, `C-<right>` / `C-<left>`
+slurp / barf, `M-(` wrap, `M-r` raise, `M-S` split, `M-j` join, `C-k`
+smart kill, etc). Paredit's `M-s` splice, `M-?` convolute and
+`M-<up>` / `M-<down>` splice-kill are left out so the `M-s` search
+prefix, `xref-find-references` and move-text keep working; run them via
+`M-x`. Other prog-mode buffers keep stock bindings.
 
 ## Windows & frames
 

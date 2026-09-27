@@ -135,10 +135,21 @@
 ;; balance" guarantee; plain smartparens-mode elsewhere gives auto-pair
 ;; for braces, brackets, quotes, etc. across all prog modes.
 ;;
-;; `sp-use-paredit-bindings' installs paredit's keymap onto smartparens
-;; so muscle memory carries over (C-) / C-( for slurp, C-} / C-{ for
-;; barf, M-( wrap, M-s splice, M-r raise, C-k smart kill, M-S split,
-;; M-J join, M-? convolute, etc).
+;; Paredit's keys (C-) / C-( slurp, C-} / C-{ barf, C-<right> / C-<left>
+;; slurp / barf, M-( wrap, M-r raise, M-S split, M-j join, ...) carry
+;; over for muscle memory, but only in Lisp buffers: they go into
+;; `smartparens-strict-mode-map', which is active exactly where strict
+;; mode is. `sp-use-paredit-bindings' would put them in
+;; `smartparens-mode-map' and so hijack every prog-mode buffer (C-<left>
+;; / C-<right> stop moving by word, M-s search prefix gone, ...).
+;;
+;; Even in Lisp, the paredit keys that shadow keys Chadmacs documents
+;; globally are left out: M-s (the search prefix - M-s l consult-line,
+;; M-s r ripgrep, ...), M-? (xref-find-references) and M-<up> / M-<down>
+;; (move-text). Their commands stay available through M-x.
+(defconst my/sp-paredit-skipped-keys '("M-s" "M-?" "M-<up>" "M-<down>")
+  "Keys from `sp-paredit-bindings' that are not bound in Lisp buffers.")
+
 (use-package smartparens
   :ensure t
   :hook
@@ -147,7 +158,9 @@
   :config
   ;; Sensible default pair definitions for HTML / Markdown / Lisp / C / etc.
   (require 'smartparens-config)
-  (sp-use-paredit-bindings)
+  (pcase-dolist (`(,key . ,command) sp-paredit-bindings)
+    (unless (member key my/sp-paredit-skipped-keys)
+      (define-key smartparens-strict-mode-map (kbd key) command)))
   ;; Show matching pair in echo area instead of blinking the cursor
   (setq sp-show-pair-from-inside t)
   ;; Don't pair single quotes inside Lisp (apostrophes break it)
