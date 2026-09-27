@@ -125,11 +125,22 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
 ;; ----------------------------------------------------------- Format --
 
 ;; Apheleia runs code formatters (shfmt, black, prettier, rustfmt, ...) async
-;; on save without disrupting the cursor position.
+;; on save without disrupting the cursor position. It is the one formatter
+;; for every language, which is why lang modules switch off their own
+;; format-on-save (rustic, zig-mode): two formatters on save would race.
+;;
+;; Lisp buffers are skipped: apheleia's `lisp-indent' formatter re-indents
+;; the *whole file* on every save, rewriting code you never touched, and
+;; aggressive-indent already keeps Lisp indented as you type.
+(defun my/apheleia-mode-maybe ()
+  "Enable `apheleia-mode' here unless this is a Lisp buffer."
+  (unless (derived-mode-p 'lisp-data-mode)
+    (apheleia-mode 1)))
+
 (use-package apheleia
   :ensure t
   :commands (apheleia-mode apheleia-global-mode)
-  :hook (prog-mode . apheleia-mode))
+  :hook (prog-mode . my/apheleia-mode-maybe))
 
 ;; ----------------------------------------------------- Elisp helpers --
 

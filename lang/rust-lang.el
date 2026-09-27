@@ -11,6 +11,7 @@
   :custom
   (rustic-cargo-use-last-stored-arguments t)
   :config
+  ;; apheleia runs rustfmt on save (see chadmacs-tools.el)
   (setq rustic-format-on-save nil)
   (setq rustic-lsp-client 'eglot)
   (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1))))

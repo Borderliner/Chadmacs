@@ -9,6 +9,7 @@
   :mode "\\.zig\\'"
   :hook (zig-mode . eglot-ensure)
   :custom
+  ;; apheleia runs `zig fmt' on save (see chadmacs-tools.el)
   (zig-format-on-save nil))
 
 (provide 'zig-lang)
