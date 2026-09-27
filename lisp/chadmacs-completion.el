@@ -247,18 +247,19 @@ on some Elpaca builds (\"failed to define function ...\")."
    '(read-only t cursor-intangible t face minibuffer-prompt)))
 
 ;; Cape: extra completion-at-point sources (dabbrev, file path, elisp block).
-;; Loaded buffer-locally per prog/text-mode so it composes with eglot.
+;; Added to the *global* value of `completion-at-point-functions', which a
+;; buffer only consults after its own capfs (the `t' entry of the local
+;; list). The mode's real completion - eglot, elisp symbols, python, ... -
+;; therefore always goes first and cape fills in where it has nothing.
+;; Prepending them buffer-locally let `cape-dabbrev' shadow e.g.
+;; `elisp-completion-at-point' with plain buffer words.
 (use-package cape
   :ensure t
   :bind ("C-c e" . cape-prefix-map)
   :init
-  (defun my/cape-setup ()
-    "Register cape capfs buffer-locally."
-    (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
-    (add-hook 'completion-at-point-functions #'cape-file nil t)
-    (add-hook 'completion-at-point-functions #'cape-elisp-block nil t))
-  (add-hook 'prog-mode-hook #'my/cape-setup)
-  (add-hook 'text-mode-hook #'my/cape-setup))
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 (provide 'chadmacs-completion)
 ;;; chadmacs-completion.el ends here
