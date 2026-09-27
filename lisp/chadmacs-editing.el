@@ -61,14 +61,11 @@
   ;; Detection must use `command-line-args', NOT the buffer list: under Elpaca,
   ;; easysession restores on `elpaca-after-init-hook', which fires *before*
   ;; `command-line-1' visits the file, so at predicate time no file-visiting
-  ;; buffer exists yet. `command-line-args' still holds the filename here
-  ;; (`-nw' and friends are already stripped by C), so a non-option argument
-  ;; means "a file was passed -> don't restore". Bare `emacs' has no such
-  ;; argument and still restores the full session.
+  ;; buffer exists yet. `my/command-line-files-p' (chadmacs-core) parses the
+  ;; arguments, so `emacs --eval ...' or `emacs -f ...' still restore the
+  ;; session; only an actual file argument skips it.
   (setq easysession-setup-load-predicate
-        (lambda ()
-          (not (seq-some (lambda (arg) (not (string-prefix-p "-" arg)))
-                         (cdr command-line-args)))))
+        (lambda () (not (my/command-line-files-p))))
 
   (with-eval-after-load 'easysession
     (require 'easysession-scratch)

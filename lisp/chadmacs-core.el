@@ -92,6 +92,42 @@ exists."
 ;; Minimum window height
 (setq window-min-height 1)
 
+;; Was Emacs started with a file to visit? `command-line-args' still holds
+;; the original arguments late in startup (C already stripped -nw, -Q, ...),
+;; but a bare "is there an argument without a leading dash" test is wrong:
+;; `emacs --eval EXPR', `emacs -l init.el' or `emacs -f magit-status' pass
+;; a non-dash argument too. Walk the list like `command-line-1' does.
+(defconst my/command-line-options-with-arg
+  '("f" "funcall" "e" "eval" "execute" "L" "directory" "l" "load"
+    "scriptload" "scripteval" "insert" "dump-file" "seccomp")
+  "Command-line options (without leading dashes) whose next argument is a
+value, not a file.")
+
+(defun my/command-line-files-p ()
+  "Return non-nil if Emacs was started with a file to visit.
+Skips the values of options such as --eval, -l and -f."
+  (let ((args (cdr command-line-args))
+        found)
+    (while (and args (not found))
+      (let ((arg (pop args)))
+        (cond
+         ;; After `--' every argument is a file.
+         ((equal arg "--") (setq found (and args t)))
+         ;; --file / --find-file / --visit FILE
+         ((string-match-p "\\`--?\\(?:find-file\\|file\\|visit\\)\\(=\\|\\'\\)" arg)
+          (setq found (or (string-search "=" arg) (and args t))))
+         ((string-prefix-p "-" arg)
+          ;; --opt=VALUE carries its value inline; otherwise skip the next
+          ;; argument when the option takes one.
+          (when (and (not (string-search "=" arg))
+                     (member (string-trim-left arg "-+")
+                             my/command-line-options-with-arg))
+            (pop args)))
+         ;; +LINE[:COLUMN] positions the file that follows.
+         ((string-match-p "\\`\\+[0-9]" arg))
+         (t (setq found t)))))
+    found))
+
 ;; Safeguard: a file opened on the command line should own the whole frame.
 ;; Startup can pop up a second window before the file is shown - a warning or
 ;; error buffer (a broken custom.el, a package's `display-warning', ...), a
@@ -102,11 +138,10 @@ exists."
 (defun my/cli-file-take-full-frame ()
   "Give a file opened on the command line the entire frame.
 No-op for a bare `emacs' launch (no file argument) and under a daemon.
-Detection uses `command-line-args' (which still holds the filename here)
-rather than the buffer list, since this may run before the file is visited."
+Detection uses `my/command-line-files-p' rather than the buffer list,
+since this may run before the file is visited."
   (when (and (not (daemonp))
-             (seq-some (lambda (arg) (not (string-prefix-p "-" arg)))
-                       (cdr command-line-args)))
+             (my/command-line-files-p))
     (let ((file-windows (seq-filter (lambda (w) (buffer-file-name (window-buffer w)))
                                     (window-list))))
       ;; Only act when exactly one file window is showing: that is the
