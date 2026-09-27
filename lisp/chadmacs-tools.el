@@ -14,6 +14,11 @@
   ;; Optional: auto-discover projects in common directories
   ;; (setq projectile-project-search-path '("~/code/" "~/work/" "~/projects/"))
   :config
+  ;; Also integrates with project.el: `projectile-mode' puts
+  ;; `project-projectile' on `project-find-functions', so eglot,
+  ;; consult-project-buffer, C-x p ... see Projectile roots and use its file
+  ;; listing, which honours .gitignore. (A hand-rolled finder returning
+  ;; transient projects used to shadow it, so C-x p f listed ignored files.)
   (projectile-mode +1)
 
   (setq projectile-completion-system 'default)
@@ -36,17 +41,7 @@
   ;; On Debian / Ubuntu the fd binary is called `fdfind' (the `fd' name is
   ;; reserved by an unrelated package). Point projectile at whichever exists.
   (setq projectile-fd-executable (or (executable-find "fd")
-                                     (executable-find "fdfind")))
-
-  ;; Integrate Projectile with project.el so tools that depend on project.el
-  ;; (eglot, consult-project-buffer, ...) see Projectile-managed roots.
-  (defun my/projectile-project-find-function (dir)
-    "Identify Projectile-managed projects for project.el.
-Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
-    (when-let* ((root (projectile-project-root dir)))
-      (cons 'transient root)))
-
-  (add-to-list 'project-find-functions #'my/projectile-project-find-function))
+                                     (executable-find "fdfind"))))
 
 ;; -------------------------------------------------------------- Git --
 
