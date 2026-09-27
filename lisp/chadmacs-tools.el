@@ -251,7 +251,6 @@ Return (cons \\='transient ROOT) if DIR is part of a known Projectile project."
   :ensure t
   :init
   (setq treesit-auto-install 'prompt)
-  (setq treesit-auto-add-to-auto-mode-alist 'all)
   :config
   (defvar my/treesit-dir (expand-file-name "tree-sitter/" my/var-dir))
 
