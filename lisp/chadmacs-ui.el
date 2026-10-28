@@ -416,6 +416,11 @@ With a prefix argument ARG, scroll ARG lines, as `scroll-down-command' does."
   :custom
   (which-key-idle-delay 0.4)
   (which-key-popup-type 'minibuffer)
+  ;; `C-h' after a prefix belongs to Embark (`embark-prefix-help-command',
+  ;; chadmacs-completion): a searchable list of the prefix's bindings.
+  ;; Without this, which-key claimed `prefix-help-command' too, and which
+  ;; one won depended only on which module happened to load last.
+  (which-key-use-C-h-commands nil)
   :config
   (which-key-mode 1))
 
