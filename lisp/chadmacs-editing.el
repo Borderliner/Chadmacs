@@ -133,12 +133,20 @@
 ;; that had none when opened. Stripping files that already carried some
 ;; rewrote lines you never touched, turning a one-line edit in someone
 ;; else's repo into a whitespace-only diff across the whole file.
+;;
+;; Markdown is skipped: two trailing spaces there are a hard line break,
+;; and stripping them on save silently joined the lines.
+(defun my/stripspace-mode-maybe ()
+  "Enable `stripspace-local-mode' here unless this is a Markdown buffer."
+  (unless (derived-mode-p 'markdown-mode)
+    (stripspace-local-mode 1)))
+
 (use-package stripspace
   :ensure t
   :commands stripspace-local-mode
   :hook
   (prog-mode . stripspace-local-mode)
-  (text-mode . stripspace-local-mode)
+  (text-mode . my/stripspace-mode-maybe)
   (conf-mode . stripspace-local-mode)
   :custom
   (stripspace-only-if-initially-clean t)
