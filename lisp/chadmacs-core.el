@@ -19,12 +19,14 @@
 (setq use-dialog-box nil)
 (setq pop-up-windows nil)
 
-;; Minor visual cleanups
-(setq indicate-empty-lines nil)
-(setq cursor-in-non-selected-windows nil)
+;; Minor visual cleanups. These three are per-buffer variables: a plain
+;; `setq' only changed whichever buffer was current while this file
+;; loaded, so every other buffer kept the stock value.
+(setq-default indicate-empty-lines nil)
+(setq-default cursor-in-non-selected-windows nil)
 
 ;; Fill / editing
-(setq fill-column 80)
+(setq-default fill-column 80)
 (setq confirm-nonexistent-file-or-buffer nil)
 
 ;; Org
