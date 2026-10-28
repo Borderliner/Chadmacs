@@ -222,7 +222,7 @@ of the standard prefixes:
 | `C-c p …`  | Projectile                                 |
 | `C-c s …`  | easysession                                |
 | `C-c T …`  | Treemacs                                   |
-| `C-c l …`  | Eglot (mode-local in eglot buffers)        |
+| `C-c L …`  | Eglot (mode-local in eglot buffers)        |
 | `C-c e …`  | Cape extra completion sources              |
 
 > 💡 **Discoverability.** `which-key` is on by default. Press any prefix
@@ -452,17 +452,17 @@ Inside magit, `?` shows every magit binding.
 | `C-c s u` | Unload session                      |
 | `C-c s d` | Delete session                      |
 
-## LSP (`C-c l` — eglot, mode-local)
+## LSP (`C-c L` — eglot, mode-local)
 
-`C-c l` is also Org's `store-link` globally; in eglot-managed buffers
-it becomes the eglot prefix instead.
+Uppercase `L`, so Org's `C-c l` (store-link) keeps working in
+eglot-managed buffers too.
 
 | Key       | Action            |
 | --------- | ----------------- |
-| `C-c l r` | Rename symbol     |
-| `C-c l f` | Format buffer     |
-| `C-c l a` | Code actions      |
-| `C-c l h` | Eldoc at point    |
+| `C-c L r` | Rename symbol     |
+| `C-c L f` | Format buffer     |
+| `C-c L a` | Code actions      |
+| `C-c L h` | Eldoc at point    |
 
 Eglot auto-starts in core modes Chadmacs ships (C / C++ / C# / Bash).
 Per-language modules in `lang/` enable Eglot for their

@@ -98,15 +98,19 @@
 ;; language's eglot hook lives in its dedicated lang/<lang>-lang.el
 ;; so users opt in per-language by uncommenting (require '<lang>-lang) in
 ;; init.el. The hooks below are the always-on baseline (sh + bash always work).
+;;
+;; The eglot prefix is `C-c L', not `C-c l': a `C-c l ...' binding in
+;; `eglot-mode-map' turns `C-c l' into a prefix in every LSP buffer and
+;; hides the global `org-store-link' there.
 (use-package eglot
   :ensure nil
   :commands (eglot-ensure eglot-rename eglot-format-buffer)
   :bind
   (:map eglot-mode-map
-        ("C-c l r" . eglot-rename)
-        ("C-c l f" . eglot-format-buffer)
-        ("C-c l a" . eglot-code-actions)
-        ("C-c l h" . eldoc))
+        ("C-c L r" . eglot-rename)
+        ("C-c L f" . eglot-format-buffer)
+        ("C-c L a" . eglot-code-actions)
+        ("C-c L h" . eldoc))
   :hook
   (sh-mode      . eglot-ensure)
   (bash-ts-mode . eglot-ensure))
