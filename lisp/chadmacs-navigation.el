@@ -150,6 +150,9 @@
   ;; `^' stays Dired's `dired-up-directory'; taking it for
   ;; `dirvish-history-last' left no key at all for going up a directory.
   ;; The last-directory jump lives on `;' instead (unbound in Dired).
+  ;; Likewise the setup menu is on `M-a' ("attributes"), not `M-s', so
+  ;; the global `M-s' search prefix (consult-line, ripgrep, ...) and
+  ;; Dired's own `M-s f' / `M-s a' still work in Dired buffers.
   (:map dirvish-mode-map
         ("a"   . dirvish-quick-access)
         ("f"   . dirvish-file-info-menu)
@@ -165,7 +168,7 @@
         ("M-l" . dirvish-ls-switches-menu)
         ("M-m" . dirvish-mark-menu)
         ("M-t" . dirvish-layout-toggle)
-        ("M-s" . dirvish-setup-menu)
+        ("M-a" . dirvish-setup-menu)
         ("M-e" . dirvish-emerge-menu)
         ("M-j" . dirvish-fd-jump)))
 
