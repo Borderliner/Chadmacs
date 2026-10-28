@@ -97,11 +97,21 @@
 ;; Eglot ships with `eglot-server-programs' covering most common LSPs. Each
 ;; language's eglot hook lives in its dedicated lang/<lang>-lang.el
 ;; so users opt in per-language by uncommenting (require '<lang>-lang) in
-;; init.el. The hooks below are the always-on baseline (sh + bash always work).
+;; init.el. Shell scripts are the always-on baseline, but only when
+;; bash-language-server is installed: an unconditional `eglot-ensure' put
+;; "Searching for program: No such file or directory" in the echo area for
+;; every shell script on machines without it.
 ;;
 ;; The eglot prefix is `C-c L', not `C-c l': a `C-c l ...' binding in
 ;; `eglot-mode-map' turns `C-c l' into a prefix in every LSP buffer and
 ;; hides the global `org-store-link' there.
+(defun my/eglot-ensure-bash ()
+  "Start eglot here if bash-language-server is installed.
+For a remote file the server is looked up on the remote host, where
+eglot would run it."
+  (when (executable-find "bash-language-server" t)
+    (eglot-ensure)))
+
 (use-package eglot
   :ensure nil
   :commands (eglot-ensure eglot-rename eglot-format-buffer)
@@ -112,8 +122,8 @@
         ("C-c L a" . eglot-code-actions)
         ("C-c L h" . eldoc))
   :hook
-  (sh-mode      . eglot-ensure)
-  (bash-ts-mode . eglot-ensure))
+  (sh-mode      . my/eglot-ensure-bash)
+  (bash-ts-mode . my/eglot-ensure-bash))
 
 ;; Bridge eglot diagnostics into flycheck (since flycheck is globally enabled)
 (use-package flycheck-eglot

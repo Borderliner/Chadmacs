@@ -464,7 +464,8 @@ eglot-managed buffers too.
 | `C-c L a` | Code actions      |
 | `C-c L h` | Eldoc at point    |
 
-Eglot auto-starts in core modes Chadmacs ships (C / C++ / C# / Bash).
+Eglot auto-starts in core modes Chadmacs ships (C / C++ / C# / Bash;
+Bash only when `bash-language-server` is installed).
 Per-language modules in `lang/` enable Eglot for their
 language when you `(require '<lang>-lang)` in `custom.el`. You
 must install each language server binary yourself.
