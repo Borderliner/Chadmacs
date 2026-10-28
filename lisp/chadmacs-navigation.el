@@ -247,8 +247,10 @@
       (split-window-right))
     (other-window 1)
     (call-interactively #'ghostel))
-  :config
   ;; Surface Ghostel entries in the `C-x p p' project-switch dispatcher.
+  ;; In :init, not :config: ghostel itself only loads on the first
+  ;; `M-x ghostel', and until then the entries were missing. Both
+  ;; commands are autoloaded, so listing them loads nothing.
   (with-eval-after-load 'project
     (add-to-list 'project-switch-commands
                  '(ghostel-project "Ghostel") t)
