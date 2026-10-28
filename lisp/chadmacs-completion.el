@@ -207,26 +207,32 @@ on some Elpaca builds (\"failed to define function ...\")."
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode))
 
-;; Corfu uses child-frames for its popup, which only render under a GUI.
-;; corfu-terminal swaps in an overlay-popup for TTY Emacs. Its dependency
-;; `popon' is shipped as a tar release on NonGNU ELPA; Elpaca's tar
-;; handler currently fails on it ("Unable to find main elisp file"), so
+;; Corfu uses child-frames for its popup, which before Emacs 31 only render
+;; under a GUI. corfu-terminal swaps in an overlay-popup for TTY Emacs. Its
+;; dependency `popon' is shipped as a tar release on NonGNU ELPA; Elpaca's
+;; tar handler currently fails on it ("Unable to find main elisp file"), so
 ;; both packages are pinned to their Codeberg git remotes directly.
+;;
+;; Only needed on TTY Emacs *older than 31*. Emacs 31 renders child frames
+;; natively in the terminal, so corfu's own popup already works there, and
+;; neither package is installed or loaded. Loading corfu-terminal on Emacs
+;; 31 just emits a `display-warning' ("`corfu-terminal' is not needed on
+;; Emacs 31"), which pops up *Warnings* during startup. That popup splits
+;; the initial frame, so a file opened with `emacs -nw FILE' lands in a
+;; tiny split under *scratch* instead of owning the frame. (Elpaca's
+;; :ensure evaluates a backquoted value: nil -> don't install.)
 (use-package popon
-  :ensure (popon :host nil
-                 :repo "https://codeberg.org/akib/emacs-popon.git"))
+  :ensure `,(and (< emacs-major-version 31)
+                 '(popon :host nil
+                         :repo "https://codeberg.org/akib/emacs-popon.git"))
+  :unless (>= emacs-major-version 31))
 
 (use-package corfu-terminal
-  :ensure (corfu-terminal :host nil
-                          :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :ensure `,(and (< emacs-major-version 31)
+                 '(corfu-terminal
+                   :host nil
+                   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
   :after (corfu popon)
-  ;; Only needed on TTY Emacs *older than 31*. Emacs 31 renders child frames
-  ;; natively in the terminal, so corfu's own popup already works there.
-  ;; Loading corfu-terminal on Emacs 31 just emits a `display-warning'
-  ;; ("`corfu-terminal' is not needed on Emacs 31"), which pops up *Warnings*
-  ;; during startup. That popup splits the initial frame, so a file opened
-  ;; with `emacs -nw FILE' lands in a tiny split under *scratch* instead of
-  ;; owning the frame. Skip it on 31+ to keep startup single-window.
   :unless (or (display-graphic-p) (>= emacs-major-version 31))
   :config
   (corfu-terminal-mode 1))
