@@ -129,7 +129,10 @@
 
 ;; -------------------------------------------------- Whitespace & indent --
 
-;; Strip trailing whitespace + final blank lines on save
+;; Strip trailing whitespace + final blank lines on save - only in files
+;; that had none when opened. Stripping files that already carried some
+;; rewrote lines you never touched, turning a one-line edit in someone
+;; else's repo into a whitespace-only diff across the whole file.
 (use-package stripspace
   :ensure t
   :commands stripspace-local-mode
@@ -138,7 +141,7 @@
   (text-mode . stripspace-local-mode)
   (conf-mode . stripspace-local-mode)
   :custom
-  (stripspace-only-if-initially-clean nil)
+  (stripspace-only-if-initially-clean t)
   (stripspace-restore-column t))
 
 ;; Auto-indent code as you type (lisp only - aggressive elsewhere)
