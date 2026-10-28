@@ -30,7 +30,11 @@
                                        my/file-name-handler-alist))))
           100)
 ;; Increase GC threshold. Decrease if you don't have sufficient RAM.I have 32GiB so 300MiB is nothing.
-(setq gc-cons-threshold (* 300 1024 1024)) ;; 300MiB
+;; The same budget is handed to gcmh (chadmacs-core) for while you work;
+;; its own default would raise it to 1GiB.
+(defconst my/gc-cons-threshold (* 300 1024 1024) ;; 300MiB
+  "GC threshold during startup and, via gcmh, while Emacs is busy.")
+(setq gc-cons-threshold my/gc-cons-threshold)
 
 ;;;;;;;;; UI ;;;;;;;;;;;;;;;
 

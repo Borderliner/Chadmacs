@@ -439,10 +439,14 @@ can enable per-language support without touching upstream files."
 ;; Skip theme-load confirmation prompt
 (setq custom-safe-themes t)
 
-;; Adaptive GC - defers garbage collection to idle, smoother typing
+;; Adaptive GC - defers garbage collection to idle, smoother typing.
+;; While busy, gcmh lets allocation run up to the early-init budget
+;; (`my/gc-cons-threshold'); left at its default it allowed 1GiB.
 (use-package gcmh
   :ensure t
   :demand t
+  :custom
+  (gcmh-high-cons-threshold my/gc-cons-threshold)
   :config
   (gcmh-mode 1))
 
