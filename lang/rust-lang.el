@@ -21,8 +21,9 @@
   :config
   ;; apheleia runs rustfmt on save (see chadmacs-tools.el)
   (setq rustic-format-on-save nil)
-  (setq rustic-lsp-client 'eglot)
-  (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
+  ;; Diagnostics go to flycheck: `flycheck-eglot-mode' (chadmacs-tools)
+  ;; already turns flymake off in eglot buffers, Rust included.
+  (setq rustic-lsp-client 'eglot))
 
 (provide 'rust-lang)
 ;;; rust-lang.el ends here
