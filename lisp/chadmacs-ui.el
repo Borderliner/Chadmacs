@@ -219,10 +219,34 @@ Apply it once installed; if Emacs can't see it yet, ask for a restart."
                (message "Chadmacs: installed JetBrainsMono Nerd Font in %s; restart Emacs to use it"
                         dir))))))))))
 
+;; nerd-icons draws the modeline, dashboard, completion and Dirvish icons
+;; from its own symbol font (`nerd-icons-font-family'); without it they
+;; render as boxes. Run its installer when that font is missing - from an
+;; idle timer, because `nerd-icons-install-fonts' downloads synchronously.
+;; It only knows where to install on Linux and macOS (elsewhere it asks
+;; for a directory), so other systems are left alone.
+(defun my/install-nerd-icons-font-maybe ()
+  "Run `nerd-icons-install-fonts' if the nerd-icons font is missing."
+  (when-let* ((frame (my/graphical-frame)))
+    (when (and (memq system-type '(gnu gnu/linux gnu/kfreebsd darwin))
+               (require 'nerd-icons nil t)
+               (not (with-selected-frame frame
+                      (find-font (font-spec :name nerd-icons-font-family)))))
+      (condition-case err
+          (progn
+            (nerd-icons-install-fonts t)
+            (message "Chadmacs: installed the nerd-icons font; restart Emacs to see the icons"))
+        (error
+         (message "Chadmacs: couldn't install the nerd-icons font: %s"
+                  (error-message-string err)))))))
+
 (defun my/setup-fonts ()
-  "Apply the default font, downloading JetBrainsMono Nerd Font if needed."
+  "Apply the default font, downloading missing fonts if allowed.
+See `my/install-missing-fonts'."
   (unless (or (my/apply-font) my/font (not my/install-missing-fonts))
-    (my/install-jetbrains-mono)))
+    (my/install-jetbrains-mono))
+  (when my/install-missing-fonts
+    (run-with-idle-timer 2 nil #'my/install-nerd-icons-font-maybe)))
 
 (add-hook 'after-init-hook
           (lambda () (my/when-graphical #'my/setup-fonts)))

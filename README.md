@@ -591,8 +591,10 @@ from the nerd-fonts release into your user font directory
 (`~/.local/share/fonts/JetBrainsMonoNerdFont/` on Linux, `~/Library/Fonts/`
 on macOS) the first time a graphical frame opens; it needs `curl` and
 `tar`. A font you name in `my/font` is never replaced: if it's missing,
-`my/font-height` still applies to the fallback font. To install fonts
-yourself instead:
+`my/font-height` still applies to the fallback font. The symbol font the
+icons come from (nerd-icons' "Symbols Nerd Font Mono") is installed the
+same way, through `nerd-icons-install-fonts`. Restart Emacs after either
+download. To install fonts yourself instead:
 
 ```elisp
 (setq my/install-missing-fonts nil)
