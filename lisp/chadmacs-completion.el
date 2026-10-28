@@ -202,6 +202,9 @@ on some Elpaca builds (\"failed to define function ...\")."
   :config
   (global-corfu-mode)
   (corfu-history-mode)
+  ;; corfu-history ranks recently chosen candidates first; savehist
+  ;; (chadmacs-core) only keeps it across restarts when asked to.
+  (add-to-list 'savehist-additional-variables 'corfu-history)
   (corfu-popupinfo-mode))
 
 ;; Corfu uses child-frames for its popup, which only render under a GUI.
