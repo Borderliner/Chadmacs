@@ -54,10 +54,13 @@
   :ensure t
   :defer t)
 
-(use-package pinentry
-  :ensure t
-  :config
-  (pinentry-start))
+;; GnuPG passphrases (signed commits, .gpg files, .authinfo.gpg) are read
+;; in the minibuffer through loopback pinentry, in GUI and terminal frames
+;; alike. This replaces the `pinentry' package, whose server started on
+;; every launch but was only used when gpg-agent.conf had
+;; `allow-emacs-pinentry'. Loopback relies on gpg-agent's
+;; `allow-loopback-pinentry', on by default since GnuPG 2.1.12.
+(setq epg-pinentry-mode 'loopback)
 
 ;; Deferred: magit's entry points (C-x g, C-x M-g, magit-* commands) are
 ;; autoloaded, so there is no reason to load it at every startup.
