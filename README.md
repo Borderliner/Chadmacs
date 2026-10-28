@@ -497,7 +497,8 @@ Eglot diagnostics flow into Flycheck via `flycheck-eglot`.
 | `v`   | Version-control menu                |
 | `y`   | Yank menu (copy / paste / link)     |
 | `f`   | File info menu                      |
-| `^`   | Jump to last directory              |
+| `^`   | Up to the parent directory          |
+| `;`   | Jump to last directory              |
 | `h`   | Jump to a recent directory          |
 | `N`   | Narrow visible entries              |
 | `M-t` | Toggle layout (preview pane)        |

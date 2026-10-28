@@ -146,12 +146,16 @@
   ;; `dirvish-override-dired-mode' above makes every `dired' session a
   ;; Dirvish session, so the canonical `C-x d' already opens it - no
   ;; extra top-level bind needed.
+  ;;
+  ;; `^' stays Dired's `dired-up-directory'; taking it for
+  ;; `dirvish-history-last' left no key at all for going up a directory.
+  ;; The last-directory jump lives on `;' instead (unbound in Dired).
   (:map dirvish-mode-map
         ("a"   . dirvish-quick-access)
         ("f"   . dirvish-file-info-menu)
         ("y"   . dirvish-yank-menu)
         ("N"   . dirvish-narrow)
-        ("^"   . dirvish-history-last)
+        (";"   . dirvish-history-last)
         ("h"   . dirvish-history-jump)
         ("s"   . dirvish-quicksort)
         ("v"   . dirvish-vc-menu)
