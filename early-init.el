@@ -53,9 +53,15 @@
 ;; Startup messages (safe to keep here)
 (setq inhibit-startup-screen t
       inhibit-startup-message t
-      inhibit-startup-echo-area-message t
       initial-scratch-message nil
       inhibit-compacting-font-caches t)
+
+;; No "For information about GNU Emacs..." in the echo area. Setting
+;; `inhibit-startup-echo-area-message' doesn't do it: Emacs only honours
+;; that variable when init.el itself contains a setq of it to the user's
+;; login name as a literal string, which a shared config can't ship.
+;; The message also hid any prompt waiting in the minibuffer at startup.
+(advice-add 'display-startup-echo-area-message :override #'ignore)
 
 ;;;;;;;;;; Paths ;;;;;;;;;;;;
 
