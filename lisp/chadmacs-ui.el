@@ -120,13 +120,22 @@ Set it in custom.el.")
     "JetBrainsMono Nerd Font Mono")
   "Font families tried in order when `my/font' is nil.")
 
+;; When the font isn't installed, `my/font-height' still applies to the
+;; font Emacs falls back to. It used to be dropped along with the family,
+;; leaving Emacs's stock ~10pt with no hint why.
 (defun my/apply-font ()
-  "Set the default face to `my/font' (or a candidate) at `my/font-height'."
-  (if-let* ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
-                            (if my/font (list my/font) my/font-candidates))))
-      (set-face-attribute 'default nil :font font :height my/font-height)
-    (when my/font
-      (message "Chadmacs: font %S is not installed" my/font))))
+  "Set the default face to `my/font' (or a candidate) at `my/font-height'.
+If no such font is installed, apply the height to the current font and
+say so. Return the font family applied, or nil."
+  (let ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
+                        (if my/font (list my/font) my/font-candidates))))
+    (if font
+        (set-face-attribute 'default nil :font font :height my/font-height)
+      (set-face-attribute 'default nil :height my/font-height)
+      (message "Chadmacs: %s is not installed; using %s"
+               (or my/font (car my/font-candidates))
+               (face-attribute 'default :family)))
+    font))
 
 (add-hook 'after-init-hook
           (lambda () (my/when-graphical #'my/apply-font)))
