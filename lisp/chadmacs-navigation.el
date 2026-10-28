@@ -105,10 +105,6 @@
   :ensure t
   :after (treemacs magit))
 
-(use-package treemacs-icons-dired
-  :ensure t
-  :hook (dired-mode . treemacs-icons-dired-enable-once))
-
 (use-package treemacs-projectile
   :ensure t
   :after (treemacs projectile))
@@ -117,6 +113,9 @@
 
 ;; Dirvish - Dired with sidebar, preview, git status, and quick-access.
 ;; `dirvish-override-dired-mode' makes every dired session use Dirvish.
+;; File icons come from the `nerd-icons' attribute below. Don't add
+;; treemacs-icons-dired or all-the-icons-dired on top: in Dirvish buffers
+;; they draw a second icon column (Dirvish FAQ).
 (use-package dirvish
   :ensure t
   :init
