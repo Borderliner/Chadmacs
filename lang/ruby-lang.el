@@ -7,15 +7,16 @@
 ;;
 ;; Tree-sitter: ruby grammar via treesit-auto.
 
+;; No `:mode' here: Emacs already sends .rb / .rake / .gemspec /
+;; Gemfile / Rakefile to `ruby-mode', and treesit-auto switches that to
+;; `ruby-ts-mode' once the grammar is installed. Without a grammar the
+;; files keep `ruby-mode' highlighting instead of none.
 (use-package ruby-ts-mode
   :ensure nil
-  :mode (("\\.rb\\'"      . ruby-ts-mode)
-         ("\\.rake\\'"    . ruby-ts-mode)
-         ("Gemfile\\'"    . ruby-ts-mode)
-         ("Rakefile\\'"   . ruby-ts-mode)
-         ("\\.gemspec\\'" . ruby-ts-mode))
   :hook
+  (ruby-mode    . eglot-ensure)
   (ruby-ts-mode . eglot-ensure)
+  (ruby-mode    . subword-mode)
   (ruby-ts-mode . subword-mode)
   :custom
   (ruby-indent-level 2))

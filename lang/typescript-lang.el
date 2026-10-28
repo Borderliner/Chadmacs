@@ -27,13 +27,20 @@
   (tsx-ts-mode . eglot-ensure)
   (tsx-ts-mode . subword-mode))
 
+;; JavaScript goes to the classic `js-mode' (Emacs's own mapping for .js;
+;; added here for .mjs / .cjs), and treesit-auto switches it to
+;; `js-ts-mode' once the grammar is installed. Mapping the files to
+;; `js-ts-mode' directly left them with no highlighting at all whenever
+;; the grammar was missing. TypeScript / TSX have no classic mode in
+;; Emacs to fall back to, so they stay mapped to their ts modes above.
 (use-package js-ts-mode
   :ensure nil
-  :mode (("\\.js\\'"  . js-ts-mode)
-         ("\\.mjs\\'" . js-ts-mode)
-         ("\\.cjs\\'" . js-ts-mode))
+  :mode (("\\.mjs\\'" . js-mode)
+         ("\\.cjs\\'" . js-mode))
   :hook
+  (js-mode    . eglot-ensure)
   (js-ts-mode . eglot-ensure)
+  (js-mode    . subword-mode)
   (js-ts-mode . subword-mode))
 
 (provide 'typescript-lang)

@@ -7,11 +7,13 @@
 ;;
 ;; Tree-sitter: python grammar via treesit-auto on first open.
 
+;; No `:mode' here: Emacs already sends .py / .pyi / .pyw to
+;; `python-mode', and treesit-auto switches that to `python-ts-mode'
+;; once the grammar is installed. Mapping the files to `python-ts-mode'
+;; directly left them with no highlighting at all whenever the grammar
+;; was missing, instead of falling back to `python-mode'.
 (use-package python
   :ensure nil
-  :mode (("\\.py\\'"  . python-ts-mode)
-         ("\\.pyi\\'" . python-ts-mode)
-         ("\\.pyw\\'" . python-ts-mode))
   :hook
   (python-mode    . eglot-ensure)
   (python-ts-mode . eglot-ensure)
