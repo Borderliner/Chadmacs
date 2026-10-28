@@ -9,8 +9,12 @@
 ;; org-mode: organising notes, planning, task management, document authoring
 ;; with plain-text markup. Supports hierarchical outlines, TODO lists,
 ;; scheduling, deadlines, time tracking, and export to HTML/LaTeX/PDF/Markdown.
+;;
+;; The Org bundled with Emacs (a stable release) is used. `:ensure t' made
+;; Elpaca build Org's development branch instead (`org-version' reported
+;; "10.0-pre"). To run a newer Org, pin a release tag in custom.el.
 (use-package org
-  :ensure t
+  :ensure nil
   :commands (org-mode org-version)
   :mode ("\\.org\\'" . org-mode)
   :custom
