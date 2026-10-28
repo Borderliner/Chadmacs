@@ -21,8 +21,13 @@
   (add-hook 'clojure-mode-hook #'idle-highlight-mode)
   )
 
+;; Deferred: CIDER is large and was loaded at every startup. Its own
+;; autoloads load it together with clojure-mode (they set up `C-c M-j'
+;; jack-in & co. in clojure-mode buffers), so it now arrives with the
+;; first Clojure file instead.
 (use-package cider
   :ensure t
+  :defer t
   :config
   (setq nrepl-log-messages t
         cider-repl-display-in-current-window t
