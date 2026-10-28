@@ -279,6 +279,21 @@
   (advice-add 'treesit-auto--prompt-to-install-package
               :around #'my/treesit-auto-prompt-only-with-terminal)
 
+  ;; Loading a session reopens every saved file at once, and each one
+  ;; whose grammar was missing stopped on its own question - hidden
+  ;; behind the startup message, with the saved layout only applied after
+  ;; the last answer, so Emacs seemed to start on *scratch*. Skip the
+  ;; offer while a session loads (at startup or via `C-c s l'); it comes
+  ;; back the next time such a file is opened by hand.
+  (defun my/treesit-auto-quiet-session-load (orig-fn &rest args)
+    "Call ORIG-FN with ARGS without offering to install grammars."
+    (let ((treesit-auto-install nil))
+      (apply orig-fn args)))
+
+  (with-eval-after-load 'easysession
+    (advice-add 'easysession-load
+                :around #'my/treesit-auto-quiet-session-load))
+
   (setq treesit-extra-load-path (list my/treesit-dir))
 
   ;; Custom C# tree-sitter recipe (the default points at the wrong subdir).
