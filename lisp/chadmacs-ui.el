@@ -338,15 +338,19 @@ Fed to `dashboard' as its startup banner via `dashboard-banner-ascii'.")
 ;; Using [remap ...] (instead of `(kbd "C-v")') makes the wrappers follow
 ;; the commands wherever they're bound, including keys other modes attach
 ;; them to. The `max 1' guard avoids a zero-scroll in tiny minibuffers.
-(defun my/scroll-third-page-down ()
-  "Scroll forward 1/3 of a window (like `C-v', but a third of the distance)."
-  (interactive)
-  (scroll-up-command (max 1 (/ (window-body-height) 3))))
+;; A prefix argument is passed through untouched, so `C-u 5 C-v' still
+;; scrolls five lines, and the "^P" spec keeps shift-selection working.
+(defun my/scroll-third-page-down (&optional arg)
+  "Scroll forward 1/3 of a window (like `C-v', but a third of the distance).
+With a prefix argument ARG, scroll ARG lines, as `scroll-up-command' does."
+  (interactive "^P")
+  (scroll-up-command (or arg (max 1 (/ (window-body-height) 3)))))
 
-(defun my/scroll-third-page-up ()
-  "Scroll backward 1/3 of a window (like `M-v', but a third of the distance)."
-  (interactive)
-  (scroll-down-command (max 1 (/ (window-body-height) 3))))
+(defun my/scroll-third-page-up (&optional arg)
+  "Scroll backward 1/3 of a window (like `M-v', but a third of the distance).
+With a prefix argument ARG, scroll ARG lines, as `scroll-down-command' does."
+  (interactive "^P")
+  (scroll-down-command (or arg (max 1 (/ (window-body-height) 3)))))
 
 (global-set-key [remap scroll-up-command]   #'my/scroll-third-page-down)
 (global-set-key [remap scroll-down-command] #'my/scroll-third-page-up)
