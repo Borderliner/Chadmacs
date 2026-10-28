@@ -408,7 +408,9 @@ the project context and browse the filesystem freely."
 ;; Chadmacs applies these after this file loads (a plain set-face-attribute
 ;; here would be overridden). :height is 1/10 pt (140 = 14pt). With
 ;; my/font left nil, the first installed JetBrainsMono Nerd Font variant
-;; is used. Point it at a font installed on your system, then uncomment:
+;; is used (downloaded on the first graphical launch if none is; set
+;; my/install-missing-fonts to nil to skip that). Point it at a font
+;; installed on your system, then uncomment:
 ;; (setq my/font \"JetBrainsMono Nerd Font\"
 ;;       my/font-height 140)
 

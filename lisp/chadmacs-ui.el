@@ -123,12 +123,17 @@ Set it in custom.el.")
 ;; When the font isn't installed, `my/font-height' still applies to the
 ;; font Emacs falls back to. It used to be dropped along with the family,
 ;; leaving Emacs's stock ~10pt with no hint why.
+(defun my/available-font ()
+  "Return `my/font', or the first installed candidate, if it's installed.
+Needs a graphical frame selected: font lookup fails on a text terminal."
+  (seq-find (lambda (f) (find-font (font-spec :name f)))
+            (if my/font (list my/font) my/font-candidates)))
+
 (defun my/apply-font ()
   "Set the default face to `my/font' (or a candidate) at `my/font-height'.
 If no such font is installed, apply the height to the current font and
 say so. Return the font family applied, or nil."
-  (let ((font (seq-find (lambda (f) (find-font (font-spec :name f)))
-                        (if my/font (list my/font) my/font-candidates))))
+  (let ((font (my/available-font)))
     (if font
         (set-face-attribute 'default nil :font font :height my/font-height)
       (set-face-attribute 'default nil :height my/font-height)
@@ -137,8 +142,90 @@ say so. Return the font family applied, or nil."
                (face-attribute 'default :family)))
     font))
 
+;; Missing JetBrainsMono Nerd Font is downloaded from the nerd-fonts
+;; release into the user's font directory (no root needed) - in the
+;; background, so startup doesn't wait on the network, and only the
+;; regular family (16 files, ~40MB unpacked, not all 98). Only when
+;; `my/font' is unset: a font you picked yourself is never replaced.
+(defvar my/install-missing-fonts t
+  "Non-nil to download the fonts Chadmacs uses when they're missing.
+Set it to nil in custom.el to install fonts yourself.")
+
+(defconst my/jetbrains-mono-url
+  "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz"
+  "Nerd-fonts release archive holding JetBrainsMono Nerd Font.")
+
+(defun my/jetbrains-mono-directory ()
+  "Return the directory to install JetBrainsMono Nerd Font into, or nil.
+nil means this system has no per-user font directory Chadmacs knows of."
+  (pcase system-type
+    ((or 'gnu 'gnu/linux 'gnu/kfreebsd 'berkeley-unix)
+     (expand-file-name "fonts/JetBrainsMonoNerdFont/"
+                       (or (getenv "XDG_DATA_HOME") "~/.local/share")))
+    ('darwin (expand-file-name "~/Library/Fonts/"))))
+
+;; $1 = archive URL, $2 = destination directory.
+(defconst my/jetbrains-mono-install-script
+  "set -e
+tmp=$(mktemp -d)
+trap 'rm -rf \"$tmp\"' EXIT
+curl -fsSL --retry 2 -o \"$tmp/font.tar.xz\" \"$1\"
+tar -xJf \"$tmp/font.tar.xz\" -C \"$tmp\" \\
+  $(tar -tJf \"$tmp/font.tar.xz\" | grep '^JetBrainsMonoNerdFont-.*\\.ttf$')
+mkdir -p \"$2\"
+cp \"$tmp\"/JetBrainsMonoNerdFont-*.ttf \"$2\"
+if command -v fc-cache >/dev/null 2>&1; then fc-cache -f \"$2\"; fi"
+  "Shell script that downloads JetBrainsMono Nerd Font and installs it.")
+
+(defun my/graphical-frame ()
+  "Return a live graphical frame, preferring the selected one, or nil."
+  (if (display-graphic-p)
+      (selected-frame)
+    (seq-find #'display-graphic-p (frame-list))))
+
+(defun my/install-jetbrains-mono ()
+  "Download and install JetBrainsMono Nerd Font in the background.
+Apply it once installed; if Emacs can't see it yet, ask for a restart."
+  (let ((dir (my/jetbrains-mono-directory))
+        (log "*Chadmacs font install*"))
+    (cond
+     ((get-process "chadmacs-font-install"))
+     ((not dir)
+      (message "Chadmacs: install JetBrainsMono Nerd Font from %s"
+               "https://www.nerdfonts.com/font-downloads"))
+     ((not (and (executable-find "curl") (executable-find "tar")))
+      (message "Chadmacs: curl and tar are needed to download JetBrainsMono Nerd Font"))
+     (t
+      (message "Chadmacs: downloading JetBrainsMono Nerd Font...")
+      (make-process
+       :name "chadmacs-font-install"
+       :buffer (with-current-buffer (get-buffer-create log)
+                 (erase-buffer)
+                 (current-buffer))
+       :command (list "sh" "-c" my/jetbrains-mono-install-script
+                      "sh" my/jetbrains-mono-url dir)
+       :sentinel
+       (lambda (proc _event)
+         (unless (process-live-p proc)
+           (if (/= (process-exit-status proc) 0)
+               (message "Chadmacs: JetBrainsMono Nerd Font download failed; see %s"
+                        log)
+             (kill-buffer log)
+             (if-let* ((frame (my/graphical-frame))
+                       ((with-selected-frame frame (my/available-font))))
+                 (progn
+                   (with-selected-frame frame (my/apply-font))
+                   (message "Chadmacs: installed JetBrainsMono Nerd Font in %s" dir))
+               (message "Chadmacs: installed JetBrainsMono Nerd Font in %s; restart Emacs to use it"
+                        dir))))))))))
+
+(defun my/setup-fonts ()
+  "Apply the default font, downloading JetBrainsMono Nerd Font if needed."
+  (unless (or (my/apply-font) my/font (not my/install-missing-fonts))
+    (my/install-jetbrains-mono)))
+
 (add-hook 'after-init-hook
-          (lambda () (my/when-graphical #'my/apply-font)))
+          (lambda () (my/when-graphical #'my/setup-fonts)))
 
 ;; --------------------------------------------------------------- Theme --
 

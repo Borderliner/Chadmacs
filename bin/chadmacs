@@ -263,7 +263,9 @@ cmd_doctor() {
     for cand in "${font_candidates[@]}"; do
       info "    \"$cand\""
     done
-    info "  Install: https://www.nerdfonts.com/font-downloads"
+    info "  Chadmacs downloads it on the next graphical launch (needs curl + tar),"
+    info "  unless custom.el sets my/install-missing-fonts to nil."
+    info "  Manual install: https://www.nerdfonts.com/font-downloads"
     info "  After install: fc-cache -fv"
   fi
 

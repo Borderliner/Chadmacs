@@ -586,6 +586,18 @@ Leave `my/font` unset to use the first installed JetBrainsMono Nerd Font
 variant. Chadmacs applies the font after `custom.el` loads, so don't call
 `set-face-attribute` there - it would be overridden.
 
+If no JetBrainsMono Nerd Font variant is installed, Chadmacs downloads it
+from the nerd-fonts release into your user font directory
+(`~/.local/share/fonts/JetBrainsMonoNerdFont/` on Linux, `~/Library/Fonts/`
+on macOS) the first time a graphical frame opens; it needs `curl` and
+`tar`. A font you name in `my/font` is never replaced: if it's missing,
+`my/font-height` still applies to the fallback font. To install fonts
+yourself instead:
+
+```elisp
+(setq my/install-missing-fonts nil)
+```
+
 ### Change Theme
 
 Chadmacs loads `doom-monokai-pro` once Elpaca has finished loading
@@ -645,7 +657,7 @@ You want:
 # 📌 Requirements
 
 * Emacs 29+
-* Nerd Font installed
+* Nerd Font (downloaded automatically when missing, see Change Font)
 * Git
 * Tree-sitter support enabled
 
