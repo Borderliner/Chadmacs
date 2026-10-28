@@ -246,6 +246,12 @@
   :ensure t
   :init
   (setq treesit-auto-install 'prompt)
+  ;; Emacs 31 offers to install missing grammars on its own
+  ;; (`treesit-auto-install-grammar', default `ask-dir'). With both
+  ;; offering, one Python file asked three times: Emacs, treesit-auto,
+  ;; then Emacs again after treesit-auto reverted the buffer. Leave the
+  ;; offer to treesit-auto alone. Harmless on Emacs 29 / 30.
+  (setq treesit-auto-install-grammar 'never)
   :config
   (defvar my/treesit-dir (expand-file-name "tree-sitter/" my/var-dir))
 
