@@ -26,7 +26,12 @@
   (setq projectile-sort-order 'recentf)
   ;; Faster indexing on large repos (uses external git / fd / find)
   (setq projectile-indexing-method 'alien)
-  (setq projectile-enable-caching t)
+  ;; No file-list cache: `C-x C-f' lists project files through
+  ;; `projectile-find-file', and a cached list never showed files created
+  ;; outside Emacs (git checkout / pull, generators, the shell) until the
+  ;; cache was invalidated by hand. Alien indexing (git ls-files / fd) is
+  ;; fast enough to run every time.
+  (setq projectile-enable-caching nil)
 
   ;; Persist the file-frecency history under var/ instead of the repo root.
   ;; `projectile-frecency-file' defaults to `user-emacs-directory', which
