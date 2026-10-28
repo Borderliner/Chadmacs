@@ -188,13 +188,12 @@ on some Elpaca builds (\"failed to define function ...\")."
 
 ;; ----------------------------------------------------------- In-buffer --
 
-;; Corfu - compact popup completion at point
+;; Corfu - compact popup completion at point, in every buffer from startup.
+;; It used to load from prog / shell / eshell hooks and only then turn on
+;; `global-corfu-mode', so text and Org buffers had no popup until the
+;; first code buffer was opened - and then they all got one at once.
 (use-package corfu
   :ensure t
-  :hook
-  (prog-mode   . corfu-mode)
-  (shell-mode  . corfu-mode)
-  (eshell-mode . corfu-mode)
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.2)
